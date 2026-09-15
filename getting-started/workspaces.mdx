@@ -1,0 +1,103 @@
+---
+title: "Workspaces"
+description: "One login can belong to several workspaces. How to switch, how membership is granted, and what happens when you belong to none."
+icon: "building"
+---
+
+A **workspace** is one business's tenant in Watx. Everything — contacts,
+conversations, templates, automations, integrations, the plan — belongs to
+exactly one workspace, and no workspace can see another's data.
+
+One login can belong to any number of workspaces, with a different role in each.
+That is how an agency administers a dozen clients without a dozen passwords.
+
+## Switching workspace
+
+The switcher is the **first row of the sidebar**, above every link whose
+contents it decides. It shows the active workspace's logo and name; click it to
+see the rest.
+
+Each row in the menu shows:
+
+- the workspace name and logo,
+- **the role you hold there** — you might be the owner of your own workspace and
+  an Agent in a client's, and that changes what the next screen lets you do,
+- the plan it is on,
+- a dot and a short phrase when it needs attention.
+
+<Note>
+  The switcher renders even when you have one workspace — as a plain chip with
+  no chevron. When the sidebar is collapsed the name hides but the logo does
+  not, so the answer to "whose data am I looking at?" is always on screen.
+</Note>
+
+Choosing a workspace reloads the page. That is deliberate: every realtime
+subscription and cache in the dashboard is keyed to a workspace, and a soft
+switch would leave the previous one's live subscriptions running — which means
+one client's messages arriving in another client's inbox.
+
+Your choice is remembered, so a different device opens the same workspace.
+
+### Standing dots
+
+| Dot | Meaning | Does the workspace still work? |
+| --- | --- | --- |
+| Red — **Subscription expired** | The trial or subscription has lapsed. | No. Sending and creating are paused. |
+| Amber — **Payment overdue** | A renewal payment failed and is being retried. | **Yes.** This is dunning, not a lockout. |
+| Grey — **Setup unfinished** | The welcome wizard was never completed. | Not yet. |
+
+The switcher also stays available on the billing and welcome screens, so an
+agency bounced there because of **one** lapsed client can get back to a
+workspace that works.
+
+## Choosing a workspace after sign-in
+
+If you belong to more than one workspace, signing in takes you to **Choose a
+workspace** first, listing each with your role, its member count and its
+standing. If you belong to one, or none, Watx forwards you straight through and
+you never see that screen.
+
+## How membership is granted
+
+There are two ways into a workspace, and self-serve workspace creation is not
+one of them today:
+
+1. **An invite link.** An owner or admin generates one from **Settings → Users &
+   Roles**, with a role attached, and shares it however they like. Accepting it
+   adds a membership; nothing you already have is moved or deleted. See
+   [Members and roles](/settings/members-and-roles).
+2. **Watx support attaches your existing login** to a workspace that already
+   exists — useful when the person who should own it already has an account.
+
+<Note>
+  Signing up **through an invite link** does not create a personal workspace for
+  you. You join the workspace that invited you and that is the only one you are
+  in — otherwise every invited teammate would permanently own an empty, unpaid
+  workspace they never asked for.
+</Note>
+
+If you accept an invite for a workspace you are already in, Watx says so and
+takes you to the dashboard rather than treating it as an error.
+
+## Belonging to no workspace
+
+"You're not in any workspace" is a real state, not a bug. It happens when you
+are removed from — or leave — the last workspace you belonged to.
+
+Watx deliberately does **not** conjure a replacement empty workspace for you.
+Your login still exists and your other memberships, if any, are untouched. To
+get back in, ask an owner or admin for an invite link; accepting one puts you
+straight back.
+
+## Renaming a workspace and changing its logo
+
+Admins and the owner can rename the workspace and change its logo from
+**Settings → Your profile**, on the workspace card below your own details. The
+name appears in the sidebar, the header and every invite link.
+
+## One plan per workspace
+
+A workspace has one plan and one person who pays for it — the owner. Invited
+teammates are entitled by the workspace they are in; they are never asked to buy
+their own plan, and they do not see the billing screen. See [Plans and
+billing](/getting-started/plans-and-billing).

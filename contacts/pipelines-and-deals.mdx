@@ -1,0 +1,126 @@
+---
+title: "Pipelines and deals"
+description: "Track deals through stages on a drag-and-drop board, with values, owners and the metrics above it."
+sidebarTitle: "Pipelines and deals"
+icon: "code-branch"
+---
+
+A pipeline is the set of stages a deal moves through. A deal is one opportunity, attached to a contact, sitting in one stage.
+
+Open **Pipelines** from the sidebar.
+
+## Your first pipeline
+
+A new workspace gets a pipeline called **Sales Pipeline** with five stages, so there is somewhere to put a deal on day one:
+
+**New Lead** → **Qualified** → **Proposal Sent** → **Negotiation** → **Won**
+
+You can rename, recolour, reorder and delete these, and add your own.
+
+## Several pipelines
+
+**Add pipeline** creates another one — a separate board with its own stages and its own deals. Any new pipeline starts with the same five default stages. Switch between them with the dropdown next to the page title.
+
+Creating pipelines needs the Admin role or above.
+
+## Managing stages
+
+**Manage pipeline** in the pipeline dropdown opens the stage editor.
+
+<Steps>
+  <Step title="Rename the pipeline">
+    The **Name** field at the top.
+  </Step>
+  <Step title="Reorder stages">
+    Drag a stage by its handle. The new order is saved when you click **Save changes**.
+  </Step>
+  <Step title="Rename or recolour a stage">
+    Edit the name in place, or click the colour swatch for a ten-colour palette.
+  </Step>
+  <Step title="Add a stage">
+    Pick a colour, type a name, click **Add**. It is created straight away at the end of the list.
+  </Step>
+  <Step title="Remove a stage">
+    The bin icon on the row. A stage that still has deals in it cannot be removed — move or delete them first, and the dialog says so.
+  </Step>
+</Steps>
+
+<Warning>
+**Delete pipeline** is permanent. It removes the pipeline, its stages and **every deal in it**. Nothing is recoverable afterwards.
+</Warning>
+
+Stage changes need the Admin role or above.
+
+## The board
+
+One column per stage, in stage order, each showing the number of deals and the total value in it. Drag a card to another column to move the deal; the change saves immediately. Keyboard users can focus a card, press <kbd>Space</kbd> to pick it up, move with the arrow keys, <kbd>Space</kbd> to drop and <kbd>Esc</kbd> to cancel.
+
+Dragging changes the stage only — there is no ordering within a column. Cards are always newest first.
+
+A card shows the deal title, a **Won** or **Lost** pill when it is not open, the contact, the value, the expected close date if there is one, and the initial of whoever it is assigned to. Clicking it opens the deal.
+
+There is no search, filter or sort on the board.
+
+## Creating and editing a deal
+
+**Add deal** in the page header, or **Add deal** at the foot of a column to start it in that stage.
+
+| Field | Required | Notes |
+| --- | --- | --- |
+| Title | Yes | What the opportunity is |
+| Contact | Yes | Any contact in the workspace. If they have a conversation, a link to the Inbox appears under the field |
+| Value | No | A number. Defaults to 0 |
+| Currency | No | Defaults to the workspace currency |
+| Stage | Yes | Any stage of this pipeline |
+| Expected close | No | A date |
+| Assigned to | No | Any member of the workspace, or **Unassigned** |
+| Notes | No | Anything the next person should know |
+
+Editing a deal adds a **Status** card with **Mark as won**, **Mark as lost** and, once it is one of those, **Reopen deal**. A deal is open, won or lost — nothing else.
+
+**Delete deal** sits in the footer of the edit panel and asks to confirm.
+
+Creating, editing, moving and deleting deals needs the Agent role or above. Members with the Viewer role can see the board and nothing more.
+
+## The metrics above the board
+
+Six tiles, each with an information icon explaining the calculation.
+
+| Tile | What it counts |
+| --- | --- |
+| **Total deals** | Every deal in this pipeline that is not marked Lost. Won deals are included |
+| **Pipeline value** | The sum of those deals' values |
+| **Avg deal size** | Pipeline value divided by Total deals |
+| **Weighted value** | Each still-open deal's value multiplied by a probability derived from its stage — the first stage counts around 10%, rising evenly through the board. Won and lost deals are excluded |
+| **Won this month** | Deals marked Won since the first of the current month |
+| **Lost this month** | Deals marked Lost since the first of the current month |
+
+These figures cover the pipeline you are looking at, not every pipeline.
+
+## Currency
+
+One currency per workspace. Set it under **Settings → Deals & currency**; only admins can change it.
+
+It decides the currency a new deal defaults to, and the currency the board totals, the pipeline metrics and the home dashboard's deal figures are shown in. **Existing deals keep the currency they were saved with**, which is what the deal card shows.
+
+There is no exchange-rate conversion anywhere. If you record deals in more than one currency, the column and pipeline totals add the raw numbers together and label them with the workspace currency.
+
+## Deals created for you
+
+A deal does not have to be typed in by hand.
+
+- **The Create deal automation step** opens a deal in a pipeline and stage you choose, with a title and value that can carry variables from the run. **Update deal** then moves its stage, changes its value or marks it won or lost. See [Steps](/automations/steps).
+- **An AI agent** can open a deal when a conversation shows enough buying intent, if you switch on the **Deal creation** skill. You choose the pipeline, the starting stage and how confident it has to be. A second skill, **Deal assignment**, lets it assign a deal to a teammate. See [Skills](/ai-agents/skills).
+
+<Note>
+The agent keeps one deal per conversation: asked again on the same thread, it updates the existing open deal and appends to its notes rather than opening a second one.
+</Note>
+
+Automation-created deals are unassigned — nothing guesses an owner for you.
+
+## Where deals show up elsewhere
+
+- The contact drawer's **Deals** tab, and the Inbox contact panel.
+- The contact's [activity timeline](/contacts/activity-timeline), as a **Deal opened** entry.
+- The home dashboard — **Open Deals Value** and a pipeline-value donut broken down by stage.
+- CSV export from the dashboard.

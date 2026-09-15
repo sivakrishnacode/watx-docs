@@ -1,0 +1,107 @@
+---
+title: "Channels and the 24-hour window"
+description: "Scope an automation to a channel, understand which steps each channel supports, and keep a follow-up inside WhatsApp's messaging window."
+sidebarTitle: "Channels and the window"
+icon: "arrows-split-up-and-left"
+---
+
+One automation can run on WhatsApp, Instagram and the website widget. This page covers
+what that means in practice: how scoping works, which steps each channel can actually do,
+and what a long wait does to a WhatsApp follow-up.
+
+## Scoping to a channel
+
+The trigger panel has a **Channels** setting: WhatsApp, Instagram, Web. It only ever
+narrows.
+
+- **None selected means every channel.** That is the default, and what an automation that
+  never touched the setting means.
+- Selecting one or two means the automation only runs when the event came from those.
+
+Two triggers lock it: **Instagram comment** and **Instagram story reply** lock to
+Instagram, **Web chat started** locks to Website. The picker shows the lock instead of a
+choice.
+
+<Warning>
+  Twelve triggers carry **no channel at all** — the form, appointment, payment and store
+  triggers. A form is submitted on a public page and a payment is made on Razorpay's, so
+  there is no channel to compare against. For those the picker is hidden, any scope left
+  over from a previous trigger is cleared, and the engine ignores channel scoping. See
+  [Triggers](/automations/triggers).
+</Warning>
+
+## What each channel can do
+
+| | WhatsApp | Instagram | Website |
+| --- | --- | --- | --- |
+| Plain text, media | Yes | Yes | Yes |
+| Buttons | Yes | Yes | Yes |
+| Lists | Yes | No | Yes |
+| Templates | Yes | No | No |
+
+Instagram has no template mechanism at all, and no list message. The website widget is
+rendered by us, so there is nothing to pre-approve.
+
+Every other kind of step — tags, segments, deals, notes, notifications, HTTP requests,
+Google actions, variables — sends nothing through a channel, so no channel can fail to
+support it. A Google Sheets row is appended identically whether the run started on
+WhatsApp, on Instagram or from a form.
+
+## How the editor reports it
+
+The settings panel's **Runs on** line and the card on the canvas give one of three
+answers.
+
+| Answer | Meaning |
+| --- | --- |
+| *Every channel this automation runs on* | The step works wherever this automation can fire. |
+| **This step is skipped on some channels** | It works on some and is skipped on the others. Legitimate and common — one automation that sends a template on WhatsApp and plain text on Instagram is exactly what the **Channel** condition exists for. The step is marked, not blocked. |
+| **This step can never run** | It cannot run on any selected channel, or the trigger cannot supply what it needs. This is dead configuration, and the checks panel reports it as a problem. |
+
+An **unscoped** automation is not warned about partial support. Strictly, a template step
+in one is skipped on Instagram and the web — but saying so would put a warning on
+essentially every template step in the product. A step that works *nowhere* is still
+reported.
+
+## Steps that need somebody to talk to
+
+Some steps need a conversation, and some need a contact at all.
+
+- **A hosted form submission, a booking, a payment or a store order** can come from
+  somebody who has never messaged you. There is no thread, so the sending steps are
+  skipped — and the tag, segment, deal and notify steps beside them still run. The run
+  ends **partial** and the log says which step was skipped and why.
+- **A scheduled automation** runs for the workspace, not for one person. There is no
+  contact at all, so every contact-shaped step in it can never run.
+
+**Send an invoice** is the exception among the sending steps: it creates the invoice
+anyway and records that it could not deliver it.
+
+## The 24-hour window
+
+WhatsApp lets you reply freely for 24 hours after the customer's last message. After
+that, only an approved [template](/whatsapp/templates) will send — see
+[The 24-hour window](/whatsapp/messaging-window).
+
+A parked run does not stop that clock. The checks panel adds up every **Wait** along each
+path (counting a **Wait until** as up to 24 hours, since its real length depends on when
+the run started) and warns on the first sending step that lands past the limit:
+
+> About 2 days of waiting happens before this step, and WhatsApp only allows a free-form
+> message within 24 hours of the contact's last one. Use a Send template step here, or
+> shorten the wait.
+
+Two ways to fix it: shorten the wait, or make that step a **Send template**.
+
+<Note>
+  The same applies to a **Request a payment** step. Inside the window it sends the link
+  as an ordinary message; outside it, the link is carried by an approved template, and
+  the step's own **Message sent with the link** is not used — a template's copy is fixed
+  at approval. Configure the template on the step, or leave it to the workspace default.
+</Note>
+
+## Branching per channel
+
+One automation can behave differently per channel rather than being duplicated. Add a
+**Condition** with the **Channel** subject, and put the template send in one branch and
+the plain-text send in the other. See [Conditions and branching](/automations/conditions).

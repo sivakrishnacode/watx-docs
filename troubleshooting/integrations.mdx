@@ -1,0 +1,374 @@
+---
+title: "Integrations"
+description: "Store webhooks that deliver nothing, carts that are never recovered, payment links that reach nobody, documents with dashes in them, and Google or Zapier setups that test fine and never fire."
+sidebarTitle: "Integrations"
+icon: "plug"
+---
+
+Symptoms first. Each entry says what is happening, how to confirm it, and what to change — with a link to the page that holds the full rule.
+
+One pattern runs through almost all of it: an integration that connects successfully and then delivers nothing. A green tick is not evidence that events are arriving, so every console has a place that shows real deliveries — check that before anything else.
+
+## Shopify and WooCommerce
+
+<AccordionGroup>
+  <Accordion title="The store is connected but no orders or carts ever arrive">
+    Almost always the **signing secret**. Every delivery is signed by the store and verified here; with the wrong secret every one is refused as a forgery, and nothing anywhere reports a problem.
+
+    **How to check.** The console's **Overview** tab lists every webhook topic with **Registered**, **Last received** and a 24-hour count. A topic that is registered but has **never received anything** is the signature check failing. **Recent deliveries** below it shows every event the store sent, verified or refused.
+
+    **What to do.**
+
+    - **Shopify, pasted token.** The **API secret key** (`shpss_…`) is not optional — the connect form refuses to save without it, so if it is missing the store was connected before that check or with the wrong value. **More actions → Reauthenticate** and paste it again.
+    - **Shopify, your own Partner app.** If you supplied a **Client ID** and **Client secret**, both must belong to the same app. Pairing one app's ID with another's secret makes every webhook fail its signature check with nothing explaining why.
+    - **WooCommerce.** Each webhook you created in WordPress must carry the same **Secret** you saved in Watx, exactly.
+    - Then **More actions → Re-register webhooks**. Registration is idempotent and safe to run at any time.
+
+    [Shopify](/integrations/shopify) · [WooCommerce](/integrations/woocommerce) · [The store console](/integrations/store-console)
+  </Accordion>
+
+  <Accordion title="Orders arrive with no customer name, phone or address">
+    Shopify treats those as protected data. A custom app you built in your own Shopify admin only receives them on the **Grow plan or above** — on every other plan they arrive empty, silently. Without the phone number, order messages, cart recovery, cash-on-delivery confirmation and contact creation all stop working.
+
+    **What to do.** Reconnect using **Install the Watx app**, which receives those fields on every plan. The paste-a-token path is only right for a merchant already on Grow or above.
+
+    [Shopify](/integrations/shopify)
+  </Accordion>
+
+  <Accordion title="Carts never move to Abandoned, or nothing is ever recovered">
+    The rules card sits on the **Carts** tab beside the list, and one of its settings stops most stores dead.
+
+    **Check, in this order.**
+
+    - **Only shoppers who accepted marketing.** This is Shopify's checkbox at checkout, and most shoppers leave it unticked — with this on, most stores send nothing at all.
+    - **Quiet for** — minutes of silence before a checkout counts as abandoned. Default 60.
+    - **Give up after** — a cart older than this is a nuisance message, not a recovery. Default 24 hours.
+    - **Minimum cart value** — carts under this are skipped. `0` means every cart.
+
+    The sweep runs every 15 minutes and fires the **Cart abandoned** trigger once per cart that meets all of them. A value outside the allowed bounds is a typo rather than a preference, and is clamped when saved.
+
+    **Then check the message exists.** The trigger firing is only half of it — the **Cart recovery** recipe on the **Messaging** tab is what sends anything.
+
+    [The store console](/integrations/store-console) · [Triggers](/automations/triggers)
+  </Accordion>
+
+  <Accordion title="A cart reminder went out after the customer had already bought">
+    A shopper who completes their order stops being abandoned the moment the order arrives, but a reminder **already scheduled** still sends.
+
+    **What to do.** Keep reminder ladders short, and keep the delay between reminders longer than the time a checkout usually takes to complete.
+
+    [The store console](/integrations/store-console)
+  </Accordion>
+
+  <Accordion title="A store message failed with a missing parameter">
+    Meta rejects the **whole** message if one value is missing, so a partly mapped template never sends.
+
+    | Error | What it means |
+    | --- | --- |
+    | *requires a buttonParams value* | The template has a button that needs a value — usually a "Track order" button wanting the order status link |
+    | *Parameter of type text is missing text value* | A placeholder is mapped to something that resolved to empty |
+
+    **What to do.** Re-open the recipe and map every placeholder **and** every button. If you changed the selected template, the mapping was reset on purpose — `{{2}}` means nothing on a template whose `{{2}}` is a different thing.
+
+    [The store console](/integrations/store-console) · [Message templates](/whatsapp/templates)
+  </Accordion>
+
+  <Accordion title="Customers get two messages about one order">
+    **Order received** and the cash-on-delivery confirmation both fire on a new order. Two messages about one order in the same minute reads as a fault.
+
+    **What to do.** Tick **Skip cash-on-delivery orders** when setting up the **Order received** recipe. It is ticked by default when the COD confirmation is on.
+
+    [The store console](/integrations/store-console) · [Cash on delivery](/integrations/cash-on-delivery)
+  </Accordion>
+
+  <Accordion title="COD orders sit at Need a human and nothing is cancelled">
+    That status means the deadline passed but Meta never reported the confirmation as **delivered**, and the guardrail **Only if the message was delivered** stopped the auto-cancel. An order whose confirmation never reached the phone is not a customer who declined.
+
+    **What to do.** Settle those rows by hand — **Confirm** and **Cancel order** are on every **Need a human** and **Awaiting reply** row, for after a phone call. Switching the guardrail off means real orders get cancelled for people who were never asked, so leave it on.
+
+    [Cash on delivery](/integrations/cash-on-delivery)
+  </Accordion>
+
+  <Accordion title="COD cancels fail at the store">
+    Tagging and cancelling an order at the store needs the `write_orders` scope. The console's **Overview** tab and the **Cash on delivery** tab both say so when the token does not have it, and the row carries the store's own error underneath.
+
+    **What to do.** Reconnect the store with that permission — **Reinstall the app** on an app-installed Shopify store, or add the scope to your custom app and **Reauthenticate**. A refused cancellation leaves the order open at the store, which is recoverable.
+
+    <Note>
+      On **WooCommerce** the connection is read-only: COD orders are recognised, but tagging and cancelling the order at the store are Shopify operations.
+    </Note>
+
+    [Cash on delivery](/integrations/cash-on-delivery) · [WooCommerce](/integrations/woocommerce)
+  </Accordion>
+
+  <Accordion title="A COD reply was not acted on">
+    A button tap arrives as the button's own label, so it is unambiguous. Somebody who types instead is matched on whole words — "cancel" cancels, "confirm" confirms. A message containing **both** words is nobody's decision to guess, so it is left for a human.
+
+    **Also check the button labels.** They are read off the template when you pick it and stored, so editing the template at Meta afterwards cannot silently flip which tap means what — but it can leave the stored labels out of date. Re-pick the template after editing it.
+
+    [Cash on delivery](/integrations/cash-on-delivery)
+  </Accordion>
+
+  <Accordion title="I removed the app in Shopify and events kept being attempted">
+    Disconnect through Watx rather than only removing the app at the store — otherwise the subscriptions we hold keep delivering to a dead token, which the store counts as success.
+
+    **What to do.** **More actions → Disconnect store**. It removes the store, its synced catalogue, orders and carts, the subscriptions held at the store, and the message automations built for it. It cannot be undone.
+
+    [Shopify](/integrations/shopify)
+  </Accordion>
+
+  <Accordion title="I cannot connect a second store">
+    There is **one store per workspace per platform** — one Shopify and one WooCommerce. To connect a different one, disconnect the first.
+
+    [Integrations](/integrations/overview)
+  </Accordion>
+</AccordionGroup>
+
+## Razorpay payment links
+
+<AccordionGroup>
+  <Accordion title="The link exists in Razorpay but the customer never got it">
+    Outside WhatsApp's 24-hour window a free-form message reaches nobody, so a link sent as ordinary text past that point is real in Razorpay and invisible to the customer.
+
+    **How Watx decides, before the link is created.** Inside the window, or on a channel with no window, it goes as an ordinary message. On WhatsApp with the window closed and a usable template nominated, it goes inside that template. With the window closed and **no** usable template, the request is **refused** rather than creating a link nobody is shown. With no conversation at all, the link is created and not sent.
+
+    **How to check.** The Payments list records which of those happened — that is the first thing to look at when somebody says they never got it.
+
+    **What to do.** Nominate a payment template on the Razorpay connection.
+
+    [Razorpay payments](/integrations/razorpay) · [The 24-hour window](/whatsapp/messaging-window)
+  </Accordion>
+
+  <Accordion title="The template I want to nominate is greyed out">
+    The picker lists templates that cannot carry a link too, with the reason beside them — *"has nowhere to put the payment link"*, *"is pending, not approved"* — so a template you know you approved is never simply missing.
+
+    **What a payment template needs.** Somewhere to put the link: a body variable, or a **dynamic URL button**. It can carry four values — customer name, amount, description and the payment link. Named placeholders are matched by name; positional ones are filled in that order.
+
+    **If you have none**, the picker offers the four payment starters from the library.
+
+    [Razorpay payments](/integrations/razorpay) · [Template library and packs](/whatsapp/template-library)
+  </Accordion>
+
+  <Accordion title="The send is refused because the button URL does not match">
+    A dynamic URL button substitutes only the **end** of the URL, so the template's base must match the link Razorpay actually issues. Razorpay has used `rzp.io/i/…`, `rzp.io/l/…` and branded domains, and a mismatch is refused rather than shipping a pay button that returns a 404.
+
+    **What to do.** Check what a real link from your account looks like — **Copy link** on any row of the Payments page — and approve a template whose button base matches it, or carry the link in a body variable instead.
+
+    [Razorpay payments](/integrations/razorpay)
+  </Accordion>
+
+  <Accordion title="The customer says they paid but the link still shows Awaiting payment">
+    **Check with Razorpay** on that row re-reads the link and applies the answer. It is offered on every row, because "they say they paid" is the question people arrive with.
+
+    **Why it can lag.** Saving the webhook secret is optional; without it Watx re-checks each link with Razorpay instead of trusting the notification, so confirmation is slower. A sweep also re-checks open links every five minutes, and never decides an expiry locally — it asks Razorpay and applies what Razorpay says. A payment always outranks an expiry.
+
+    **What to do.** Add the webhook in Razorpay with the four events, and save its secret in Watx.
+
+    [Razorpay payments](/integrations/razorpay)
+  </Accordion>
+
+  <Accordion title="My wording was ignored on the message that carried the link">
+    **Message** is used inside the 24-hour window only. Outside it, the wording is the template's, fixed when Meta approved it — the dialog says so and disables the field.
+
+    [Razorpay payments](/integrations/razorpay)
+  </Accordion>
+
+  <Accordion title="I need to refund a payment">
+    Watx does not issue refunds. Do that in your Razorpay dashboard.
+
+    Disconnecting Razorpay in Watx stops Watx using the keys; links already sent stay live and payable, and the keys keep working. To revoke them fully, regenerate them in Razorpay.
+
+    [Razorpay payments](/integrations/razorpay)
+  </Accordion>
+</AccordionGroup>
+
+## Sales documents
+
+<AccordionGroup>
+  <Accordion title="I cannot create a document">
+    Two gates are checked, in this order, and the console's status line mirrors them.
+
+    - **Off.** The switch in the console header is off for a new workspace. Nothing new will be issued.
+    - **Needs company details.** It is on, but there is no legal name — every document would fail, so this is refused first and the message names the real fix.
+
+    **What it is not.** Nothing here needs Razorpay, a store or any other integration. If something suggests otherwise, it is the company details that are missing.
+
+    **Note** that the switch gates **creation only**. Turning it off never strands a bill a customer already holds: the list, marking paid, sending and the public link all keep working.
+
+    [Sales documents](/integrations/sales-documents)
+  </Accordion>
+
+  <Accordion title="The WhatsApp message arrived with dashes in it">
+    A placeholder is mapped to a value this document does not have. Meta rejects a message with a blank parameter outright, so an unmapped or empty slot is filled with a dash instead — the message goes out, with `—` where the value should be.
+
+    **The usual cases.** **Due date** on a payment receipt, which has none. **Date paid** while money is still owed. **Payment method** when nothing has been recorded yet. **Balance due** on a document type that carries no balance.
+
+    **What to do.** Map each placeholder to a value that type of document actually has. A receipt wants **Date paid** and **Amount paid**; an unpaid invoice wants **Due date** and **Balance due**.
+
+    [Creating and sending](/integrations/sales-documents-sending)
+  </Accordion>
+
+  <Accordion title="The send was refused">
+    Four reasons, each with its own message.
+
+    | Message | Cause |
+    | --- | --- |
+    | The contact has no phone number | A walk-in, or a contact that exists only on Instagram or the website |
+    | Choose a template | The chat is closed and no invoice template is nominated |
+    | The template has no document header | That header is what carries the PDF; without one the customer gets a sentence about an invoice with no invoice attached |
+    | — | The customer had no thread at all, which is normal at a counter: Watx opens one, and the document rides the approved template because a fresh thread is outside the window |
+
+    **What to do.** Nominate a template under **Settings → Invoice template** in the console. Only templates with a document header are listed.
+
+    <Note>
+      A failed send never undoes the document. It exists the moment it is created, and the failure is recorded against it — the **Documents** tab's delivery column says `template`, `PDF` or **not sent**.
+    </Note>
+
+    [Creating and sending](/integrations/sales-documents-sending)
+  </Accordion>
+
+  <Accordion title="I need to correct an issued document">
+    An issued document cannot be edited. What may still change is its status, the payment recorded against it, and whether it has been sent.
+
+    **What to do.** Cancel it and issue a fresh one — that is what GST requires, and it is what makes the PDF safe to render on demand: re-opening an old document always reproduces exactly what the customer was given.
+
+    [Sales documents](/integrations/sales-documents)
+  </Accordion>
+
+  <Accordion title="A GST invoice is refused, or prints without tax columns">
+    Three separate things.
+
+    - **A missing place of supply is refused**, not guessed. Guessing would charge a local customer the wrong tax and file it against the wrong state, invisibly.
+    - **No GSTIN saved** means the workspace is not registered, so documents print as plain **INVOICE**s with no HSN column, no tax columns and no rate summary. Nothing is promoted to a tax invoice that is not one.
+    - **An empty HSN column on automatic documents.** Shopify sends no HSN code, so an invoice raised from an order uses the **default HSN/SAC code** on the Settings tab. Set it before relying on the automatic path.
+
+    [Sales documents](/integrations/sales-documents)
+  </Accordion>
+
+  <Accordion title="A number cannot be issued, or the format is refused">
+    A document number is at most **16 characters** — `INV/2026-27/0042` is exactly 16, with nothing to spare. A prefix that overflows is reported when you **save the format**, not months later when a number cannot be issued.
+
+    **Check.** The Settings tab shows an example of your next number and how many the format allows. Each document type keeps its own series, and including the financial year restarts the numbering each April.
+
+    [Sales documents](/integrations/sales-documents)
+  </Accordion>
+</AccordionGroup>
+
+## Google
+
+<AccordionGroup>
+  <Accordion title="A login page or an HTML error comes back instead of a result">
+    The deployment is not reachable by a server. Two causes, and both look correct in the Apps Script editor.
+
+    - **Who has access** is not **Anyone**. "Anyone with a Google account" is a different setting and returns a login page — Watx's server has no Google login. Your secret is what protects the URL.
+    - **The `/dev` URL was used.** It looks identical to the `/exec` one and requires a signed-in browser. Only `/exec` works, and Watx refuses the other by name.
+
+    **What to do.** Re-deploy as a **Web app**, **Execute as: Me**, **Who has access: Anyone**, and paste the `/exec` URL. **Test connection** runs the one action that changes nothing.
+
+    [Google](/integrations/google)
+  </Accordion>
+
+  <Accordion title="Calendar is not defined, or authorising the script fails">
+    A service named at the top of the script was not added in the Apps Script editor.
+
+    **What to do.** In the left sidebar, next to **Services**, click **+** and add **every** service the script names — **Calendar API**, **People API** and **Tasks API**. Adding only Calendar is the most common reason `authorizeOnce` fails part-way. Then replace `appsscript.json` with the manifest shown beside the script, run `authorizeOnce` again, and approve.
+
+    Google warns that the app is not verified. It is your own script in your own account, and **Advanced → Go to…** is the right answer. It appears once.
+
+    [Google](/integrations/google)
+  </Accordion>
+
+  <Accordion title="A run failed with unknown action">
+    The deployed script is older than the action the automation is calling. The script reports its own version every time it answers, so the card says **Update available** before an automation fails — but only if you have opened it.
+
+    **What to do.** Generate a new script, paste it over `Code.gs`, and redeploy. Everything you have already built keeps working meanwhile; only actions added since your script was generated are missing.
+
+    [Google](/integrations/google) · [Google actions](/integrations/google-actions)
+  </Accordion>
+
+  <Accordion title="Nothing works after I generated a new script">
+    Generating mints a **new secret**, which stops the currently deployed script working until you paste and redeploy the new one. The dialog warns before you do it.
+
+    **What to do.** Paste the new script over the old `Code.gs`, save, and deploy again. The `/exec` URL may change with a new deployment — paste whatever the new one is back into Watx.
+
+    [Google](/integrations/google)
+  </Accordion>
+
+  <Accordion title="Emails stop sending after a while, and there is no error here">
+    The script runs under **your** Google account, so Google's own Apps Script quotas apply to you — consumer Gmail caps sending at roughly 100 recipients a day.
+
+    **Where the detail is.** In **your** Apps Script execution log, not here. Watx only sees the summary the script returns. The setup dialog shows the last error with the time it happened, so a failure from this morning never reads as one happening now.
+
+    [Google](/integrations/google)
+  </Accordion>
+
+  <Accordion title="An agent has a Google skill on but never books or logs anything">
+    Google tools are withheld twice: when Google is not connected, and again while the agent is **drafting** a reply rather than sending one. Pressing "draft a reply" three times must not book three meetings.
+
+    The agent is also given a deliberately narrower set than an automation: it cannot read event titles or other rows, cannot send email, and logs only to the spreadsheet named in the skill's own settings.
+
+    [Skills](/ai-agents/skills) · [Why is my agent silent?](/ai-agents/readiness)
+  </Accordion>
+</AccordionGroup>
+
+## Zapier and n8n
+
+<AccordionGroup>
+  <Accordion title="The test fires but real events never arrive">
+    The commonest problem on both platforms, and the causes differ.
+
+    **n8n — two of them, and both end in a green tick here and nothing there.**
+
+    - **The Test URL only listens while the editor is open.** It is the URL highlighted while you are building, so it is the one people copy, and it works for exactly as long as it takes to press **Send test**. Watx warns inline if the URL you paste contains `/webhook-test/` — a warning, not a block.
+    - **A Production URL returns 404 until the workflow is Active.** Switching it on is the last step, not an optional one.
+
+    **Zapier.** The Zap has to be **published**. A Catch Hook accepts the test while the Zap is still in the editor.
+
+    **Both.** Check the connection subscribes to the events you expect — the card lists them, and you can change the selection at any time.
+
+    [n8n](/integrations/n8n) · [Zapier](/integrations/zapier)
+  </Accordion>
+
+  <Accordion title="My workflow branches on the event name and the test takes the wrong path">
+    The test delivery is named after the platform: `zapier.test` on a Zapier connection, `n8n.test` on an n8n one. A Switch or IF node routing on the event name behaves the same for a test as for a real event, except for the name itself.
+
+    `zapier.test` stays exactly that — Zaps already filtering on it are live.
+
+    [Zapier](/integrations/zapier) · [n8n](/integrations/n8n)
+  </Accordion>
+
+  <Accordion title="The connection switched itself off">
+    A delivery is attempted up to five times with a growing gap. Each event whose attempts all fail counts one **consecutive delivery failure**, shown on the card. After **15** consecutive failures the connection is switched off automatically, so a dead endpoint is not retried for ever.
+
+    **What to do.** Fix the endpoint — the Zap still published, the workflow still Active, the path unchanged, the instance reachable — then re-enable it with the switch, which clears the failure count. A successful delivery also resets it to zero.
+
+    [Zapier](/integrations/zapier) · [n8n](/integrations/n8n)
+  </Accordion>
+
+  <Accordion title="A self-hosted n8n URL is refused when I connect">
+    The instance must be reachable from the public internet over **https**. Loopback and private network addresses are refused at connect time rather than accepted and never delivered to.
+
+    [n8n](/integrations/n8n) · [Webhooks](/api/webhooks)
+  </Accordion>
+
+  <Accordion title="Deleting a webhook through the API disconnected an integration">
+    Connecting Zapier or n8n from the dashboard registers an ordinary webhook endpoint, so `GET /webhooks` returns endpoints you did not create through the API — and deleting one there disconnects that integration.
+
+    **What to do.** Each endpoint carries a read-only `provider` of `api`, `zapier` or `n8n`, saying which surface created it. Read it before deleting. `provider` has no effect on delivery; it only decides which page manages the endpoint.
+
+    [Webhooks](/api/webhooks)
+  </Accordion>
+
+  <Accordion title="I want the automation to call Zapier, not the other way round">
+    These pages are about Watx telling Zapier or n8n that something happened. To have an **automation** call a workflow mid-sequence — with the contact and the message in hand — use the preset in **Other services**, which is a pre-filled HTTP request step.
+
+    [Other services](/integrations/other-services) · [Steps](/automations/steps)
+  </Accordion>
+</AccordionGroup>
+
+## Still stuck
+
+- A message that failed at Meta rather than in the integration: [WhatsApp delivery](/troubleshooting/whatsapp).
+- The automation the integration triggers: [Automations and agents](/troubleshooting/automations-and-agents).
+- What each card's status means: [Integrations](/integrations/overview).
+- Anything else: [support@watx.in](mailto:support@watx.in).

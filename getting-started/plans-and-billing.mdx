@@ -1,0 +1,188 @@
+---
+title: "Plans and billing"
+description: "Starter, Growth and Enterprise; the one 15-day trial per workspace; what counts against your limits; automatic renewal, failed payments, and cancelling."
+sidebarTitle: "Plans and billing"
+icon: "credit-card"
+---
+
+Every workspace runs on one plan, paid for by one person: the owner. This page
+covers what the plans are, how the trial works, what happens when a payment
+fails, and how to stop.
+
+<Note>
+  This is what your workspace pays **Watx**. It is not the same thing as **Sales
+  documents**, which is the invoicing you issue to *your* customers — see
+  [Sales documents](/integrations/sales-documents).
+</Note>
+
+## The plans
+
+There are three: **Starter**, **Growth** and **Enterprise**. There is no free
+plan.
+
+Prices and limits are read live from your Watx instance, so this page does not
+quote amounts — open **Settings → Plan & billing** to see the current figures
+for each plan side by side.
+
+Every plan sets the same set of limits:
+
+| Limit | Counted as |
+| --- | --- |
+| Contacts | How many exist right now |
+| Messages per month | Sent this calendar month |
+| Broadcasts per month | Sent this calendar month |
+| Flows | How many are **active** right now |
+| Team members | How many are in the workspace right now |
+| AI agents | How many exist right now — **Starter 1, Growth 5, Enterprise unlimited** |
+| Storage | Shown on the plan card, but **not currently enforced** — nothing is refused for being over it |
+
+Limits are checked **before** an action, not after: a broadcast to more
+recipients than you have messages left is refused before any of them is sent,
+rather than halfway through. When a limit is reached, Watx says which one and
+what you have used.
+
+<Note>
+  Paused AI agents still count towards the agent cap. A cap you can dodge by
+  pausing is not a cap.
+</Note>
+
+**Enterprise is quoted, not listed.** Its card shows **Custom pricing** and a
+**Talk to sales** button, which opens a short enquiry form (your name and work
+email are required; phone and a message are optional). Sending it records the
+enquiry and, if the workspace is not already on a working plan, provisions a
+trial so you are not locked out waiting for a reply.
+
+## The free trial
+
+Choosing a plan in the welcome wizard starts a **15-day free trial**. No card is
+asked for and no payment is taken.
+
+<Warning>
+  **One trial per workspace, ever.** Clicking between Starter, Growth and
+  Enterprise carries the same clock forward — it does not grant a fresh 15 days.
+  Once the trial is spent, the only way to keep the workspace running is to pay.
+</Warning>
+
+While the trial is running, the whole plan is available. In the last five days,
+a strip above the dashboard header counts down. You can dismiss it, but it comes
+back — a deadline banner that dismisses for ever is decoration.
+
+If you need more time, the billing screen has an email and (where configured) a
+WhatsApp button that opens a pre-filled message to support. Extensions are not
+self-serve.
+
+## Paying — automatic renewal
+
+Checkout goes through **Razorpay**, and what you authorise is a **recurring
+mandate**, not a one-off payment: you approve it once — by UPI AutoPay, card or
+netbanking — and Razorpay charges you every cycle after that. Nobody is asked to
+come back and pay by hand each month.
+
+The checkout dialog says so before you authorise, and after it **Settings → Plan
+& billing** carries an **Automatic renewal** card naming the next charge date.
+
+<Note>
+  Converting a trial does not bill you immediately. The first charge is deferred
+  to the end of what you already hold, so you never pay twice for the same days.
+</Note>
+
+Only the **owner** can open checkout. `Plan & billing` is owner-only — stricter
+than admin-only — because a workspace has one plan and one person paying for it,
+and a payment made by anyone else would land on a record nothing reads. A
+teammate who reaches the screen is shown who to ask, by name and email.
+
+## When a payment fails
+
+A declined renewal does not lock you out on the spot.
+
+<Steps>
+  <Step title="Grace — the workspace still works">
+    The subscription moves to **past due**. Sending and creating carry on
+    working. A banner appears saying the payment could not be taken and that
+    access will stop if it is not sorted out.
+
+    Razorpay retries on its own schedule during this period.
+  </Step>
+  <Step title="Lapsed — access stops">
+    If it is still unpaid after the dunning period, the subscription expires.
+    Sending and creating are paused and the workspace is sent to a billing
+    screen.
+
+    **Nothing is deleted.** Contacts, conversations and automations are exactly
+    where you left them and come back the moment a plan is paid for.
+  </Step>
+</Steps>
+
+<Warning>
+  There is no "update your payment method" flow, and there cannot be — a
+  Razorpay mandate's card cannot be swapped. Recovery is a **new mandate**:
+  press **Restart subscription** on your plan and authorise again.
+</Warning>
+
+## The billing screen
+
+A workspace whose trial is spent and which has paid nothing is sent to a
+dedicated billing screen rather than back to the plan wizard. It offers only the
+exits that exist:
+
+- **Pay and continue** on the plan you were on, or **choose a different plan**;
+- **ask support for more time**, by email or WhatsApp;
+- **talk to sales**, if the plan is one that is quoted by hand.
+
+There are no trial badges anywhere on it. A teammate who lands there gets a
+read-only version naming the owner instead.
+
+The workspace switcher is on that screen too, so an agency with one lapsed
+client can move to a workspace that still works.
+
+## Changing plan
+
+Open **Settings → Plan & billing**. Every plan's card has a button, including
+the one you are on:
+
+| Your subscription | The button on your current plan |
+| --- | --- |
+| On trial | **Set up billing** — authorise the mandate; the first charge is when the trial ends |
+| Active and renewing | **Current plan**, disabled — there is nothing to do |
+| Active, renewal cancelled | **Resume subscription** |
+| Past due, expired or cancelled | **Restart subscription** |
+
+Picking a different tier takes you to the checkout page for it.
+
+<Note>
+  While you are on a paid plan, the welcome wizard will not change it — plan
+  changes for a paying workspace go through checkout, so that what you are
+  entitled to and what you are charged never disagree.
+</Note>
+
+## Cancelling
+
+**Settings → Plan & billing → Automatic renewal → Cancel renewal.** Owner only.
+
+Cancelling stops the **renewal**, not the plan: you keep everything you have
+paid for until the end of the current cycle, and the card then says **Access
+ends** with the date instead of **Renews**. After that date the workspace loses
+access until a plan is chosen again — there is no free tier to fall back to.
+
+The confirmation dialog names the date before you press the button. If you
+change your mind before it arrives, **Resume subscription** on your plan sets a
+new mandate up.
+
+## Who sees what
+
+| | Owner | Admin | Agent | Viewer |
+| --- | --- | --- | --- | --- |
+| See **Plan & billing** | Yes | No | No | No |
+| Pay, change plan, cancel | Yes | No | No | No |
+| Be entitled by the workspace's plan | Yes | Yes | Yes | Yes |
+| Be blocked when a limit is reached | Yes | Yes | Yes | Yes |
+
+See [Members and roles](/settings/members-and-roles) for everything else roles
+decide.
+
+<Note>
+  **AI credits are a separate meter.** On platform credits, AI thinking is paid
+  for out of a credit wallet topped up on its own; your plan's message limit is
+  a different thing, and you can exhaust one without touching the other. See
+  [Credits and your own key](/ai-agents/credits-and-byok).
+</Note>

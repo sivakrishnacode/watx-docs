@@ -1,0 +1,95 @@
+---
+title: "n8n"
+description: "Trigger n8n workflows when contacts, conversations and messages arrive — cloud or self-hosted, using the Production URL of a Webhook node."
+icon: "diagram-project"
+---
+
+n8n connects the same way Zapier does: you give Watx an https URL, and Watx POSTs signed
+JSON to it when one of the events below happens. No n8n credentials are stored and Watx never
+calls the n8n API.
+
+One connection is one workflow. Add as many as you like.
+
+## Connect a workflow
+
+<Steps>
+  <Step title="Add a Webhook node">
+    In n8n, start a workflow with the **Webhook** node and set its HTTP method to **POST**.
+    Leave authentication off — every delivery is signed instead.
+  </Step>
+  <Step title="Copy the Production URL">
+    The node shows two URLs. Copy the **Production** one (`…/webhook/…`).
+  </Step>
+  <Step title="Paste it into Watx">
+    **Integrations → n8n → Connect**, paste the URL, and tick which events should trigger it.
+  </Step>
+  <Step title="Activate the workflow">
+    Press **Send test** from Watx, confirm n8n received it in the workflow's executions, then
+    switch the workflow to **Active**.
+  </Step>
+</Steps>
+
+## The two ways an n8n connection silently never fires
+
+Both end in a green tick here and nothing happening there, so they are worth checking first.
+
+<Warning>
+  **The Test URL only listens while the n8n editor is open.** It is the URL highlighted while
+  you are building, so it is the one people copy — and it works perfectly for exactly as long
+  as it takes to press **Send test**. Then the tab is closed and every real event 404s. Watx
+  warns inline if the URL you paste contains `/webhook-test/`; it is a warning, not a block.
+</Warning>
+
+<Warning>
+  **A Production URL 404s until the workflow is Active.** Switching it on is the last step,
+  not an optional one.
+</Warning>
+
+A self-hosted n8n must also be reachable from the public internet over **https**. Watx cannot
+deliver to `localhost` or a private network address, and such a URL is refused when you
+connect rather than accepted and never delivered to.
+
+## The events
+
+| Event | Fires when |
+| --- | --- |
+| `message.received` | An inbound message was received from a contact |
+| `message.status_updated` | A message you sent changed delivery status (sent, delivered, read, failed) |
+| `conversation.created` | A new conversation was opened |
+| `contact.created` | A new contact was added to the CRM |
+
+Pick at least one. The test delivery is named `n8n.test`, so a Switch or IF node that routes
+on the event name behaves the same for a test as it does for a real event — except for the
+name itself.
+
+## The signing secret
+
+Shown once, immediately after you connect. It is optional: the Webhook node accepts the
+request either way. Use it if you want a **Code** node to verify the `X-Watx-Signature`
+header against the payload before acting on it. See [Webhooks](/api/webhooks) for the payload
+and the verification recipe.
+
+## Managing a connection
+
+Each connected workflow is a card with its URL, its events, **Active** or **Paused**, and the
+last delivery time.
+
+| Control | What it does |
+| --- | --- |
+| The switch | Pauses or re-enables it. Re-enabling clears the failure count |
+| **Send test** | Fires a real delivery now and reports what came back |
+| The bin | Disconnects it |
+
+## Delivery, retries and failures
+
+A delivery is attempted up to five times with an increasing gap. Each event whose attempts all
+fail counts one **consecutive delivery failure**, shown on the card with a hint to check that
+the workflow is still Active, that the Webhook node's path has not changed, and that your n8n
+instance is reachable. After 15 consecutive failures the connection is switched off
+automatically. A successful delivery resets the count.
+
+## n8n in the other direction
+
+To have an **automation** call an n8n workflow mid-sequence, use the n8n preset in
+[Other services](/integrations/other-services). That is Watx calling your workflow at a point
+you chose inside a sequence; this page is your workflow being told that something happened.

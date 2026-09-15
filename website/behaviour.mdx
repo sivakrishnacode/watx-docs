@@ -1,0 +1,82 @@
+---
+title: "Behaviour"
+description: "What the widget does: the pre-chat screen, your business hours, and what happens to a visitor who arrives when you are away."
+icon: "clock"
+---
+
+**Channels → Web → Behaviour** holds three settings that only make sense together — what a
+visitor is asked before chatting, when you are open, and what happens when you are not.
+They are one decision: an offline form with no business hours never shows, and business
+hours with no offline form only change a sentence of wording.
+
+## Before the chat starts
+
+**Pre-chat form** decides what a visitor is asked before they can send their first message.
+
+| Choice | What the visitor sees |
+| --- | --- |
+| **Built-in name & phone screen** | *Introduce Yourself* — **Full Name** and **Mobile Number** required, **Email Address** optional |
+| One of your published forms | That form, rendered inside the chat |
+
+The built-in screen is why website chats arrive with a real contact attached rather than an
+anonymous visitor. A phone number given here is matched against your existing contacts, so
+somebody who already reached you on WhatsApp stays one contact.
+
+<Note>
+Only **published** forms are offered. A draft would configure something that silently never
+appears. Build and publish one under [Forms](/forms/overview).
+</Note>
+
+## Business hours
+
+Off means always available. On, the widget tells visitors *We're away right now* outside
+your hours.
+
+| Setting | What it is |
+| --- | --- |
+| **Timezone** | An IANA zone, such as `Asia/Kolkata`. Hours are read in this zone, so daylight saving is handled for you |
+| **Open hours** | One or more rows of day, start time and end time |
+
+Add two rows for the same day to model a lunch break — `Mon 09:00–13:00` and
+`Mon 14:00–18:00`. A day with no row is closed all day.
+
+<Warning>
+Turning business hours on with **no open hours set** shows the widget as away permanently.
+The page warns when the list is empty.
+</Warning>
+
+## When you are away
+
+**Form to show when you're away** decides what an out-of-hours visitor gets.
+
+| Choice | What happens |
+| --- | --- |
+| **Let them send a message anyway** | The chat stays open. Their message waits in the Inbox for the morning |
+| One of your published forms | The form replaces the composer, with a line above it saying you are away |
+
+Either is fine. A form is the better choice when you need an email address to reply to,
+because a website visitor who leaves cannot be messaged back — the channel has no way to
+push to a closed tab. See [Website chat](/website/overview).
+
+## What answers a website chat
+
+When a visitor sends a message, Watx offers it to the engines in order and the first one
+that handles it stops the rest, so nobody gets three replies.
+
+<Steps>
+  <Step title="Automations">
+    Rules with a message trigger. Website chats also fire a dedicated **Web chat started**
+    trigger on the visitor's very first message, so you can greet website visitors without
+    also greeting every new WhatsApp contact. See
+    [Triggers](/automations/triggers).
+  </Step>
+  <Step title="An AI agent">
+    Answers anything the automations did not, when **AI replies** is on under
+    [Widget settings](/website/settings) and an agent covers the website channel. See
+    [Routing](/ai-agents/routing).
+  </Step>
+</Steps>
+
+An agent never answers a button tap — the automation that sent the buttons owns those.
+
+[Flows](/flows/overview) are WhatsApp-only and do not run here.

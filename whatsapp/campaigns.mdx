@@ -1,0 +1,51 @@
+---
+title: "Campaign schedules"
+description: "Record when a broadcast or a retargeting campaign should run, once or on a repeating pattern."
+sidebarTitle: "Campaigns"
+icon: "calendar"
+---
+
+**WhatsApp → Campaigns** keeps a list of campaign schedules: a name, what should run, and when. Members with the Admin role or above can create and edit them.
+
+<Warning>
+  A schedule is a **record of a plan**, not a timer. Creating one does not start the broadcast at the scheduled time, and **Next run** and **Runs** stay empty. Send broadcasts from [Broadcasts](/whatsapp/broadcasts) until that changes.
+</Warning>
+
+## Creating a schedule
+
+**New schedule** asks for:
+
+| Field | Notes |
+| --- | --- |
+| **Name** | Required. How it appears in the list, e.g. "Weekly newsletter" |
+| **Type** | **Broadcast** or **Retargeting** |
+| **Broadcast ID** | Broadcast type only. The id of an existing broadcast — it is the last part of that broadcast's URL |
+| **Retargeting config (JSON)** | Retargeting type only. A raw JSON object |
+| **Schedule type** | **One-time** or **Recurring** |
+| **Timezone** | Free text, defaults to `UTC` |
+| **Scheduled at** | Required. A date and time |
+| **Recurring pattern (cron)** | Recurring only. Cron format — minute, hour, day, month, weekday. For example `0 9 * * 1` is every Monday at 9 AM |
+
+The broadcast id is checked before the schedule is saved: it must be a valid id of a broadcast that exists.
+
+## The list
+
+Columns are **Name**, **Type**, **Schedule** (one-time or recurring), **Runs**, **Status**, and **Next run**. Two filters narrow it by type and by status.
+
+| Status | Meaning |
+| --- | --- |
+| **Pending** | Recorded, not marked as running |
+| **Running** | Marked as running |
+| **Completed** | Marked as finished |
+| **Failed** | Marked as failed |
+
+The row menu offers **Activate** / **Pause**, which flips between Pending and Running, and **Delete**, which removes the schedule after a confirmation.
+
+## Campaigns versus broadcasts
+
+They are not the same object:
+
+- A [**broadcast**](/whatsapp/broadcasts) is a real send — an audience, a template, per-recipient delivery status, a report.
+- A **campaign schedule** is a calendar entry that points at one.
+
+If what you want is to reach the people an earlier broadcast did not, that lives in the broadcast report itself: the funnel's **didn't reply**, **didn't open** and **failed to deliver** buttons open the wizard with that audience pre-selected.

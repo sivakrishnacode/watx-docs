@@ -1,0 +1,97 @@
+---
+title: "Website chat"
+description: "A chat widget for your own site, feeding the same inbox as WhatsApp and Instagram — what it does, how a visitor becomes a contact, and what the channel cannot do."
+icon: "globe"
+---
+
+The website channel is a chat widget you paste onto your own site. A visitor opens it,
+types, and a conversation appears in the [Inbox](/inbox/overview) alongside WhatsApp and
+Instagram — same contacts, same automations, same [AI agents](/ai-agents/overview).
+
+Unlike the other two channels there is no third party in the middle. Watx is the transport,
+which is why the rules are different.
+
+## What the widget does
+
+- A **launcher** in the corner of every page, with your colour, icon and shape.
+- An **opening message** and an optional **teaser bubble** that appears after a delay.
+- **Live chat** with your team, updating without a page refresh in both directions.
+- **AI replies**, when you switch them on, using your agent's knowledge.
+- **Buttons and list choices** as real tappable controls, because the widget is the UI.
+- **File uploads** from the visitor, and from your team in the Inbox.
+- **Typing indicators** and **read receipts**, both ways.
+- **Conversation history** that survives a page reload and a return visit.
+- A **pre-chat screen** that collects details before the first message.
+- **Business hours**, with an offline form or a plain "we're away" message outside them.
+
+## How it differs from the other channels
+
+| | WhatsApp | Instagram | Website |
+| --- | --- | --- | --- |
+| Reply window | 24 hours | 24 hours | **None** |
+| Message templates | Yes | No | **No, and none needed** |
+| Broadcasts | Yes | No | **No** |
+| Delivery receipts | Yes | Read only | **Yes, and they are exact** |
+| Buttons | Yes | Yes (quick replies) | Yes |
+| List choices | Yes | No | Yes |
+| Product catalogue | Yes | No | No |
+
+**There is no reply window.** Nobody imposes a re-engagement rule, so a conversation never
+closes on you and there is nothing to re-open with a template. The Inbox composer shows no
+window banner on a web conversation.
+
+**There are no broadcasts, and cannot be.** A visitor is only reachable while their tab is
+open, so there is no audience to send to. This is also why a contact who exists only on the
+website cannot be messaged out of the blue.
+
+**Delivery ticks are honest here.** The message either reached the visitor's open
+connection or it did not — unlike WhatsApp, which reports Meta's opinion, and Instagram,
+which reports nothing.
+
+<Note>
+[Flows](/flows/overview) are WhatsApp-only. Website chats run on
+[automations](/automations/overview), which work on every channel and skip the individual
+steps a channel cannot do.
+</Note>
+
+## How a visitor becomes a contact
+
+The widget mints an anonymous visitor identity in the browser and keeps it, so somebody who
+asked a question yesterday comes back to the same thread rather than an empty box. That is
+the resume path, and it is the common case — most widget loads are a returning visitor.
+
+When the visitor gives you a phone number — through the built-in pre-chat screen or a form
+you chose — Watx looks for an existing contact with that number and **uses it**. Somebody
+who already reached you on WhatsApp and then types the same number into the widget is one
+contact, not two.
+
+<Warning>
+The widget is public and unauthenticated, so everything a visitor types is an unverified
+claim. Details they give only ever fill **blank** fields on a contact — nothing a teammate
+has entered is overwritten, and no existing name, email or phone is changed.
+</Warning>
+
+If your own site has logged-in users, you can have your server vouch for who a visitor is,
+so a stranger cannot claim to be one of your customers and read their chat history. A
+misconfigured signature degrades to an anonymous chat rather than breaking the widget.
+
+## Where things live
+
+<CardGroup cols={2}>
+  <Card title="Install the widget" icon="code" href="/website/install">
+    Allowed domains, the snippet, and how the channel goes live.
+  </Card>
+  <Card title="Widget settings" icon="sliders" href="/website/settings">
+    Colour, launcher, wording, AI replies and branding, with a live preview.
+  </Card>
+  <Card title="Behaviour" icon="clock" href="/website/behaviour">
+    Pre-chat form, business hours, and what happens when you are away.
+  </Card>
+  <Card title="Sessions and analytics" icon="chart-simple" href="/website/sessions-and-analytics">
+    Where your web chats came from, and how the channel is performing.
+  </Card>
+</CardGroup>
+
+Hosted [forms and booking pages](/forms/overview) sit under the same panel. They are not
+part of the widget — a form link works just as well sent over WhatsApp — but they are the
+two things most often built alongside one.

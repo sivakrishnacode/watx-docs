@@ -1,0 +1,98 @@
+---
+title: "Sharing a form"
+description: "The public link, a QR code, the embed snippet, sending a form into a chat from an automation, and using one in the website widget."
+sidebarTitle: "Sharing"
+icon: "share-nodes"
+---
+
+Open the **Share** tab in the form editor. It offers the three ways to hand a form to somebody, side by side, and says **Live** or **Draft** at the top so you know whether the link works yet.
+
+## The public link
+
+Every form has one address:
+
+```
+https://app.watx.in/f/<name>
+```
+
+A booking form answers at a second one as well:
+
+```
+https://app.watx.in/book/<name>
+```
+
+Both show the same page. `/book/` adds nothing except a clearer link to send; if you share a `/book/` link for a form with no time picker, the page says so and offers the ordinary form link instead.
+
+**Copy link** and **Open** are next to the box. The link works on any channel — a WhatsApp message, an email, a button on your own site.
+
+<Warning>
+While the form is a draft the links go nowhere. Publishing makes them work immediately and **does not change the address**, so a link shared early starts working rather than breaking.
+</Warning>
+
+### Where the address comes from
+
+It is made from the form's name when the form is created, lowercased and hyphenated. If another workspace already holds that name, a number is added. Renaming the form afterwards does not change the address — choose the name you want in the link before you share it, and duplicate the form if you need a different one.
+
+### Prefilling from the link
+
+Add `?<field key>=<value>` to fill a field in before the visitor sees it:
+
+```
+https://app.watx.in/f/demo-request?email=priya@example.com&source=newsletter
+```
+
+The key is the one shown as **Saved as** in the field inspector. This is how you send a form to a contact you already know, and how a hidden field records which campaign somebody arrived from. See [Field types](/forms/field-types).
+
+## QR code
+
+For anything printed — a flyer, a receipt, a table card. The code appears once the form is published, with **Download PNG (400×400)** under it. It points at the same public link, so the form can be edited afterwards without reprinting anything.
+
+## Embedding it in your own page
+
+The **Embed** card holds a snippet to paste into any HTML page:
+
+```html
+<iframe
+  src="https://app.watx.in/f/demo-request"
+  width="100%"
+  height="600"
+  frameborder="0"
+  style="border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.08)"
+  title="Demo request"
+></iframe>
+```
+
+The height is fixed at 600 pixels. Raise it for a long form, or the visitor scrolls inside the frame. The embedded form carries your [appearance settings](/forms/appearance), so it can be made to sit inside your own design — **Accent bar** or **None** as the header style, and the branding line hidden.
+
+Submissions from an embed are recorded with the source `embed`, so you can tell them apart from the hosted page in the [submissions table](/forms/submissions).
+
+## Sending a form into a conversation
+
+Add the **Send form** step to an automation and pick a published form. The step sends a message containing the form's link — on WhatsApp, on Instagram and in the website chat alike.
+
+<Steps>
+  <Step title="Choose the form">
+    Only published forms are offered. If the form is later unpublished, the step fails rather than sending a link that 404s.
+  </Step>
+  <Step title="Write the message that carries it">
+    Optional. Left blank, the message reads *"Please fill in this short form:"* with the link under it. Your own wording can use tokens such as `{{ contact.name }}`.
+  </Step>
+</Steps>
+
+The step needs a contact and a conversation to send into, so it belongs in an automation triggered by something a person did in a chat — a keyword, a new conversation, a tag. See [Steps](/automations/steps).
+
+To send a booking form, use **Send form** and pick the booking form: its `/f/` link shows the time picker.
+
+<Note>
+On WhatsApp, a message that is not an approved template can only be sent inside the 24-hour window after the customer's last message. An automation replying to somebody who just wrote to you is fine; one reaching out cold is not. See [Channels and the 24-hour window](/automations/channels-and-window).
+</Note>
+
+## In the website chat widget
+
+A published form can greet a visitor before a chat starts, or catch them when you are closed. Both are set under **Website → Chat widget → Behaviour**: a **Pre-chat form** and an **Offline form**. Only published forms are offered.
+
+Submissions from there are recorded with the source `widget` and land on the visitor's own contact, so the answers and the conversation are the same person. See [Widget behaviour](/website/behaviour).
+
+## Keeping a link private
+
+Nothing about the public address is secret — anyone with the link can open a published form. If a form should only be seen by certain people, send it to them rather than publishing the link somewhere public, and unpublish it when the campaign is over. The address survives, so the same link works again when you publish it next time.

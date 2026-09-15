@@ -1,0 +1,80 @@
+---
+title: "Working a conversation"
+description: "Assign a conversation, change its status, see who else is in it, and use the contact panel beside the thread."
+sidebarTitle: "Working a conversation"
+icon: "user-check"
+---
+
+Everything on this page is about one thread: who owns it, what state it is in, and what your team can see about the person on the other end.
+
+## Status
+
+A conversation is **Open**, **Pending** or **Closed**. Change it from the dropdown in the thread header, or from the row's actions menu without opening the thread at all.
+
+Closing does not archive or hide anything — the conversation stays in the list, and the **Closed** filter is how you keep it out of your working queue. A new message from the customer arrives in the same conversation whatever its status.
+
+<Tip>
+Triage from the list, not from the thread. Opening a conversation marks it read, which is exactly what you were avoiding when you decided to deal with it later.
+</Tip>
+
+## The row actions menu
+
+Hover a row in the conversation list and a menu appears in its top-right corner.
+
+| Action | What it does |
+| --- | --- |
+| **Mark as read** / **Mark as unread** | Clears the unread badge, or puts one back. Marking the open conversation unread closes the reading pane first, because a thread you are looking at cannot stay unread. |
+| **Status → Open / Pending / Closed** | Same three states as the header dropdown. |
+| **Copy number** / **Copy handle** | Copies the contact's phone number, or their Instagram handle for a contact who has no number. |
+| **Delete conversation** | Deletes the thread and every message in it. The dialog tells you how many messages that is. |
+
+Deleting cannot be undone. The **contact is not deleted**, and a new message from them starts a fresh conversation.
+
+Members with the Viewer role see only **Copy number** / **Copy handle** — they can read the Inbox but not change anything in it. See [Members and roles](/settings/members-and-roles).
+
+## Owner — a teammate or an AI agent
+
+The **Owner** dropdown in the thread header answers one question: who has this thread. It lists the workspace's AI agents first, then your teammates, each with a presence dot showing whether they are online. Your own row is marked *(me)*.
+
+- **Picking a teammate** assigns the conversation to them. It also stands the AI down: while a human owns a thread, the bot does not reply to it.
+- **Picking an AI agent** hands the thread to that agent and clears the human assignment.
+- **Unassign** clears the human owner only. The agent that had the thread earlier picks it back up, so the customer does not meet a new persona because the thread changed hands twice.
+
+The button label shows the current answer: a teammate's name, an agent's name, **AI paused**, or **Unassigned**.
+
+### Pausing the AI on one thread
+
+Next to the owner control is a switch reading **AI on**, **AI paused** or **AI standing by**.
+
+- **AI on** — an agent may answer this conversation.
+- **AI paused** — you have paused it here. This happens automatically the moment a human replies, so the bot never talks over an agent mid-sentence. Click to resume.
+- **AI standing by** — a teammate owns the thread, so the agent is silent whatever the pause setting says. Clear the owner to let it reply.
+
+Everything else about agents is on [AI agents](/ai-agents/overview).
+
+## Who else is looking
+
+The Inbox shows live presence, so two people do not answer the same customer twice.
+
+- A small people glyph on a list row means a teammate has that conversation open.
+- Inside the thread, a strip under the header names them: *"Anil is also viewing"*, or *"Anil is also replying"* once they start typing. Typing outranks viewing. Past two people it becomes *"Anil and 3 others"*.
+
+Presence is based on tabs that are actually open; an entry older than about a minute and a half is ignored, so a suspended laptop does not keep claiming a thread.
+
+## The contact panel
+
+The panel beside the thread carries what you need mid-conversation, without leaving it.
+
+- **Name, company and avatar**, with the phone number or `@handle` as a click-to-copy row, plus the email when there is one.
+- **Tags** on the contact.
+- **Segments** the contact belongs to, with an **Edit** link that opens the segment picker. Filter segments work out their own members and cannot be edited here — see [Segments](/contacts/segments).
+- **Active Deals** — title, value and stage for each deal raised against this contact. See [Pipelines and deals](/contacts/pipelines-and-deals).
+- **Notes** — a box to write one and the list of previous notes with their dates. Notes are internal; the customer never sees them.
+
+For the full record — the address, custom fields, marketing consent and the whole activity timeline — open the contact from [Contacts](/contacts/overview).
+
+## The reply window
+
+On WhatsApp the header carries a countdown pill showing how long is left in the 24-hour window that opened when the customer last wrote. When it runs out the pill reads **Expired**, the composer is disabled and only an approved template will send. Read [The 24-hour window](/whatsapp/messaging-window) for the rule itself, and [Sending messages](/inbox/sending) for what to do about it.
+
+Instagram has the same 24-hour limit but no templates, so a closed Instagram thread waits until the person writes again. Website chats have no window at all.

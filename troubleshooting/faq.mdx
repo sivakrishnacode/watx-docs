@@ -1,0 +1,202 @@
+---
+title: "FAQ"
+description: "Short answers to the questions people ask most — plans and the trial, workspaces and roles, channels, templates, AI, data and the API — each with a link to the page that explains it."
+sidebarTitle: "FAQ"
+icon: "circle-question"
+---
+
+Short answers, with a link to the full explanation. If you are trying to fix something rather than understand it, start with [WhatsApp](/troubleshooting/whatsapp), [Instagram](/troubleshooting/instagram), [Automations and agents](/troubleshooting/automations-and-agents) or [Integrations](/troubleshooting/integrations).
+
+## Plans, trial and billing
+
+<AccordionGroup>
+  <Accordion title="Is there a free plan?">
+    No. There are three plans — **Starter**, **Growth** and **Enterprise** — and every workspace runs on one of them. What a new workspace gets instead is a free trial.
+
+    [Plans and billing](/getting-started/plans-and-billing)
+  </Accordion>
+
+  <Accordion title="How long is the trial, and can I have another one?">
+    Choosing a plan in the welcome wizard starts a **15-day trial** with no card asked for. It is **one trial per workspace, ever** — clicking between Starter, Growth and Enterprise carries the same clock forward rather than granting a fresh 15 days.
+
+    [Plans and billing](/getting-started/plans-and-billing)
+  </Accordion>
+
+  <Accordion title="Who can pay for the workspace or change its plan?">
+    The **owner**, and nobody else — **Settings → Plan & billing** is owner-only, stricter than admin-only. A teammate who reaches that screen is shown who to ask, by name and email.
+
+    [Plans and billing](/getting-started/plans-and-billing)
+  </Accordion>
+
+  <Accordion title="What happens if a renewal payment fails?">
+    The subscription moves to **past due** and the workspace keeps working while Razorpay retries — that is dunning, not a lockout. If it is still unpaid after the dunning period, sending and creating pause and you are sent to a billing screen; **nothing is deleted**.
+
+    [Plans and billing](/getting-started/plans-and-billing)
+  </Accordion>
+
+  <Accordion title="How do I cancel?">
+    **Settings → Plan & billing → Automatic renewal → Cancel renewal**, owner only. Cancelling stops the renewal rather than the plan: you keep everything you have paid for until the end of the current cycle, and the dialog names that date before you press the button.
+
+    [Plans and billing](/getting-started/plans-and-billing)
+  </Accordion>
+
+  <Accordion title="Does Watx charge me for the WhatsApp messages I send?">
+    No. Meta bills you for conversations directly, through the payment method on your own WhatsApp Business Account — Watx never sits between you and that bill. Your Watx plan is a separate thing, with its own monthly message and broadcast allowances.
+
+    [WhatsApp](/whatsapp/overview) · [Plans and billing](/getting-started/plans-and-billing)
+  </Accordion>
+</AccordionGroup>
+
+## Workspaces and people
+
+<AccordionGroup>
+  <Accordion title="Can one login belong to several workspaces?">
+    Yes, with a different role in each — that is how an agency administers a dozen clients without a dozen passwords. The switcher is the first row of the sidebar, and switching reloads the page deliberately so no workspace's live subscriptions leak into another's.
+
+    [Workspaces](/getting-started/workspaces)
+  </Accordion>
+
+  <Accordion title="Can I create a new workspace myself?">
+    Not today. There are two ways into a workspace: an **invite link** from its owner or an admin, or Watx support attaching your existing login to a workspace that already exists.
+
+    [Workspaces](/getting-started/workspaces)
+  </Accordion>
+
+  <Accordion title="What are the roles, and what does each one do?">
+    Four, ranked: **Owner** (everything, plus billing and ownership), **Admin** (members, settings, integrations, agents), **Agent** (works the product — inbox, contacts, deals, broadcasts, automations, flows) and **Viewer** (read-only). The role named Agent is a person; an AI agent is software.
+
+    [Members and roles](/settings/members-and-roles)
+  </Accordion>
+
+
+</AccordionGroup>
+
+## Channels and messaging
+
+<AccordionGroup>
+  <Accordion title="Which channels does Watx support?">
+    Three: **WhatsApp** (through the official Meta Cloud API), **Instagram** (DMs, story replies and comments) and a **website chat widget**. All three feed the same inbox, the same contacts and the same automations.
+
+    [Core concepts](/getting-started/concepts)
+  </Accordion>
+
+  <Accordion title="Can I keep the number that is on my WhatsApp Business app?">
+    Yes, two ways. You can migrate it — which keeps the number and can import up to six months of chat history — or connect it in **coexistence** mode, where the number stays on the WhatsApp Business app as well.
+
+    [Connect your number](/whatsapp/connect)
+  </Accordion>
+
+  <Accordion title="Can two workspaces use the same WhatsApp number?">
+    No. A phone number can be connected to one Watx workspace at a time, and a second attempt is refused with a message saying so.
+
+    [Connect your number](/whatsapp/connect)
+  </Accordion>
+
+  <Accordion title="Why do I have to use a template to message somebody?">
+    Meta allows free-form replies for **24 hours** after each message a customer sends you. Outside that window only a pre-approved template will send, which is why broadcasts, order updates, reminders and invoices are all template sends.
+
+    [The 24-hour window](/whatsapp/messaging-window) · [Message templates](/whatsapp/templates)
+  </Accordion>
+
+  <Accordion title="Can I send a broadcast on Instagram or through the website widget?">
+    No. Instagram has no approved-template mechanism, so there is no compliant way to send bulk DMs; a website visitor is only reachable while their tab is open, so there is no audience to send to. Broadcasts are WhatsApp only.
+
+    [Instagram](/instagram/overview) · [Website chat](/website/overview)
+  </Accordion>
+
+</AccordionGroup>
+
+## Automations, flows and AI
+
+<AccordionGroup>
+  <Accordion title="What is the difference between an automation, a flow and an AI agent?">
+    An **automation** is a trigger plus a fixed sequence of steps, on every channel and on events with no channel at all. A **flow** is a back-and-forth conversation with buttons and questions, WhatsApp only; an **AI agent** writes an open-ended reply from your knowledge and skills.
+
+    [Automations](/automations/overview) · [Flows](/flows/overview) · [AI agents](/ai-agents/overview)
+  </Accordion>
+
+  <Accordion title="What is the difference between a flow and a WhatsApp Flow?">
+    A **flow** (lowercase) is the Watx chatbot builder — a graph of nodes that sends ordinary WhatsApp messages. A **WhatsApp Flow** is Meta's own product: form screens that open inside WhatsApp, which Watx can create, validate, preview and publish but cannot yet send to a customer.
+
+    [Flows](/flows/overview) · [WhatsApp Flows](/whatsapp/whatsapp-flows)
+  </Accordion>
+
+
+  <Accordion title="Do I need my own OpenAI key to use AI agents?">
+    No. Built-in AI is the default and every new workspace starts with 250 free credits, metered from real token usage. You can instead save your own OpenAI, Anthropic or Google key, in which case your provider bills you and Watx meters nothing.
+
+    [Credits and your own key](/ai-agents/credits-and-byok)
+  </Accordion>
+
+  <Accordion title="How many AI agents can I have?">
+    It is a plan limit: **Starter 1, Growth 5, Enterprise unlimited**. A paused agent still occupies a slot — a cap you can dodge by pausing is not a cap.
+
+    [AI agents](/ai-agents/overview)
+  </Accordion>
+
+  <Accordion title="Will the AI agent pretend to be a person?">
+    No. It never claims to be a human being, it is told to answer from your business description and your documents rather than guess a price or a delivery date, and it hands the conversation to your team when it should.
+
+    [Persona, voice and behaviour](/ai-agents/persona-and-behaviour) · [Why is my agent silent?](/ai-agents/readiness)
+  </Accordion>
+</AccordionGroup>
+
+## Integrations, data and the API
+
+<AccordionGroup>
+  <Accordion title="Do I need a store or a payment gateway to use Watx?">
+    No. Watx is a CRM first and **every integration is optional** — the inbox, contacts, automations, flows and agents all work with nothing connected. Invoices and receipts need only your company details, not Razorpay and not a store.
+
+    [Integrations](/integrations/overview) · [Sales documents](/integrations/sales-documents)
+  </Accordion>
+
+  <Accordion title="Can another workspace see my data?">
+    No. Everything belongs to exactly one workspace and no workspace can read another's, even when the same login belongs to both — what you see is always the workspace you have open.
+
+    [Security and privacy](/account/security-and-privacy)
+  </Accordion>
+
+  <Accordion title="How are my connected credentials stored?">
+    Every token, key and secret Watx holds for you is encrypted at rest, decrypted only at the moment it is used, and never returned in an API response or written to a log. Two things are shown once and never again, because only a hash is kept: **API keys** and **invite links**.
+
+    [Security and privacy](/account/security-and-privacy)
+  </Accordion>
+
+  <Accordion title="A customer asked me to delete their data. What do I do?">
+    Their conversation and contact record live in your workspace and are yours to delete — a member with the Agent role or above can delete the contact. A request made to Meta about an Instagram connection deletes the connection and its token, but not the conversations already saved in your workspace.
+
+    [Security and privacy](/account/security-and-privacy) · [Contacts](/contacts/overview)
+  </Accordion>
+
+  <Accordion title="Does Watx have an API?">
+    Yes — a REST API at `https://api.watx.in/v1` for contacts, conversations, messages, broadcasts and segments. Issue a key under **Settings → API keys**, grant it only the scopes it needs, and send it as a bearer token; to be told when something happens rather than polling for it, register a signed [webhook](/api/webhooks) endpoint.
+
+    [API introduction](/api/introduction) · [Authentication](/api/authentication)
+  </Accordion>
+
+  <Accordion title="Can I export my data?">
+    Form submissions, deals and each analytics page export as CSV from the dashboard. For contacts and conversations, page through the API — there is no contacts export button today.
+
+    [Submissions](/forms/submissions) · [Requests and responses](/api/requests-and-responses)
+  </Accordion>
+
+</AccordionGroup>
+
+## What Watx does not do
+
+Worth knowing before you plan around it:
+
+- **No voice or calling.** Voice notes are supported in the inbox on every channel; calls are not.
+- **No free plan.** Cancelling ends access at the end of the cycle — there is no free tier to fall back to. See [Plans and billing](/getting-started/plans-and-billing).
+- **No broadcasts on Instagram or the website.** WhatsApp only. See [Broadcasts](/whatsapp/broadcasts).
+- **No flows off WhatsApp.** Use [automations](/automations/overview) for anything cross-channel.
+- **Campaign schedules do not run by themselves.** A schedule records a plan; send from [Broadcasts](/whatsapp/broadcasts).
+- **Click-to-WhatsApp clicks are not reported by Meta.** The conversation still arrives normally; the counters only move through the API. See [Click-to-WhatsApp](/whatsapp/click-to-whatsapp).
+- **A WhatsApp Flow cannot be sent from Watx.** Create, validate, preview and publish, yes — send, not yet. See [WhatsApp Flows](/whatsapp/whatsapp-flows).
+- **Publishing to Instagram is not supported.** Everything else about a post can be done from [Posts](/instagram/posts).
+- **Refunds are not issued from Watx.** Do those in your Razorpay dashboard. See [Razorpay payments](/integrations/razorpay).
+- **An issued sales document cannot be edited.** Cancel it and issue a fresh one. See [Sales documents](/integrations/sales-documents).
+
+## Still not answered
+
+Write to [support@watx.in](mailto:support@watx.in). If it is a setup question, say which channel or integration and what the screen says — the status banners on each console name the cause in Meta's, Shopify's or Razorpay's own words, and quoting them is the quickest route to an answer.

@@ -1,0 +1,163 @@
+---
+title: "Shopify"
+description: "Connect a Shopify store so orders, abandoned carts and your catalogue arrive in Watx — by installing the Watx app, or by pasting an Admin API token."
+icon: "bag-shopping"
+---
+
+Connecting Shopify brings orders, abandoned checkouts and your product catalogue into
+Watx as they happen, and gives the store its own [console](/integrations/store-console)
+with order messages, cart recovery and [cash on delivery](/integrations/cash-on-delivery).
+
+There are **two ways to connect**, and they are not equivalent.
+
+## Which method to use
+
+<Warning>
+  Shopify treats a customer's **name, phone, email and address** as protected data. A
+  custom app you build in your own Shopify admin only receives those fields on the
+  **Grow plan or above** — on every other plan they arrive empty, silently. Without the
+  phone number, order messages, cart recovery, cash-on-delivery confirmation and contact
+  creation all stop working.
+</Warning>
+
+Installing the Watx app is the recommended path: it receives those fields on every plan.
+The paste-a-token path exists for merchants who already have a working token, or who are
+on Grow or above and would rather not wait.
+
+<Tabs>
+  <Tab title="Install the Watx app">
+    Nothing to copy or paste. You approve access on Shopify and come straight back.
+
+    <Steps>
+      <Step title="Open the connect dialog">
+        **Integrations → Shopify → Connect**. The dialog opens on **Install the Watx
+        app**, which is the default.
+      </Step>
+      <Step title="Enter your store address">
+        Your `.myshopify.com` address — not a custom domain like `shop.yourbrand.com`.
+      </Step>
+      <Step title="Continue to Shopify">
+        Press **Continue to Shopify**, review the permissions, and approve. You are
+        returned to the store console, and the first catalogue sync starts on its own.
+      </Step>
+    </Steps>
+
+    If your Watx contact set up the app in their own Shopify Partner Dashboard and sent
+    you a **Client ID** and **Client secret**, open **I created the app in my own Partner
+    Dashboard** on the same dialog and paste both before pressing Continue. Both fields or
+    neither — an ID without its secret is refused, because pairing one app's ID with
+    another's secret makes every webhook fail its signature check for a reason no error
+    message explains.
+
+    <Note>
+      You may be asked to approve twice: once to install the app, and once when Watx
+      exchanges the access token. Shopify may skip the second prompt if nothing new is
+      being asked for.
+    </Note>
+  </Tab>
+
+  <Tab title="Paste a custom app token">
+    You build an app inside your own Shopify admin and paste its credentials here.
+
+    <Steps>
+      <Step title="Create the app in Shopify">
+        **Settings → Apps and sales channels → Develop apps**. The first time on a store
+        you must click **Allow custom app development** — store owner only, and it cannot
+        be undone.
+      </Step>
+      <Step title="Set the scopes">
+        **Create an app**, name it Watx, then **Configure Admin API scopes** and tick
+        `read_products`, `read_inventory`, `read_orders` and `read_customers`. Add
+        `write_orders` as well if you intend to use cash-on-delivery cancellation.
+      </Step>
+      <Step title="Install it and copy both values">
+        **Save → Install app**. Under API credentials copy the **Admin API access token**
+        (starts with `shpat_`, shown once — it cannot be read again, only rotated) and the
+        **API secret key** beside it (starts with `shpss_`).
+      </Step>
+      <Step title="Paste them into Watx">
+        In the connect dialog choose **Paste a custom app token instead**, enter your
+        `.myshopify.com` URL, the access token and the API secret key, then press
+        **Connect store**.
+      </Step>
+    </Steps>
+
+    <Warning>
+      The **API secret key** is not optional. Shopify signs every webhook with it, so
+      without it the store connects and then nothing ever arrives — the most confusing
+      possible failure. The connect form refuses to save without it.
+    </Warning>
+  </Tab>
+</Tabs>
+
+## What Watx reads and writes
+
+The console's **Overview** tab shows the scopes the token actually carries, read live from
+the store — what you ticked, not what was asked for.
+
+| Scope | Why |
+| --- | --- |
+| `read_products`, `read_inventory` | The catalogue, prices and stock |
+| `read_orders` | Orders, their items, status and totals |
+| `read_customers` | The customer's name, phone and address |
+| `write_orders` | Tagging and cancelling a cash-on-delivery order. Optional |
+
+Shopify collapses `read_orders` into `write_orders` when both are granted, so a store with
+write access may not list the read scope separately.
+
+## What arrives after connecting
+
+Watx registers **13 webhook topics** on the store and starts a catalogue sync:
+
+`orders/create` · `orders/updated` · `orders/paid` · `orders/fulfilled` ·
+`orders/cancelled` · `refunds/create` · `checkouts/create` · `checkouts/update` ·
+`checkouts/delete` · `products/create` · `products/update` · `products/delete` ·
+`app/uninstalled`
+
+The Overview tab lists every topic with whether it is registered, when an event last
+arrived on it, and how many arrived in the last 24 hours. A topic that is registered but
+has never received anything is the sign that the signing secret is wrong.
+
+Registration is idempotent — **Re-register webhooks** from the console's **More actions**
+menu can be run at any time. If registration fails, the store still connects and the
+Overview carries the error.
+
+## Order messages and contacts
+
+An order creates the contact (source `store`) and an empty WhatsApp thread, so an order
+message can reach a customer who has never written to you. Abandoned carts do **not**
+create contacts — they only match existing ones.
+
+Set the messages up on the console's **Messaging** tab, and the confirmation flow on
+**Cash on delivery**.
+
+## Reconnecting
+
+| Situation | What to do |
+| --- | --- |
+| App uninstalled in Shopify | The card and console say **Disconnected**. Install it again — **More actions → Reinstall the app** on an app-installed store. |
+| A new scope was added | Walk the consent flow again: **Reinstall the app**. Nothing else re-prompts. |
+| Token rotated on a custom app | **More actions → Reauthenticate**, then paste the new token, the new API secret key, or both. |
+| Events stopped arriving | **More actions → Re-register webhooks**, and check the per-topic table on Overview. |
+
+## Disconnecting
+
+**More actions → Disconnect store** removes the store, its synced catalogue, orders and
+carts from the workspace, the webhook subscriptions held at Shopify, and the message
+automations built for it. It cannot be undone. Disconnect through Watx rather than only
+removing the app in Shopify — otherwise the subscriptions keep delivering to a dead token.
+
+<Note>
+  One Shopify store per workspace. To connect a different one, disconnect the first.
+</Note>
+
+## When something is wrong
+
+| Symptom | Almost always |
+| --- | --- |
+| Connected, but no orders or carts ever arrive | The wrong or a missing signing secret. On a pasted-token store, the API secret key was skipped. |
+| Orders arrive with no customer name or phone | A custom app on a plan below Grow. Reconnect with **Install the Watx app**. |
+| A message fails with "requires a buttonParams value" | The template has a button that needs a value. Re-open the recipe and map it. |
+| A message fails with "Parameter of type text is missing text value" | A placeholder is mapped to something empty. Re-check the mapping. |
+
+More in [Troubleshooting integrations](/troubleshooting/integrations).

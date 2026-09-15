@@ -1,0 +1,112 @@
+---
+title: "Automations"
+description: "A trigger plus a sequence of steps that runs without anyone watching — on WhatsApp, Instagram and your website."
+icon: "bolt"
+---
+
+An automation is one **trigger** and a **sequence of steps**. Something happens — a
+customer writes, a form is submitted, an order is placed — and the steps run in order:
+send a message, tag the contact, open a deal, call an API, wait a day, then send a
+follow-up.
+
+Automations work on **every channel**. Some of the events that start them do not belong
+to a channel at all, and those run wherever the person came from. Flows, by contrast,
+are WhatsApp-only. See [Flows](/flows/overview) for the difference.
+
+## The shape of an automation
+
+<Steps>
+  <Step title="A trigger">
+    Exactly one, chosen from the [trigger catalogue](/automations/triggers). It decides
+    when the automation runs and what data the steps can read.
+  </Step>
+  <Step title="A sequence of steps">
+    Run top to bottom. Each step's result is published to the steps after it, so a
+    later step can build a message or a request out of what an earlier one produced.
+  </Step>
+  <Step title="Branches">
+    A **Condition** or a **Random split** owns two sequences of its own — **Yes** and
+    **No**. Whichever branch is taken, the parent sequence carries on afterwards.
+  </Step>
+</Steps>
+
+Because it is a sequence with branches rather than a free graph, the picture on the
+canvas is always derived from what will actually run. Dragging an arrow from one card
+to another **moves** the step; it never draws a connection the engine does not follow.
+
+## The automations list
+
+**Automations** in the sidebar lists every automation in the workspace as a card: the
+trigger's icon and name, the description, a pulsing dot while it is active, and a switch
+to turn it on and off. Under that sit the trigger's pill and the channels it is scoped
+to, and a footer with the number of runs and when it last fired. The actions menu offers
+**Edit**, **Duplicate**, **View runs** and **Delete**. Deleting removes the automation
+and its run history, and cannot be undone.
+
+## Three ways to start
+
+**New automation** offers three routes, and they are genuinely different starting points
+rather than steps in a wizard.
+
+<CardGroup cols={3}>
+  <Card title="Start from scratch" icon="pen-line">
+    An empty canvas. Pick the trigger and add steps one at a time.
+  </Card>
+  <Card title="Use a template" icon="grid-2" href="/automations/templates-and-ai">
+    A working automation with the copy already written. Anything that names something in
+    your workspace — a tag, a pipeline stage — is left blank and listed up front.
+  </Card>
+  <Card title="Build with AI" icon="sparkles" href="/automations/templates-and-ai">
+    Describe what should happen in a sentence and get a draft on the canvas. It costs AI
+    credits, and nothing is saved until you press Save.
+  </Card>
+</CardGroup>
+
+## What happens at run time, and what does not
+
+Almost everything that can go wrong in an automation is **silent** on purpose:
+
+- An unknown variable resolves to an **empty string** rather than being shown to the
+  customer with its braces intact.
+- A step the channel cannot do — a WhatsApp template on Instagram — is **skipped**, and
+  the rest of the run continues.
+- A step with nobody to send to is skipped for the same reason.
+
+Each of those is the right behaviour in front of a customer and a poor one while you are
+building, so the editor is loud instead. The **checks** panel in the editor header lists
+every one of them before the automation goes live, and the run log records what each step
+did afterwards. See [Diagnostics and logs](/automations/diagnostics-and-logs).
+
+<Note>
+  Switching an automation on is the only thing the server refuses outright. It validates
+  every step and returns the first problem it finds — an empty message, a missing tag, a
+  wait of zero.
+</Note>
+
+## Automations, flows and agents
+
+| Use | When |
+| --- | --- |
+| **Automation** | A rule that fires on an event and runs a fixed sequence. Works on all three channels, and on events with no channel at all (forms, payments, store orders). |
+| **[Flow](/flows/overview)** | A back-and-forth conversation with buttons, lists and questions. WhatsApp only. |
+| **[AI agent](/ai-agents/overview)** | An open-ended reply written by a model, using your knowledge and skills. |
+
+They co-operate: an automation can hand a contact to a flow with the **Start flow** step,
+and a flow can hand a conversation to an AI agent or to a human.
+
+## Next
+
+<CardGroup cols={2}>
+  <Card title="The canvas editor" icon="pen-ruler" href="/automations/editor">
+    Adding steps, the inspector, branches, saving and activating.
+  </Card>
+  <Card title="Triggers" icon="bolt" href="/automations/triggers">
+    Every trigger, what it supplies, and which ones ignore channel scoping.
+  </Card>
+  <Card title="Steps" icon="list-check" href="/automations/steps">
+    Every step by category, with its settings and what it publishes.
+  </Card>
+  <Card title="Variables and expressions" icon="code" href="/automations/expressions">
+    Tokens, filters and the empty-value rule.
+  </Card>
+</CardGroup>

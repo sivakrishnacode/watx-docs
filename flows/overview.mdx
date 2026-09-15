@@ -1,0 +1,101 @@
+---
+title: "Flows"
+description: "A visual WhatsApp chatbot: buttons, lists and questions that route a customer to the right answer before a human steps in."
+icon: "diagram-project"
+---
+
+A flow is a conversation you draw. The customer taps a button or answers a question, the
+flow follows that path, and it ends by giving them what they came for or handing them to
+a person.
+
+<Warning>
+  **Flows are WhatsApp only.** They send lists, approved templates and catalogue
+  products — none of which exist on Instagram or the website widget — so an Instagram DM
+  or a web chat never enters the flow engine. For anything that has to work across
+  channels, use an [automation](/automations/overview).
+</Warning>
+
+Do not confuse a flow with a [WhatsApp Flow](/whatsapp/whatsapp-flows), which is Meta's
+own native form screen. A flow here is the Watx chatbot builder.
+
+## How a flow runs
+
+<Steps>
+  <Step title="It starts">
+    A message matches the flow's trigger — a keyword, or the customer's first-ever
+    message — or something starts it deliberately: the **Start flow** step in an
+    [automation](/automations/steps), or a **Connect flow** node in another flow.
+  </Step>
+  <Step title="It advances">
+    The engine walks from node to node, sending as it goes, until it reaches a node that
+    needs the customer: a set of buttons, a list, a question, a file, a location, or a
+    payment.
+  </Step>
+  <Step title="It waits">
+    The run sits on that node until the customer replies. Every answer it captures is
+    stored on the run and can be read later as `{{ vars.<name> }}`.
+  </Step>
+  <Step title="It ends">
+    At an **End** node, at a **Handoff** to a person, at a **Hand to AI agent**, or by
+    connecting to another flow. It can also time out, or be paused when one of your team
+    replies by hand.
+  </Step>
+</Steps>
+
+## One active run per contact
+
+A contact can be in **one** flow at a time. That is why **Connect flow** ends the current
+run before starting the target rather than nesting — and why an accidental loop between
+two flows terminates instead of growing.
+
+It also means a flow that nobody finishes would block that contact from starting another
+one, so a sweep closes runs that have gone quiet. The cutoff is 24 hours of silence by
+default.
+
+<Note>
+  **A human reply pauses the bot.** When somebody on your team sends a message to a
+  contact who is mid-flow, the run is marked *paused by agent* and stops advancing. The
+  customer is talking to a person now.
+</Note>
+
+## Flow or automation?
+
+| | Flow | Automation |
+| --- | --- | --- |
+| Channels | WhatsApp only | WhatsApp, Instagram, Website — and events with no channel at all |
+| Shape | A graph of nodes, each waiting on a reply | A sequence of steps with yes/no branches, run start to finish |
+| Good at | Menus, FAQs, qualification, triage — anything that is a back-and-forth | Reacting to an event: tag, notify, create a deal, call an API, follow up later |
+| Started by | A keyword, a first message, or another flow or automation | Any of the [triggers](/automations/triggers) |
+
+They work together. A common shape is an automation on **First message from a contact**
+that tags the person and then uses **Start flow** to hand them to a welcome menu.
+
+## The flows list
+
+**Flows** in the sidebar lists every flow as a card: its name, its status — **Draft**,
+**Active** or **Archived** — its description or a summary of its trigger, and how many
+times it has run. **Export**, **Edit** and **Delete** sit at the bottom of each card, and
+**Import** in the header reads an exported flow back in as a new draft.
+
+Only an **active** flow answers anything. A draft is skipped, including by an
+automation's **Start flow** step.
+
+**New flow** offers three ways in: describe it and let the AI build it, start from a
+template (**Welcome menu**, **FAQ bot**, **Lead capture**), or start blank with a name.
+
+## Next
+
+<CardGroup cols={2}>
+  <Card title="The flow editor" icon="pen-ruler" href="/flows/editor">
+    Palette, canvas, inspector, entry node, activating.
+  </Card>
+  <Card title="Node types" icon="shapes" href="/flows/nodes">
+    All 21 nodes with their settings and outgoing paths.
+  </Card>
+  <Card title="Waits, hand-offs and runs" icon="hourglass" href="/flows/waits-and-runs">
+    Parking a run, unmatched replies, timeouts, and the runs screen.
+  </Card>
+  <Card title="Testing and Build with AI" icon="mobile" href="/flows/testing-and-ai">
+    The simulator, and drafting a flow from a sentence.
+  </Card>
+</CardGroup>

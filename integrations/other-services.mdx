@@ -1,0 +1,68 @@
+---
+title: "Other services"
+description: "Slack, Notion, Airtable, HubSpot and anything else with an API — added to an automation as an HTTP request step with the URL, method and body already filled in."
+sidebarTitle: "Other services"
+icon: "code"
+---
+
+Not every service needs a connector. **Other services** is a list of pre-filled
+[HTTP request steps](/automations/steps): pick one and the step lands in your automation with
+the service's URL shape, method, headers and a sensible body already written. You supply your
+own key.
+
+<Note>
+  These are not connections. Nothing is stored, nothing expires, and nothing appears on the
+  Integrations directory — the credential lives in the step you just added. The trade is
+  honest: no OAuth to break at 3am, and no typed list of actions either.
+</Note>
+
+## Adding one
+
+In the [automation editor](/automations/editor), press to add a step and open the **Apps**
+rail — or just search. Connected apps are listed first; **Other services** is below them,
+and each row says what it needs before you pick it.
+
+| Service | What the step does | What you supply |
+| --- | --- | --- |
+| **Slack** | Post a message to a channel | An incoming-webhook URL from your Slack app |
+| **Notion** | Create a page in a database | An internal integration token |
+| **HubSpot** | Create or update a contact | A private-app token |
+| **Mailchimp** | Add the contact to an audience | An API key, and your server prefix in the URL |
+| **Airtable** | Create a record in a base | A personal access token |
+| **Discord** | Post to a channel | A channel webhook URL |
+| **Telegram** | Send a message to a chat | A bot token in the URL and a chat id |
+| **Zapier / Make** | Kick off a Zap or scenario | A catch-hook URL — no key |
+| **n8n** | Call a workflow from this step | The Production URL of a Webhook node — no key |
+| **OpenAI** | Send a prompt and keep the reply | An API key. Billed by OpenAI, not by Watx |
+| **Any other API** | A blank HTTP request you configure yourself | Whatever the service needs |
+
+Each preset arrives with the contact and message already interpolated where it makes sense —
+`{{ contact.name }}`, `{{ contact.phone }}`, `{{ message.text }}`. Replace the placeholder
+parts of the URL (they are written in capitals, like `REPLACE_WITH_DATABASE_ID`) and paste
+your credential into the step's auth section.
+
+## What the step gives you
+
+An HTTP request step publishes its `status` and `body` to the steps after it, **including
+when the call failed** — so a [condition](/automations/conditions) can branch on the status
+code, and a later step can read a field out of the response with a token like
+`{{ steps.notion.body.id }}`. See [Variables and expressions](/automations/expressions).
+
+Outbound requests must go to a publicly reachable address. Local and private addresses —
+`localhost`, an internal IP, a cloud metadata endpoint — are refused, and so is any address
+with credentials in the URL.
+
+## Zapier and n8n appear in two places, on purpose
+
+| | Direction | Where |
+| --- | --- | --- |
+| **The integration** | Watx tells your workflow that something happened | [Zapier](/integrations/zapier), [n8n](/integrations/n8n) |
+| **The preset** | Your automation calls the workflow, mid-sequence, at a point you chose | This page |
+
+They do different jobs, so having both is not a duplicate.
+
+## Why Google is not on this list
+
+Gmail, Calendar, Meet and Sheets are a real integration with a typed list of actions — see
+[Google](/integrations/google). Two Google Sheets entries in one picker, one wired up and one
+asking you to paste a key, would be worse than either alone.

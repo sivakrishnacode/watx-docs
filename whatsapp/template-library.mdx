@@ -1,0 +1,71 @@
+---
+title: "Template library and packs"
+description: "Start from a pre-built template instead of a blank editor, and submit a whole group of them to Meta at once."
+sidebarTitle: "Template library"
+icon: "layer-group"
+---
+
+Every template still has to be approved by Meta, and writing one that passes review takes a few tries. The library is a set of starters that already follow Meta's rules — contiguous variables, a sample for each, a short footer with no variables, quick replies grouped before links — so the only thing left is your wording.
+
+Open it from **WhatsApp → Templates → New Template → Use a template**.
+
+## Browsing
+
+The left rail groups starters by **what they are for**, not by Meta's Marketing/Utility split, because that is the question you are actually asking:
+
+| Collection | What is in it |
+| --- | --- |
+| **E-commerce** | Orders, shipping, carts, cash on delivery — what a connected store sends |
+| **Payments** | Payment requests that carry a link, reminders, receipts |
+| **Appointments** | Bookings, reminders and reschedules |
+| **Support** | Ticket updates and feedback after a conversation |
+| **Promotions** | Offers, launches and sales — everything Meta files as marketing |
+| **Reports** | Summaries sent to your own team: daily sales, weekly performance |
+
+Chips above the grid narrow by type: **Text only**, **Text header**, **Image**, **File**, **Video**, **Location**, **Carousel**.
+
+Each card shows the starter's Meta category, its type and its body. **Preview** opens it full-size with its sample values and a phone mock-up. **Use** loads it into the editor — nothing reaches Meta until you review it and submit.
+
+Two labels are worth knowing:
+
+- **Needs your media** — an image, video, file or carousel starter arrives with its media slot empty, because Watx cannot ship your pictures. Add your own before submitting.
+- **Already in your account** — a template of that name already exists here, in any status, so the card is disabled. Edit the existing one from the [template list](/whatsapp/templates) instead.
+
+## Submitting a whole collection
+
+Select a collection and its header offers **Submit all N to Meta** (or, for E-commerce, **Submit the store bundle**). The dialog lists every template in the pack with a preview, lets you untick any you do not want, and picks the language they are submitted in — English (US), English (UK) or English.
+
+Templates you already have are unticked by default but still listed, because re-submitting is a legitimate way to reset a rejected one.
+
+They go to Meta **one at a time**, and each row reports its own outcome. Meta allows 100 template creations an hour; if it refuses part-way, the run stops with that message rather than repeating it for every remaining row, and the rest can be sent later.
+
+<Note>
+  Starters that need your own media are left out of a pack — they cannot be submitted blind. Add those one at a time.
+</Note>
+
+## The store bundle
+
+The E-commerce pack is the set the [store console](/integrations/store-console) is built around: eight templates, each with a placeholder map the console reads back so the mapping is pre-filled when you pick one.
+
+| Template | Where the console uses it |
+| --- | --- |
+| Order received | Messaging → Order received |
+| Order shipped | Messaging → Order shipped |
+| Order cancelled | Messaging → Order cancelled |
+| Refund issued | Messaging → Refund issued |
+| Cart reminder | Messaging → Cart recovery (first reminder) |
+| Cart reminder — last call | Messaging → Cart recovery (later reminder) |
+| Cash-on-delivery confirmation | Cash on delivery → confirmation template |
+| New order — team alert | Messaging → Admin alerts |
+
+The two cart reminders are filed as **Marketing** and carry an opt-out footer; the rest are **Utility**, because they are about an order the customer already placed.
+
+If you edit a bundle template's wording and the placeholders stay where they were, the mapping still pre-fills. Reorder them and the console gives you an empty mapping form rather than guessing.
+
+<Tip>
+  You do not have to come here for it. Any empty template picker in the store console offers **Submit the store bundle to Meta**, and the [Razorpay](/integrations/razorpay) card offers the Payments pack the same way.
+</Tip>
+
+## After submitting
+
+Templates land in [your library](/whatsapp/templates) as **Pending** and become usable when Meta approves them — usually within an hour, sometimes up to 24. You can edit any of them afterwards, which sends them back for review.

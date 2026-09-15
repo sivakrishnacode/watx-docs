@@ -1,0 +1,90 @@
+---
+title: "Conditional logic and steps"
+description: "Show a field only when an earlier answer matches, and split a long form into steps with a progress bar."
+sidebarTitle: "Conditional logic"
+icon: "code-branch"
+---
+
+A form can ask different questions depending on what somebody has already answered, and a long form can be broken into steps. Both are set on the Build tab: rules in the field inspector, steps with the **Page break** field.
+
+## Adding a rule
+
+Select a field and open **Conditional logic** in the inspector, then **Add a rule**. A rule reads as one sentence:
+
+> Show this field when **&lt;an earlier field&gt;** **&lt;is / is not / contains …&gt;** **&lt;value&gt;**
+
+| Operator | Matches when the earlier answer |
+| --- | --- |
+| **is** | Is exactly the value |
+| **is not** | Is anything other than the value |
+| **contains** | Contains the value, ignoring case |
+| **is empty** | Was left blank |
+| **is not empty** | Was answered at all |
+| **is greater than** | Is a larger number |
+| **is less than** | Is a smaller number |
+
+**is empty** and **is not empty** compare against nothing, so the value box disappears for them. **is greater than** and **is less than** compare numbers; if either side is not a number the rule simply does not match.
+
+When the field you point at is a dropdown, radio group or checkbox list, its own options are offered as the value — so you pick a real answer rather than typing one that can never match.
+
+A field with a rule on it is marked **conditional** on the canvas, so you can see at a glance which parts of the form are not always shown.
+
+## Rules only point backwards
+
+The picker offers the fields **above** the selected one, and only those. A rule naming a later field is refused when the form is saved.
+
+That single restriction is what makes the feature predictable:
+
+- A question cannot depend on an answer the visitor has not been asked for yet — decisively so once a page break sits between them.
+- Loops are impossible. Two fields can never wait on each other.
+
+Headings, paragraphs and page breaks cannot be a rule's source either: they carry no answer to test.
+
+Rules chain. If "Other" hid **Please specify**, anything keyed off **Please specify** is hidden too, whatever was typed into it before the visitor changed their mind.
+
+## A hidden field is not a blank one
+
+When a rule hides a field:
+
+- It is **not required**, even if **Required** is on. Nobody loses their enquiry to a question they were never asked.
+- Its answer is **not stored**. Somebody who picks "Other", types a reason and then switches back to a standard option does not have that reason filed against them.
+
+The page and the server work this out the same way, so what you see on screen is what is accepted. Only the answers that were actually visible are sent.
+
+<Note>
+Deleting a field also clears any rule that pointed at it. Without that, saving the form would fail with an error on a field you never touched.
+</Note>
+
+## Splitting a form into steps
+
+Drop a **Page break** wherever you want a new step to begin. Everything after the break belongs to the next step, and the canvas marks it **Step 2 of 3** so you can see the shape of the form while building it.
+
+On the live form the visitor gets:
+
+- a **Step n of N** counter and a progress bar,
+- a **Next** button that checks the required fields on the current step before moving on,
+- a **Back** button from the second step onwards, which never blocks — somebody returning to fix an answer must not be stopped by the one they were fixing.
+
+Pressing Enter in a text box on any step but the last cannot submit the form.
+
+When the last step is submitted, every step is re-checked — a rule can reveal a required field on a step already walked past — and the visitor is sent back to the first step that actually has a problem.
+
+## Steps and rules together
+
+The two interact in one useful way: **a step that a rule has emptied disappears**, rather than showing as a blank page with a Next button on it. The step count shrinks with it, so "Step 2 of 3" stays honest.
+
+A practical shape:
+
+<Steps>
+  <Step title="Step 1 asks the branching question">
+    A radio group: *"Are you buying for yourself or a business?"*
+  </Step>
+  <Step title="Step 2 holds the business-only questions">
+    Company name, team size and VAT number, each with a rule of **is** *business* on that radio group.
+  </Step>
+  <Step title="Somebody buying for themselves never sees step 2">
+    Every field on it is hidden, so the step is dropped and they go straight to step 3 — which now calls itself step 2.
+  </Step>
+</Steps>
+
+Use the **Try it** switch above the canvas to walk the form as a visitor would, with the rules and the steps live, before you publish.

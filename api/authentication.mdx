@@ -1,0 +1,125 @@
+---
+title: "Authentication"
+description: "Create an API key in Settings, send it as a bearer token, and grant only the scopes the integration needs."
+icon: "key"
+---
+
+Every request carries an **API key** as a bearer token:
+
+```http
+Authorization: Bearer watx_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+A key belongs to one workspace and acts only on that workspace's data. What it
+can do is decided entirely by the scopes it was given, not by the role of the
+member who created it.
+
+## Create a key
+
+<Steps>
+  <Step title="Open Settings → API keys">
+    Every member can see the list of keys. Creating and revoking needs the
+    Owner or Admin role.
+  </Step>
+  <Step title="Click New API key">
+    Name it after the integration that will use it — "Zapier automation",
+    "Order sync" — up to 80 characters. The name is how you will recognise it
+    later when deciding what to revoke.
+  </Step>
+  <Step title="Tick the scopes it needs">
+    Grant the minimum. A key that only sends messages needs `messages:send` and
+    nothing else.
+  </Step>
+  <Step title="Copy the key">
+    The full key is shown **once**, in the dialog. Watx stores only a hash of
+    it, so it can never be shown again. If you lose it, revoke it and create a
+    new one.
+  </Step>
+</Steps>
+
+New keys start with `watx_live_`. Keys issued before the product was renamed
+start with `converse360_live_` and keep working — there is no need to rotate
+them.
+
+The list shows each key's prefix, its scopes, when it was created and when it
+was last used, plus a badge when it is **Revoked** or **Expired**.
+
+## Scopes
+
+| Scope | What it unlocks | Endpoints |
+| --- | --- | --- |
+| `messages:send` | Send WhatsApp messages | `POST /messages` |
+| `messages:read` | Read messages and their delivery status | `GET /conversations/{id}/messages` |
+| `contacts:read` | List and read contacts and segments | `GET /contacts`, `GET /contacts/{id}`, `GET /segments`, `GET /segments/{id}`, `GET /segments/{id}/contacts` |
+| `contacts:write` | Create and update contacts, manage segments and their membership | `POST /contacts`, `PATCH /contacts/{id}`, `POST /segments`, `PATCH`/`DELETE /segments/{id}`, `POST`/`DELETE /segments/{id}/contacts` |
+| `conversations:read` | List and read conversations | `GET /conversations`, `GET /conversations/{id}` |
+| `broadcasts:send` | Launch broadcasts and read their progress | `POST /broadcasts`, `GET /broadcasts/{id}` |
+| `webhooks:manage` | Register and manage webhook endpoints | `GET`/`POST /webhooks`, `GET`/`PATCH`/`DELETE /webhooks/{id}` |
+
+Segments deliberately reuse the contact scopes rather than having their own. A
+segment is contact data, and a new scope would be missing from every key already
+issued — every live integration would start failing the day it shipped.
+
+A key with **no scopes** still authenticates. It can call `GET /me` and nothing
+else, which makes it a safe way to test that a key reaches the right workspace.
+
+### Check what a key can do
+
+```bash
+curl https://api.watx.in/v1/me \
+  -H "Authorization: Bearer watx_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+```
+
+```json
+{
+  "data": {
+    "account": { "id": "6f5a0d6e-1d1a-4a1e-9f2f-2c9a1b7b5f10", "name": "Acme Traders" },
+    "key": { "id": "2a7c9e11-4b3f-4c22-9a6d-8f1e5b0c3d44", "scopes": ["messages:send"] }
+  }
+}
+```
+
+## What a failure looks like
+
+A **401** means the key itself was not accepted — missing, malformed, unknown,
+revoked or expired. All of those answer identically, so an attacker probing keys
+learns nothing:
+
+```json
+{ "error": { "code": "unauthorized", "message": "Missing or invalid API key" } }
+```
+
+A **403** means the key is fine but was not granted the scope this endpoint
+needs. The message names the missing scope:
+
+```json
+{ "error": { "code": "forbidden", "message": "This API key is missing the 'messages:send' scope" } }
+```
+
+Scopes are fixed when the key is created. To add one, create a new key and
+revoke the old one.
+
+## Revoke a key
+
+**Settings → API keys → Revoke.** The key stops working on its next request.
+Revoked keys stay in the list, struck through, as a record of what existed.
+
+Revoke a key when the integration that used it is retired, when someone who had
+a copy leaves, or whenever you are not certain where a key has been.
+
+## Keeping a key safe
+
+- **Keep it on a server.** A key in browser JavaScript, a mobile app or a public
+  repository is a key anyone can read. The API sends no CORS headers, so a
+  browser cannot call it directly in any case — call it from your backend.
+- **One key per integration.** Then revoking one thing does not break the other
+  three.
+- **Grant the minimum.** A reporting script that only reads contacts should not
+  hold `messages:send`.
+- **Rotate by overlap.** Create the new key, deploy it, then revoke the old one.
+  There is no way to un-revoke.
+- **Watch "last used".** A key that has never been used, or has not been used in
+  months, is a key to revoke.
+
+Keys are managed in the dashboard only — there is no endpoint that creates or
+lists keys. See [API keys](/settings/api-keys) for the settings screen itself.

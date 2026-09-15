@@ -1,55 +1,29 @@
-# Mintlify Starter Kit
+# Watx docs
 
-Use the starter kit to get your docs deployed and ready to customize.
+Documentation for [Watx](https://app.watx.in), built on [Mintlify](https://mintlify.com)
+and deployed from `main`.
 
-Click the green **Use this template** button at the top of this repo to copy the Mintlify starter kit. The starter kit contains examples with
+- `DOCS_PLAN.md` — the map: audience, scope, source-of-truth references into the
+  product repo, writing rules, page inventory, progress. Read it first.
+- `AGENTS.md` — terminology, style and boundaries for anyone (or any agent) writing here.
+- `docs.json` — site config and navigation. Navigation is **generated** from the
+  page tables in `DOCS_PLAN.md`; edit the plan, then regenerate.
+- `openapi.yaml` — the public API, rendered as one page per operation.
+- `postman/watx-api.postman_collection.json` — generated from `openapi.yaml`.
 
-- Guide pages
-- Navigation
-- Customizations
-- API reference pages
-- Use of popular components
-
-**[Follow the full quickstart guide](https://starter.mintlify.com/quickstart)**
-
-## AI-assisted writing
-
-Set up your AI coding tool to work with Mintlify:
+## Scripts
 
 ```bash
-npx skills add https://mintlify.com/docs
+python3 scripts/build-nav.py . --write --api-ops scripts/api-operations.txt   # docs.json navigation from DOCS_PLAN.md
+python3 scripts/build-postman.py .                                           # Postman collection from openapi.yaml (needs PyYAML)
+python3 scripts/lint-docs.py .                                               # frontmatter, H1s, images, links, internal leakage
 ```
 
-This command installs Mintlify's documentation skill for your configured AI tools like Claude Code, Cursor, Windsurf, and others. The skill includes component reference, writing standards, and workflow guidance.
+## Preview and validate
 
-See the [AI tools guides](/ai-tools) for tool-specific setup.
-
-## Development
-
-Install the [Mintlify CLI](https://www.npmjs.com/package/mint) to preview your documentation changes locally. To install, use the following command:
-
-```
+```bash
 npm i -g mint
+mint dev            # http://localhost:3000
+mint validate       # strict build check
+mint broken-links
 ```
-
-Run the following command at the root of your documentation, where your `docs.json` is located:
-
-```
-mint dev
-```
-
-View your local preview at `http://localhost:3000`.
-
-## Publishing changes
-
-Install our GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app) to propagate changes from your repo to your deployment. Changes are deployed to production automatically after pushing to the default branch.
-
-## Need help?
-
-### Troubleshooting
-
-- If your dev environment isn't running: Run `mint update` to ensure you have the most recent version of the CLI.
-- If a page loads as a 404: Make sure you are running in a folder with a valid `docs.json`.
-
-### Resources
-- [Mintlify documentation](https://mintlify.com/docs)

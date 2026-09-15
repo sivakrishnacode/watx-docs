@@ -12,45 +12,285 @@
     "dark": "/images/watx-mark-dark.png"
   },
   "navigation": {
-    "pages": [
+    "tabs": [
       {
-        "group": "Getting Started",
-        "pages": [
-          "index",
-          "quickstart"
+        "tab": "Guides",
+        "groups": [
+          {
+            "group": "Getting started",
+            "pages": [
+              "index",
+              "getting-started/quickstart",
+              "getting-started/concepts",
+              "getting-started/workspaces",
+              "getting-started/plans-and-billing"
+            ]
+          },
+          {
+            "group": "Account",
+            "pages": [
+              "account/sign-in",
+              "account/security-and-privacy"
+            ]
+          },
+          {
+            "group": "Settings",
+            "pages": [
+              "settings/overview",
+              "settings/members-and-roles",
+              "settings/workspace",
+              "contacts/team-performance",
+              "settings/api-keys"
+            ]
+          },
+          {
+            "group": "Inbox",
+            "pages": [
+              "inbox/overview",
+              "inbox/conversations",
+              "inbox/sending",
+              "inbox/canned-replies",
+              "inbox/notifications"
+            ]
+          },
+          {
+            "group": "Contacts & CRM",
+            "pages": [
+              "contacts/overview",
+              "contacts/fields-and-tags",
+              "contacts/segments",
+              "contacts/activity-timeline",
+              "contacts/pipelines-and-deals",
+              "contacts/media-library"
+            ]
+          },
+          {
+            "group": "Automations",
+            "pages": [
+              "automations/overview",
+              "automations/editor",
+              "automations/triggers",
+              "automations/steps",
+              "automations/expressions",
+              "automations/conditions",
+              "automations/channels-and-window",
+              "automations/diagnostics-and-logs",
+              "automations/templates-and-ai"
+            ]
+          },
+          {
+            "group": "Flows",
+            "pages": [
+              "flows/overview",
+              "flows/editor",
+              "flows/nodes",
+              "flows/waits-and-runs",
+              "flows/testing-and-ai"
+            ]
+          },
+          {
+            "group": "Forms",
+            "pages": [
+              "forms/overview",
+              "forms/builder",
+              "forms/field-types",
+              "forms/conditional-logic",
+              "forms/appearance",
+              "forms/bookings",
+              "forms/sharing",
+              "forms/submissions"
+            ]
+          },
+          {
+            "group": "AI agents",
+            "pages": [
+              "ai-agents/overview",
+              "ai-agents/create",
+              "ai-agents/persona-and-behaviour",
+              "ai-agents/knowledge",
+              "ai-agents/skills",
+              "ai-agents/custom-actions",
+              "ai-agents/routing",
+              "ai-agents/testing",
+              "ai-agents/credits-and-byok",
+              "ai-agents/readiness"
+            ]
+          },
+          {
+            "group": "Integrations",
+            "pages": [
+              "integrations/overview",
+              "integrations/shopify",
+              "integrations/woocommerce",
+              "integrations/store-console",
+              "integrations/cash-on-delivery",
+              "integrations/razorpay",
+              "integrations/sales-documents",
+              "integrations/sales-documents-sending",
+              "integrations/sales-documents-design",
+              "integrations/google",
+              "integrations/google-actions",
+              "integrations/zapier",
+              "integrations/n8n",
+              "integrations/other-services"
+            ]
+          },
+          {
+            "group": "Troubleshooting",
+            "pages": [
+              "troubleshooting/whatsapp",
+              "troubleshooting/instagram",
+              "troubleshooting/automations-and-agents",
+              "troubleshooting/integrations",
+              "troubleshooting/faq"
+            ]
+          }
         ]
+      },
+      {
+        "tab": "Channels",
+        "groups": [
+          {
+            "group": "WhatsApp",
+            "pages": [
+              "whatsapp/overview",
+              "whatsapp/connect",
+              "whatsapp/settings",
+              "whatsapp/messaging-window",
+              "whatsapp/templates",
+              "whatsapp/template-library",
+              "whatsapp/broadcasts",
+              "whatsapp/campaigns",
+              "whatsapp/catalog-and-orders",
+              "whatsapp/whatsapp-flows",
+              "whatsapp/click-to-whatsapp",
+              "whatsapp/analytics",
+              "whatsapp/limits-and-quality"
+            ]
+          },
+          {
+            "group": "Instagram",
+            "pages": [
+              "instagram/overview",
+              "instagram/connect",
+              "instagram/posts",
+              "instagram/comments",
+              "instagram/comment-funnels",
+              "instagram/dm-agents",
+              "instagram/intents",
+              "instagram/settings-and-analytics"
+            ]
+          },
+          {
+            "group": "Website",
+            "pages": [
+              "website/overview",
+              "website/install",
+              "website/settings",
+              "website/behaviour",
+              "website/sessions-and-analytics"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API reference",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "api/introduction",
+              "api/authentication",
+              "api/requests-and-responses",
+              "api/webhooks",
+              "api/postman"
+            ]
+          },
+          {
+            "group": "Account",
+            "pages": [
+              "GET /me"
+            ]
+          },
+          {
+            "group": "Messages",
+            "pages": [
+              "POST /messages"
+            ]
+          },
+          {
+            "group": "Contacts",
+            "pages": [
+              "GET /contacts",
+              "POST /contacts",
+              "GET /contacts/{id}",
+              "PATCH /contacts/{id}"
+            ]
+          },
+          {
+            "group": "Segments",
+            "pages": [
+              "GET /segments",
+              "POST /segments",
+              "GET /segments/{id}",
+              "PATCH /segments/{id}",
+              "DELETE /segments/{id}",
+              "GET /segments/{id}/contacts",
+              "POST /segments/{id}/contacts",
+              "DELETE /segments/{id}/contacts"
+            ]
+          },
+          {
+            "group": "Conversations",
+            "pages": [
+              "GET /conversations",
+              "GET /conversations/{id}",
+              "GET /conversations/{id}/messages"
+            ]
+          },
+          {
+            "group": "Broadcasts",
+            "pages": [
+              "POST /broadcasts",
+              "GET /broadcasts/{id}"
+            ]
+          },
+          {
+            "group": "Webhooks",
+            "pages": [
+              "GET /webhooks",
+              "POST /webhooks",
+              "GET /webhooks/{id}",
+              "PATCH /webhooks/{id}",
+              "DELETE /webhooks/{id}"
+            ]
+          }
+        ],
+        "openapi": "openapi.yaml"
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    }
+    ]
   },
   "logo": {
-    "light": "/images/watx-wordmark.svg",
-    "dark": "/images/watx-wordmark-light.png"
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg",
+    "href": "https://app.watx.in"
   },
   "navbar": {
     "links": [
       {
+        "label": "Postman collection",
+        "href": "/api/postman",
+        "icon": "paper-plane"
+      },
+      {
         "label": "Support",
-        "href": "mailto:hi@mintlify.com"
+        "href": "mailto:support@watx.in"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Dashboard",
-      "href": "https://app.mintlify.com"
+      "label": "Open Watx",
+      "href": "https://app.watx.in"
     }
   },
   "contextual": {
@@ -66,10 +306,30 @@
     ]
   },
   "footer": {
-    "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
-    }
-  }
+    "links": [
+      {
+        "header": "Product",
+        "items": [
+          {
+            "label": "Open Watx",
+            "href": "https://app.watx.in"
+          },
+          {
+            "label": "Pricing",
+            "href": "https://app.watx.in/pricing"
+          }
+        ]
+      },
+      {
+        "header": "Help",
+        "items": [
+          {
+            "label": "Support",
+            "href": "mailto:support@watx.in"
+          }
+        ]
+      }
+    ]
+  },
+  "description": "Documentation for Watx: one inbox for WhatsApp, Instagram and website chat, with a CRM, automations, flows, forms, AI agents, integrations and a public API."
 }

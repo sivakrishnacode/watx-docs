@@ -1,0 +1,119 @@
+---
+title: "Broadcasts"
+description: "Send an approved template to many contacts at once: audiences, exclusions, per-recipient variables, delivery status and re-targeting."
+icon: "tower-broadcast"
+---
+
+A broadcast sends one approved template to many people — one real message each, through your own number, with per-recipient personalisation and per-recipient delivery status. It is not a group message: nobody sees anyone else.
+
+**WhatsApp → Broadcasts** lists everything you have sent. **New broadcast** opens a four-step wizard. Members with the Agent role or above can create one.
+
+<Note>
+  A broadcast is always a template send, because most of the audience will be outside the [24-hour window](/whatsapp/messaging-window). Only **Approved** templates are offered.
+</Note>
+
+## Step 1 — Template
+
+Pick from your approved templates. Each card shows the name, Meta category, body and language. If the list is empty, create one first: [Message templates](/whatsapp/templates).
+
+<Warning>
+  Changing the template later in the wizard clears every value you had filled in — variables, header media, button values, carousel cards. They are keyed to one template's shape, so carrying them across would send the wrong things without saying so.
+</Warning>
+
+## Step 2 — Audience
+
+| Audience | What it means |
+| --- | --- |
+| **All Contacts** | Every contact in this workspace |
+| **Filter by Tags** | Contacts carrying any of the tags you pick |
+| **Saved Segments** | One or more [segments](/contacts/segments), unioned |
+| **Custom Field** | A custom field that **is**, **is not** or **contains** a value |
+| **Upload CSV** | A list of phone numbers, with optional names |
+| **Re-target a broadcast** | The recipients of an earlier broadcast, by outcome |
+
+Re-targeting offers three outcomes, and they mean different things:
+
+- **Didn't reply** — reached them, but they never wrote back.
+- **Didn't open** — delivered, but never read.
+- **Failed to deliver** — never reached them at all. A retry, not a nudge.
+
+### Exclusions
+
+Two exclusion pickers apply to **every** audience type, not just segments: **exclude tags** and **exclude segments**. "Everyone except last month's buyers" is the shape most suppression lists take.
+
+### Who is always dropped
+
+Regardless of the audience:
+
+- **Contacts who have opted out.** Somebody who replied `STOP` (or tapped an opt-out button) is skipped, and there is no way to switch that off. If everyone in an audience has opted out, the send is refused with the count so it does not read as a broken filter.
+- **Contacts with no phone number.** An Instagram-only contact cannot receive a WhatsApp message.
+
+An estimated recipient count is shown as you build the audience, with both rules already applied.
+
+### CSV uploads
+
+Numbers are converted to international format using your workspace's country setting. Rows that cannot be parsed are skipped. A number that already exists as a contact is matched rather than duplicated; a new number becomes a contact with the source **broadcast**.
+
+## Step 3 — Personalize
+
+Each placeholder in the template gets a **mapping type**:
+
+| Mapping type | What it sends |
+| --- | --- |
+| **Static Value** | The same text for everybody |
+| **Contact Field** | The contact's **Contact Name**, **Phone Number**, **Email Address** or **Company** |
+| **Custom Field** | The value of one of your [custom fields](/contacts/fields-and-tags) for that contact |
+
+Everything the template needs beyond the body is collected here too — header media (typed URL or picked from the [media library](/contacts/media-library)), header text, a location pin's four fields, URL-button and copy-code values, and each carousel card's media, body values and button values. Those are the same for everybody in the audience; only the body mapping varies per contact.
+
+A live preview renders the message using your first real contact's values.
+
+You cannot continue until every placeholder is mapped: Meta rejects the whole message on one missing value.
+
+## Step 4 — Review and send
+
+Name the broadcast, check the summary (template, audience, estimated reach, language) and send. A confirmation dialog repeats the recipient count and the template name.
+
+The [messaging limit card](/whatsapp/limits-and-quality) sits above the button and warns when the audience looks larger than your remaining daily allowance. It never blocks the send — the usage figure behind it counts broadcasts only, so it is a floor rather than a total.
+
+**Save as Draft** stores the name and template so you can find it again later. The audience and variable mapping are not stored with a draft, so you fill those in again when you come back.
+
+## What happens after you press send
+
+The broadcast is accepted, then fanned out into one job per recipient.
+
+| Status | Meaning |
+| --- | --- |
+| **Draft** | Saved, never sent |
+| **Queued** | Accepted; the fan-out has not started yet |
+| **Sending** | Messages are going out |
+| **Sent** | Finished; at least one message went out |
+| **Failed** | Finished with nothing sent at all |
+
+Per-recipient status is the ladder Meta reports: **Pending → Sent → Delivered → Read**, plus **Replied** when the person writes back, and **Failed** with the reason.
+
+Sending is deliberately paced — by default around 10 messages a second, which matches the tier every new number starts on.
+
+**Retries:** a throttle from Meta or a network failure is retried with a growing delay. A rejection on the merits — an unapproved template, a bad parameter, a number that cannot receive template messages — is recorded and never retried, because it would fail identically every time. If the server restarts mid-send, the broadcast resumes: the recipient rows are the work list, and only the ones still pending are sent.
+
+Common per-recipient failures you will see in the table: `Contact opted out of marketing`, `No phone number on contact`, `Invalid phone number`, and `WhatsApp not configured`.
+
+## The broadcast report
+
+Opening a broadcast shows six counters — Recipients, Sent, Delivered, Read, Replied, Failed — a funnel, and the full recipient list with a status filter and each failure's reason.
+
+Under the funnel, three buttons start a follow-up broadcast to the people who **didn't reply**, **didn't open**, or whom it **failed to deliver** to. They open the wizard with that audience already selected.
+
+A broadcast can be deleted once it has finished. While it is queued or sending, the delete button is disabled — messages already in flight would leave the report inconsistent.
+
+The list page polls while anything is sending, so counters move without a reload.
+
+## Plan limits
+
+Broadcasts and messages both count against your plan. Before a broadcast is written, Watx checks that the **whole** send fits in the month's remaining message allowance, so a large audience cannot start on a plan that would run out three-quarters of the way through. If it does not fit, the send is refused with the numbers and a link to upgrade. See [Plans and billing](/getting-started/plans-and-billing).
+
+## Related
+
+- [Campaign schedules](/whatsapp/campaigns) — recording when a campaign should run.
+- [Analytics](/whatsapp/analytics) — broadcast and template performance over a date range.
+- [Segments](/contacts/segments) — building the audiences you send to.

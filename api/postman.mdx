@@ -1,0 +1,54 @@
+---
+title: "Postman collection"
+description: "Import every Watx API request into Postman with one file, set your key, and start calling."
+icon: "paper-plane"
+---
+
+The collection carries one request per API operation, grouped the way the reference is, with an example body for every request that takes one and an example response for every success. It is generated from the same OpenAPI document that renders the endpoint pages, so it does not drift from them.
+
+## Import it
+
+<Steps>
+  <Step title="Import into Postman">
+    In Postman, click **Import**, paste this link, and confirm:
+
+    ```text
+    https://raw.githubusercontent.com/sivakrishnacode/watx-docs/main/postman/watx-api.postman_collection.json
+    ```
+
+    Postman fetches the file and creates a **Watx API** collection with seven folders: Account, Messages, Contacts, Conversations, Broadcasts, Segments and Webhooks. If you prefer a file, open the link, save it, and drop it onto the same **Import** dialog.
+  </Step>
+  <Step title="Set your key">
+    Open the collection, go to **Variables**, and paste a key from **Settings → API keys** into `apiKey`. Every request sends it as `Authorization: Bearer {{apiKey}}` through the collection's auth setting, so nothing needs changing per request.
+  </Step>
+  <Step title="Send a request">
+    Open **Account → Who am I** and click **Send**. A `200` with your workspace details means the key works. The scope each request needs is in its description.
+  </Step>
+</Steps>
+
+## Variables
+
+| Variable | Default | Use |
+| --- | --- | --- |
+| `baseUrl` | `https://api.watx.in/v1` | Leave as is for production. |
+| `apiKey` | empty | Your API key. Keys are shown once when created; see [API keys](/settings/api-keys). |
+
+Path parameters such as `:id` are collection variables on each request. Fill them on the **Params** tab before sending.
+
+<Note>
+A key only unlocks the scopes it was created with. A `403` on a request means the key lacks that request's scope, not that the collection is wrong. See [Authentication](/api/authentication).
+</Note>
+
+## Prefer the OpenAPI document?
+
+Postman, Insomnia and most SDK generators can import the API definition directly:
+
+```text
+https://raw.githubusercontent.com/sivakrishnacode/watx-docs/main/openapi.yaml
+```
+
+It is the same document this reference is rendered from.
+
+## Keep it current
+
+The file is regenerated whenever the API reference changes. Re-import it to pick up new operations; Postman offers to replace the existing collection.

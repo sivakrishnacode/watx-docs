@@ -1,0 +1,217 @@
+---
+title: "Google actions"
+description: "Every action the Apps Script bridge can run — Gmail, Calendar, Sheets, Contacts, Docs and Tasks — with its fields, its outputs, and what an AI agent is allowed to use."
+sidebarTitle: "Google actions"
+icon: "list-check"
+---
+
+Once [Google is connected](/integrations/google), each action below is available as a
+**Google** step in the [automation editor](/automations/steps). Fields marked **required**
+must be filled; most accept [tokens](/automations/expressions) such as
+`{{ contact.email }}`. Outputs are published to later steps.
+
+## Gmail
+
+### Send email
+
+Sends from the connected Google account's own address.
+
+| Field | Notes |
+| --- | --- |
+| **To** (required) | One address, or several separated by commas |
+| **Subject** (required) | |
+| **Message** (required) | |
+| **Send as HTML** | Off sends plain text, which is what most confirmations want |
+| **Cc**, **Bcc** | |
+| **Reply-To** | Where replies should land, if not the sending address |
+| **From name** | |
+| **Attachments** | Up to 5 file URLs — paste from the media library, or use a token from an earlier step |
+
+Outputs: `to`.
+
+There is no reply or draft action. Threading a reply would need to search the mailbox, and
+nothing here can read one.
+
+## Calendar and Meet
+
+### Create calendar event
+
+Books a slot, optionally with a Google Meet link.
+
+| Field | Notes |
+| --- | --- |
+| **Title** (required) | |
+| **Starts** (required) | ISO 8601 including the offset, e.g. `2026-08-20T15:00:00+05:30`. A bare date has no time to book |
+| **Ends** (required) | |
+| **Add a Google Meet link** | On by default. Returns `meeting_url`, which a later step can send to the customer |
+| **Description** | |
+| **Attendees** | One address or several, comma separated |
+| **Timezone** | Blank uses the script's own timezone |
+| **Email the attendees** | No notifications (default), notify everyone, or only people outside the organisation |
+
+Outputs: `event_id`, `html_link`, `meeting_url`.
+
+### Reschedule an event
+
+Moves or edits an event booked earlier. Send only what changes.
+
+| Field | Notes |
+| --- | --- |
+| **Event id** (required) | From the Create calendar event step that made it — nothing searches your calendar for one |
+| **New start**, **New end**, **New title**, **New description**, **Timezone** | Optional |
+| **Tell the attendees** | Notify everyone (default), only people outside the organisation, or nobody |
+
+Outputs: `event_id`, `html_link`, `meeting_url`.
+
+### Cancel an event
+
+Takes an event off the calendar. An event that is already gone counts as success, so a
+double cancellation or a retried automation does not leave a failed run.
+
+| Field | Notes |
+| --- | --- |
+| **Event id** (required) | |
+| **Tell the attendees** | Yes (default) or no |
+
+Outputs: `deleted`.
+
+### Find events
+
+What is on between two instants. Reads event titles and times.
+
+| Field | Notes |
+| --- | --- |
+| **From** (required), **To** (required) | ISO 8601 |
+| **Containing** | Optional free-text match |
+| **Most to return** | Default 10 |
+
+Outputs: `events`, `count`.
+
+### Check availability
+
+Busy blocks between two instants. Reads no event details at all.
+
+| Field | Notes |
+| --- | --- |
+| **From** (required), **To** (required) | ISO 8601 |
+
+Outputs: `busy`.
+
+## Sheets
+
+Every Sheets action takes a **Spreadsheet** id — the part of the sheet's URL between `/d/`
+and `/edit` — and an optional **Tab** name. Blank uses the first tab. Nothing lists your
+spreadsheets or tabs, because the bridge holds no Drive access.
+
+### Add a row
+
+| Field | Notes |
+| --- | --- |
+| **Spreadsheet** (required), **Tab** | |
+| **Values** (required) | Left to right, one per column |
+
+Outputs: `row`.
+
+### Find a row
+
+Looks a row up by a column value and publishes what it found.
+
+| Field | Notes |
+| --- | --- |
+| **Spreadsheet** (required), **Tab** | |
+| **Search column** (required) | The header text in row 1 — the first row is always treated as headers |
+| **Search for** (required) | |
+
+Outputs: `found`, `row`, `values`.
+
+### Update a row
+
+Finds a row by a column value and overwrites it.
+
+| Field | Notes |
+| --- | --- |
+| **Spreadsheet** (required), **Tab**, **Search column** (required), **Search for** (required) | |
+| **New values** (required) | Replaces the whole row, left to right. Repeat unchanged cells |
+
+Outputs: `found`, `row`.
+
+### Delete a row
+
+| Field | Notes |
+| --- | --- |
+| **Spreadsheet** (required), **Tab**, **Search column** (required), **Search for** (required) | |
+
+Outputs: `found`, `row`.
+
+## Contacts
+
+### Save to Google Contacts
+
+Puts the person in the account's own address book, so they show up on the phone.
+
+| Field | Notes |
+| --- | --- |
+| **Name** (required) | |
+| **Phone** | Also what an existing entry is matched on, so a re-run updates rather than duplicating |
+| **Email**, **Company**, **Notes** | |
+
+Outputs: `resource_name`, `created`.
+
+## Docs
+
+### Create a document
+
+Writes a quote, receipt or summary and gives you a link back.
+
+| Field | Notes |
+| --- | --- |
+| **Title** (required) | |
+| **Contents** (required) | Plain text. Tokens are filled in before the document is written |
+
+Outputs: `document_id`, `url`.
+
+The document is written from scratch and is private to the account that owns the script —
+copying a template or sharing a file would both need Drive access, which the bridge does not
+have. Share it yourself from the link.
+
+## Tasks
+
+### Add a task
+
+| Field | Notes |
+| --- | --- |
+| **Task** (required) | |
+| **Notes** | |
+| **Due date** | A date, not a time — Google Tasks ignores the time of day |
+
+Outputs: `task_id`.
+
+## What an AI agent gets
+
+An [AI agent](/ai-agents/skills) is talking to a customer, so it is given a **narrower set**
+than an automation. Two skills unlock it, both off by default, and both need Google
+connected:
+
+| Skill | Tools |
+| --- | --- |
+| **Appointments** | Check availability, and book a meeting |
+| **Google Workspace** | Log to a spreadsheet, save the customer to Contacts, raise a follow-up task |
+
+Deliberately withheld:
+
+- **Find events** and **Find a row** — they read event titles and other customers' rows,
+  which a model would happily summarise to whoever asked. **Check availability** returns
+  intervals with no content, which is why the bridge has two calendar reads.
+- **Send email** — it leaves WhatsApp, is permanent, and arrives under the owner's address.
+- **Anything destructive** — no cancelling, no deleting, no overwriting.
+
+The spreadsheet an agent may write to is set in the skill's own configuration, never chosen
+by the model, and the writing tools are withheld while an agent is only **drafting** a reply
+— pressing "draft a reply" three times must not book three meetings.
+
+## New actions and your script
+
+Actions are added to Watx from time to time. An action added after your script was generated
+does not work until you regenerate and redeploy — the card says **Update available** when
+that is the case, and a run that hits one fails with a message saying so. See
+[Google](/integrations/google).

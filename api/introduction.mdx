@@ -1,0 +1,108 @@
+---
+title: "API introduction"
+description: "Drive your Watx workspace from your own code — send WhatsApp messages, manage contacts and segments, read conversations, launch broadcasts and subscribe to events."
+icon: "plug"
+---
+
+The Watx API is a JSON REST API for developers who want to do from their own
+code what the dashboard does: send a WhatsApp message, create a contact, read a
+conversation, launch a broadcast, or receive an event when a customer replies.
+
+It is scoped to one workspace. A key created in a workspace can only ever read
+and write that workspace's data.
+
+## Base URL
+
+```
+https://api.watx.in/v1
+```
+
+Every path in this reference is relative to that base, so
+`POST /messages` means `POST https://api.watx.in/v1/messages`.
+
+<Note>
+The dashboard host proxies the same API at `https://app.watx.in/api/v1/…`, which
+is the form older integrations use. Both reach the same service. Use
+`https://api.watx.in/v1` for anything new.
+</Note>
+
+## Send your first message
+
+Create a key in **Settings → API keys** with the `messages:send` scope (see
+[Authentication](/api/authentication)), then:
+
+```bash
+curl -X POST https://api.watx.in/v1/messages \
+  -H "Authorization: Bearer watx_live_xxxxxxxxxxxxxxxxxxxx" \
+  -H "Content-Type: application/json" \
+  -d '{
+        "to": "+919876543210",
+        "type": "text",
+        "text": "Your order has been packed."
+      }'
+```
+
+```json
+{
+  "data": {
+    "message_id": "9d1f4b2a-6c3e-4a51-bf2d-0a7c9e114b3f",
+    "whatsapp_message_id": "wamid.HBgMOTE5ODc2NTQzMjEwFQIAERgS",
+    "conversation_id": "3c5b1e77-90aa-4c0e-8f71-1d2a3b4c5d6e",
+    "contact_id": "7e2d9c01-55b4-4a3d-9c8e-0f1a2b3c4d5e",
+    "contact_created": true
+  }
+}
+```
+
+You pass a phone number, not an internal id. Watx finds or creates the contact
+and the conversation, then sends. The reply appears in the shared inbox like any
+other message.
+
+<Warning>
+A free-form message only reaches a customer inside the 24-hour messaging window.
+Outside it, WhatsApp accepts an approved template and nothing else — send
+`type: "template"`. See [The 24-hour window](/whatsapp/messaging-window).
+</Warning>
+
+## What you can do
+
+| Area | Endpoints |
+| --- | --- |
+| Check a key | `GET /me` |
+| Send messages | `POST /messages` |
+| Contacts | `GET`/`POST /contacts`, `GET`/`PATCH /contacts/{id}` |
+| Segments | `GET`/`POST /segments`, `GET`/`PATCH`/`DELETE /segments/{id}`, `GET`/`POST`/`DELETE /segments/{id}/contacts` |
+| Conversations | `GET /conversations`, `GET /conversations/{id}`, `GET /conversations/{id}/messages` |
+| Broadcasts | `POST /broadcasts`, `GET /broadcasts/{id}` |
+| Webhooks | `GET`/`POST /webhooks`, `GET`/`PATCH`/`DELETE /webhooks/{id}` |
+
+What the API does **not** cover: templates, automations, flows, forms, deals,
+invoices and AI agents are dashboard features with no public endpoints. Sending
+happens on WhatsApp — Instagram and website conversations can be read through
+the API, but not replied to.
+
+## Versioning
+
+The version is in the path. `v1` is the only version, and it is stable: the
+endpoints, the response envelope and the field names above are what you can
+build on.
+
+Changes are additive. New fields appear on existing responses and new endpoints
+appear under `/v1` without a version bump, so parse leniently and ignore fields
+you do not recognise. Renamed things keep their old name working alongside the
+new one — `message_id` was added beside `whatsapp_message_id`, and API keys
+issued under the old `converse360_live_` prefix still authenticate.
+
+## Next
+
+<CardGroup cols={3}>
+  <Card title="Authentication" icon="key" href="/api/authentication">
+    Create a key, pick its scopes, send the header.
+  </Card>
+  <Card title="Requests and responses" icon="code" href="/api/requests-and-responses">
+    The envelope, error codes, pagination, rate limits.
+  </Card>
+  <Card title="Webhooks" icon="bell" href="/api/webhooks">
+    Events, signatures, retries.
+  </Card>
+</CardGroup>

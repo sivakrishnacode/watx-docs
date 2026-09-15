@@ -1,0 +1,142 @@
+---
+title: "Skills"
+description: "Every skill an agent can be given, what each one unlocks, which need an integration, and the settings each takes."
+icon: "bolt"
+---
+
+A skill is a job the agent is allowed to do. Switching one on adds a paragraph to the agent's instructions and, for most of them, gives it a tool — a real lookup against your own data rather than a promise in a prompt. That is why **Order status** can answer truthfully and a hand-written instruction cannot: the skill grants the lookup.
+
+Each skill is a card on the **Skills** tab with a switch, the tools it can call, and a **Settings** link when it has any. Save the tab with **Save skills**.
+
+## The catalogue
+
+Two skills are on for a new agent. Everything that reaches outside Watx is off until you switch it on and set it up.
+
+| Skill | What it does | On by default | Tools it unlocks | Needs |
+| --- | --- | --- | --- | --- |
+| **FAQ & support** | Answers general questions about the business from the knowledge base — products, hours, policies, delivery areas | Yes | — | — |
+| **Lead qualification** | Collects the details you need from a new enquiry and saves them onto the contact | No | `save_lead_details` | — |
+| **Order status** | Looks up this customer's own orders and reports status, total and items | No | `lookup_orders` | Orders in Watx (a [connected store](/integrations/shopify) or WhatsApp orders) |
+| **Product recommendations** | Searches your catalogue and recommends matching products with real prices | No | `search_products` | A synced catalogue |
+| **Returns & refunds** | Handles return, exchange and refund requests strictly by your policy | No | — | — |
+| **Appointments** | Checks the real calendar and books, when Google is connected. Shares your booking link otherwise | No | `check_availability`, `book_meeting` | [Google](/integrations/google) for the calendar tools |
+| **Google Workspace** | Logs to a spreadsheet, saves the customer to Contacts, and creates follow-up tasks | No | `log_to_sheet`, `save_to_contacts`, `create_task` | [Google](/integrations/google) |
+| **Sell from the chat** | Sends a basket link so the customer can check out on your store | No | `create_cart_link` | A connected [store](/integrations/store-console) |
+| **Take payments** | Sends a payment link once the customer has agreed a price | No | `request_payment` | [Razorpay](/integrations/razorpay) |
+| **Send approved templates** | Lets the agent reply with one of your approved WhatsApp templates instead of plain text | No | `send_whatsapp_template` | WhatsApp, plus templates you list |
+| **Human handoff** | Recognises when to stop and pass the conversation to your team | Yes | — | — |
+| **Deal creation** | Creates deals in your pipeline from conversation context and customer intent | No | `create_deal` | A [pipeline](/contacts/pipelines-and-deals) |
+| **Deal assignment** | Assigns deals to specific team members based on ownership or expertise | No | `assign_deal` | Members in the workspace |
+| **Automation triggers** | Triggers workflows and automations based on conversation events | No | `trigger_automation` | — |
+
+<Note>
+A skill whose integration is missing is not an error — the agent simply never sees that tool and answers without it. The [readiness checklist](/ai-agents/readiness) is what tells you it is happening.
+</Note>
+
+## Settings, skill by skill
+
+<AccordionGroup>
+  <Accordion title="Lead qualification">
+    **Details to collect** — pick from budget, timeline, company name, team size, what they need it for, quantity, location, email address, who decides, what they use today, or type your own. Up to eight. The agent asks at most two per message, conversationally, never as a numbered form.
+
+    **Treat as qualified when** — free text, e.g. *they have a budget over ₹50,000 and a timeline this quarter*.
+
+    Once it has the details it records them against the contact once, then confirms that somebody will follow up.
+  </Accordion>
+
+  <Accordion title="Returns & refunds">
+    **Return window** — 7, 10, 14, 15, 21, 30, 45, 60 or 90 days, or type an unusual number.
+
+    **Policy notes** — the conditions, e.g. *unopened items only, original packaging, customer pays return shipping*.
+
+    The agent explains the policy and never approves a refund, waives a fee or commits to a timeline itself. Anything outside the policy is handed to a person.
+  </Accordion>
+
+  <Accordion title="Appointments">
+    **Booking link** — your published [booking forms](/forms/bookings) are listed, and you can paste any other link instead (Calendly, a page on your site). Used when Google is not connected, and as a fallback the agent can always offer.
+
+    **Availability in words** — e.g. *Mon–Fri 10:00–18:00 IST, closed on public holidays*. This matters even with Google connected: a calendar says what is **busy**, never what is **open**. Without it the agent will happily offer 3am, because nothing is booked then.
+
+    **Meeting length** — 15, 20, 30, 45, 60, 90 or 120 minutes. 30 if unset.
+
+    With Google connected, the agent checks availability before naming a time and books only after the customer has agreed to a specific one. Without it, it never states that a slot is confirmed.
+  </Accordion>
+
+  <Accordion title="Google Workspace">
+    **Spreadsheet id** — from the sheet's URL, between `/d/` and `/edit`. The agent can only **append** to this one sheet; it cannot read or change what is already there, and it cannot be talked into writing somewhere else.
+
+    **Tab name** — blank uses the first tab. A name that does not exist fails every write.
+
+    **Columns, left to right** — e.g. *Date, Name, Phone, What they wanted*. Without it the agent guesses what goes in each cell.
+
+    It logs a row or saves a contact once per conversation, not per message, and raises a task only when something genuinely needs a person later. None of it is narrated to the customer.
+  </Accordion>
+
+  <Accordion title="Take payments">
+    **Most it may ever ask for** — required. The agent refuses any amount above this and hands over instead. This ceiling is enforced in the tool, not in the instructions: a customer can talk a model into a number, so this is the part that is not up for discussion. **Leave it unset and the tool refuses every time.**
+
+    **What things cost** — the price list it may quote, one per line, e.g. *Consultation — 1500*. Without it the agent has nothing to work from.
+
+    It confirms what is being bought and the amount before sending a link, sends one link per agreed purchase, and never claims a payment has been received — it cannot see that.
+  </Accordion>
+
+  <Accordion title="Send approved templates">
+    **Templates the agent may send** — a picker over your approved WhatsApp templates. **Nothing selected means the agent sends none**, never "all of them".
+
+    Templates that cannot be sent safely are listed with the reason instead of being hidden:
+
+    | Reason shown | Why |
+    | --- | --- |
+    | not approved by Meta | Only APPROVED templates can be sent at all |
+    | authentication templates send passcodes | An agent that can be asked to re-send an OTP is a way into someone's account |
+    | carousels need media and values for every card at send time | One gap advertises the wrong product |
+    | has a media header but no saved media URL | Meta re-fetches the asset on every send |
+    | location headers need a pin per send | The agent cannot know it |
+    | its text header has its own placeholder | The agent fills body values only |
+    | has a dynamic URL button whose value the agent must not choose | Part of a URL wearing your business's name |
+
+    The agent sees each allowed template's approved wording, so it can pick one that genuinely fits. It cannot edit a word of it, and when none of them says what it means it writes an ordinary reply. See [Message templates](/whatsapp/templates).
+  </Accordion>
+
+  <Accordion title="Deal creation">
+    **Pipeline for new deals** — pick one of your pipelines. Unset uses the workspace's first pipeline.
+
+    **Stage it starts in** — only the stages of the pipeline above are offered, and changing the pipeline clears this field. A stage from another pipeline is ignored at run time.
+
+    **Create a deal when at least this confident** — 0.5 (anything that sounds like interest) to 0.9 (only when they have all but asked). 0.8 by default.
+
+    If the customer changes their budget or requirements later in the same conversation, the agent updates the deal that conversation already has rather than opening a second one.
+  </Accordion>
+
+  <Accordion title="Deal assignment">
+    **How to assign deals** — free text, e.g. *assign to the sales director for deals over 50k, to team leads otherwise*.
+
+    The agent names a teammate the way you would out loud ("Priya", or their email) and Watx resolves who that is. It does not discuss your team structure with the customer.
+  </Accordion>
+
+  <Accordion title="Automation triggers">
+    **Automations this agent may trigger** — pick from: send an email, send an SMS, update the contact, create a task, notify the team, add a tag, add to a segment, schedule a follow-up. Nothing selected means any of them; these eight are the only types the tool accepts.
+
+    The agent triggers only what the customer explicitly asked for, or what directly serves what they said they need. See [Automations](/automations/overview).
+  </Accordion>
+</AccordionGroup>
+
+**FAQ & support**, **Order status**, **Product recommendations**, **Sell from the chat** and **Human handoff** have no settings.
+
+## When a tool is withheld
+
+A tool is removed from the agent's toolset rather than offered and allowed to fail. A failing tool costs a round trip and a credit to discover something that was knowable before the reply started — and, in front of a customer, an agent that tries and fails reads worse than one that never offered.
+
+| Tool | Withheld when |
+| --- | --- |
+| `check_availability`, `book_meeting`, `log_to_sheet`, `save_to_contacts`, `create_task` | Google is not connected for the workspace |
+| `book_meeting`, `log_to_sheet`, `save_to_contacts`, `create_task` | The reply is a **draft** — pressing "draft a reply" three times must not book three meetings |
+| `create_cart_link` | No store is connected. It is *not* withheld while drafting: it writes nothing, so three drafts produce the same link three times |
+| `request_payment` | Razorpay is not connected, **or** the reply is a draft, **or** no maximum amount is set |
+| `send_whatsapp_template` | The conversation is not WhatsApp, or the reply is a draft, or the skill is off, or no template you listed is currently sendable |
+
+An agent takes at most three tool rounds per reply — enough for "look up the order, then search the catalogue, then answer".
+
+## Adding a skill to an existing agent
+
+Skills are per agent. Switching **Take payments** on for your sales agent leaves your support agent alone. If you want the same set everywhere, set one agent up and [duplicate](/ai-agents/create) it.

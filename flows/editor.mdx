@@ -1,0 +1,121 @@
+---
+title: "The flow editor"
+description: "Build a WhatsApp flow: the palette, the canvas, the inspector, the entry node, and what has to be true before it can be activated."
+sidebarTitle: "The flow editor"
+icon: "pen-ruler"
+---
+
+Opening a flow takes over the screen: a toolbar at the top, a node palette on the left,
+the canvas in the middle, the selected node's settings on the right, and a validation
+bar when something is wrong.
+
+## The toolbar
+
+| Control | What it does |
+| --- | --- |
+| Back arrow | Returns to **Flows**. |
+| Name | Click to rename. The description underneath is internal — customers never see it. |
+| Status chip | **Draft**, **Active** or **Archived**. |
+| **Edited** | Appears as soon as there are unsaved changes. |
+| Validation badge | Appears only when there are issues. Opens the list. |
+| AI prompt bar | Describe a change and get a draft — see [Testing and Build with AI](/flows/testing-and-ai). |
+| **Test** | Opens the simulator. |
+| **Runs** | The run history, with the run count beside it. |
+| **Delete** | Removes the flow. |
+| **Activate** / **Pause** | Puts it live, or takes it back to draft. |
+| **Save** | Writes the flow. |
+
+**Activate** is disabled while there are errors; hovering it says to fix the issues in
+the top bar first. Saving a draft is always allowed — a half-built flow is a normal thing
+to leave overnight.
+
+## Canvas and list
+
+A **Canvas** / **List** toggle sits under the toolbar, beside a legend of every node type
+and its colour. Your choice is remembered on that device.
+
+Below 768px wide the list view is forced and the toggle, palette and inspector are hidden:
+the canvas handles are about 10px and drag-to-connect is not a finger workflow. The list
+view can do everything except wiring by drag.
+
+## Adding nodes
+
+The palette on the left is a permanent rail of every node type you can add, grouped as
+**Message types**, **Ask &amp; capture**, **Actions &amp; data** and **Flow control**,
+with a search box at the top. It collapses and reopens with the panel button.
+
+There are two ways to add:
+
+- **Drag** a type onto the canvas — it lands where you dropped it.
+- **Click** it — it lands in the middle of the visible canvas.
+
+Either way the new node is selected, so its settings open immediately.
+
+## Wiring
+
+Unlike an automation, a flow is a real graph: each node stores the key of the node it
+continues to.
+
+- **Drag from a node's output port to another node** to wire that path. A node with one
+  way out has a single port; a **If / else** has *true* and *false*; a **Take a payment**
+  has *paid* and *not paid*; a **Send buttons** or **Send list** has one port per button
+  or row, labelled with its title.
+- **Select an edge and press <kbd>Delete</kbd>** to clear just that path.
+- **Select a node and press <kbd>Backspace</kbd> or <kbd>Delete</kbd>** to remove it. Every
+  path that pointed at it is cleared too, so there are no arrows left hanging.
+
+A path left unwired is not an error while you are drafting, but it will be flagged before
+you can activate.
+
+## The inspector
+
+The right pane shows the selected node's settings form — the same form the list view
+uses, so the two cannot drift.
+
+With **nothing selected** it shows the flow's own settings instead of empty space:
+
+- **When…** — the trigger. **A message contains a keyword**, **Customer's first ever
+  inbound message**, or **Manual only (no auto-trigger)**.
+- **Keywords (comma-separated)** for a keyword trigger.
+- **Entry node** — which node the run starts on.
+
+A manual flow answers no message on its own. It is started by an automation's **Start
+flow** step, or by another flow's **Connect flow** node.
+
+## Node keys
+
+Every node has a key — a short identifier such as `welcome` or `ask_name`. It is what
+every path points at, so it is the node's real identity. Two nodes with the same key is
+an error, and the flow will not activate.
+
+## Validation
+
+The bar at the bottom lists every issue, split into errors and warnings. Clicking a
+node-scoped issue jumps to that node on the canvas and flashes it; a trigger issue is
+shown on the trigger form instead.
+
+Errors stop activation. Among them:
+
+- No name, no entry node, no nodes at all, or an entry node that does not exist.
+- A duplicate node key.
+- A path that points at a node which is not there, or a required path left empty.
+- A keyword trigger with no keywords.
+- Missing text, missing prompts, a variable name that is not a valid identifier.
+- WhatsApp's own limits: at most 3 buttons, button titles at most 20 characters, at most
+  10 list rows across all sections, and the length caps on row titles, descriptions and
+  captions. These are checked here so a send cannot be rejected later for something that
+  was knowable now.
+
+Warnings do not stop activation. The two you will meet most:
+
+- A node that cannot be reached from the entry node.
+- A **Wait** of 24 hours or more, which closes
+  [WhatsApp's messaging window](/whatsapp/messaging-window) — after it, only a template
+  will send unless the customer writes again.
+
+## Import and export
+
+A flow can be exported as JSON from its card on the flows list, and **Import** in the
+flows list header reads one back — which is how you copy a flow between workspaces. An
+imported flow always arrives as a **draft**, whatever the file says, so you review it
+before it answers anybody.

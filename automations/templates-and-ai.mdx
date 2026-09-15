@@ -1,0 +1,100 @@
+---
+title: "Templates and Build with AI"
+description: "Start from a ready-made automation, or describe what you want in a sentence and edit the draft."
+sidebarTitle: "Templates and AI"
+icon: "sparkles"
+---
+
+Two of the three routes out of **New automation** save you from an empty canvas. Both
+produce an ordinary automation you finish and save yourself.
+
+## The template gallery
+
+**Templates** in the automations header opens the gallery. There is a search box and a
+category filter — Greeting &amp; availability, Lead capture, Appointments, Support,
+Commerce, Follow-up, Integrations.
+
+Every template arrives with the copy already written: real messages, real waits, real
+conditions. What cannot be pre-filled is anything that names a row in **your** workspace
+— a tag, a pipeline stage, a form, a Google connection. Those are left empty on purpose;
+a plausible-looking id would save cleanly and then never match.
+
+### Requirements on the card
+
+Each card lists what it needs before it can actually run, and whether this workspace has
+it. There are three kinds, because the fix is different for each:
+
+| Kind | Where you fix it |
+| --- | --- |
+| **Channel** | The automation only fires on a channel you have connected — connect it first. |
+| **App** | A step uses the [Google Apps Script bridge](/integrations/google). Checked live against your workspace. |
+| **Setup** | A step names something inside your workspace — a tag, a stage, a form. Fixed in the editor. |
+
+Requirements never block the click. A template you cannot run yet is still worth opening:
+the editor is where the pickers are.
+
+Picking one opens the canvas editor with everything filled in. Nothing is saved until you
+press Save.
+
+## Store recipes are ordinary automations
+
+The **Messaging** tab of a [store console](/integrations/store-console) offers recipes —
+order received, order shipped, abandoned cart. Those are not a second engine: each one
+builds an ordinary automation with a store trigger and a template send, and posts it like
+the gallery does. It opens on this canvas like anything else, and its deliveries appear
+in the same run log.
+
+The one difference is that a recipe is tied to the store it was built for, so a second
+connected store does not fire the first store's messages.
+
+## Build with AI
+
+**Build with AI** takes a sentence and returns a draft automation.
+
+<Steps>
+  <Step title="Describe it">
+    One or two sentences: what starts it, and what should happen. There are suggestions
+    to start from — "Greet first-time WhatsApp customers, then tag them as a new lead",
+    "Reply outside 9–6 saying we'll be back in the morning".
+  </Step>
+  <Step title="Read the draft">
+    You get the trigger it chose, the steps in order, anything you still have to pick,
+    and any notes it left. **How it was built** expands to show what it did.
+  </Step>
+  <Step title="Open in builder">
+    The draft is handed to the canvas editor. **Regenerate** tries again from the same
+    description.
+  </Step>
+</Steps>
+
+<Warning>
+  **Nothing is saved until you press Save in the builder.** The draft is editor state, not
+  a row. It is never active, and it goes through exactly the same validation as an
+  automation you built by hand.
+</Warning>
+
+### What it costs
+
+Each generation spends [AI credits](/ai-agents/credits-and-byok) from the workspace
+wallet, and the draft card says how many. If the wallet is empty you are told, with a
+link to top up. A workspace running on its own provider key is billed by that provider
+instead.
+
+### What it can and cannot draft
+
+It works from a fixed vocabulary, and anything outside it is left for you:
+
+- **It never invents an id.** Tags, segments, pipelines and stages come back blank and
+  are listed under *You'll need to pick these in the builder*.
+- **Some steps are not available to it**: sending an email or writing to a spreadsheet
+  (those are [Google actions](/integrations/google-actions), whose fields are a contract
+  with a script in your own Google account), starting a flow, running another automation,
+  and sending a WhatsApp template. When the request clearly wanted one, it builds the
+  closest thing it can and says what is missing.
+- **Scheduled automations are not offered.** A schedule fires for the workspace with no
+  contact attached, so every messaging step under one would be dead configuration.
+- Anything it could not decide, or an assumption it made about a vague request, comes
+  back as a note you can read.
+
+The same thing exists for [flows](/flows/testing-and-ai), with its own prompt bar in the
+flow editor.

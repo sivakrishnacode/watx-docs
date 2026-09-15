@@ -1,0 +1,221 @@
+---
+title: "WhatsApp delivery"
+description: "Why a WhatsApp message did not send, why a template was refused, why nothing is arriving, and what to do about each."
+sidebarTitle: "WhatsApp"
+icon: "whatsapp"
+---
+
+Symptoms first. Each entry says what is happening, how to confirm it, and what to change — with a link to the page that explains the rule in full.
+
+Most WhatsApp problems come down to one of three things: the [24-hour window](/whatsapp/messaging-window), a [template](/whatsapp/templates) Meta has not approved, or a connection that can send but is not receiving.
+
+## Sending
+
+<AccordionGroup>
+  <Accordion title="The composer is greyed out and says the session expired">
+    The customer last wrote more than 24 hours ago, so Meta refuses free-form messages on that thread. An amber strip appears — *"24-hour session expired. Use a template to re-engage."* — with a **Templates** button beside it.
+
+    **What to do.** Send an approved template. That is the only thing that will reach them until they write back; a tap on a template's quick-reply button counts as a reply and reopens the window.
+
+    [The 24-hour window](/whatsapp/messaging-window) · [Sending messages](/inbox/sending)
+  </Accordion>
+
+  <Accordion title="My message shows a red cross">
+    Meta accepted the request and then rejected the message. The reason Meta gave is printed under the bubble and in its tooltip — read that first, because it names the actual cause.
+
+    **Common causes.** The window closed between typing and sending; the number cannot receive messages; the template was not approved, was paused, or a parameter was missing; the number is blocked by Meta for a billing or policy reason.
+
+    **What to do.** Fix what the reason names, then send again. If the reason mentions a restriction on your number rather than this message, see *Meta says sending is blocked on my number* below.
+
+    [Sending messages](/inbox/sending)
+  </Accordion>
+
+  <Accordion title="Meta says it could not download the media">
+    A media header, a **Send media** step or a carousel card points at a URL that **Meta** fetches — not your browser. A link that works when you click it can still fail for Meta if it needs a login, sits behind a private network, redirects oddly, or serves the wrong file type.
+
+    **Check.** The link must be public `https://`, and within Meta's limits: images JPEG or PNG up to 5 MB, video MP4 or 3GPP up to 16 MB, documents PDF up to 16 MB. A link pasted into a template must stay reachable for about 24 hours, because Meta fetches it during review.
+
+    **What to do.** Upload the file to the [media library](/contacts/media-library) and pick it there instead of pasting a link — the library serves a public, stable URL.
+
+    [Message templates](/whatsapp/templates) · [Steps](/automations/steps)
+  </Accordion>
+
+  <Accordion title="Product messages fail">
+    A product card is a free-form message, so it needs three things: a **Meta Catalog ID** saved on the Catalogue tab, the SKU to exist in your Meta catalogue, and the 24-hour window to be open.
+
+    **Check.** Products added or edited in Watx only reach Meta when you press **Sync to Meta Catalog** — until then the SKU is not in the catalogue Meta looks in.
+
+    [Catalog and orders](/whatsapp/catalog-and-orders)
+  </Accordion>
+</AccordionGroup>
+
+## Templates
+
+<AccordionGroup>
+  <Accordion title="A template was rejected">
+    Meta refused it on review. The reason is printed on the template's card in red.
+
+    **The usual causes.** The body starts or ends with a variable — trailing punctuation does not help. A sample value is missing. Two variables sit next to each other. There is too little text for the number of variables (roughly two words per variable is the floor). The category is wrong for the content: a promotion filed as **Utility** is rejected on the merits.
+
+    **What to do.** Press **Resubmit** on the card, fix what the reason names, and submit again. Starting from the [template library](/whatsapp/template-library) avoids most of these, because those starters already follow the rules.
+
+    [Message templates](/whatsapp/templates)
+  </Accordion>
+
+  <Accordion title="A template is Paused or Disabled">
+    Meta paused or disabled it after poor feedback from the people who received it — blocks, reports, or "not useful". It stops sending immediately, so any broadcast or automation using it starts failing.
+
+    **What to do.** Use a different approved template while you rework the wording, then **Resubmit**. A paused template is a signal about the copy and the audience, not a fault in Watx — check your [quality rating](/whatsapp/limits-and-quality) at the same time.
+
+    [Message templates](/whatsapp/templates)
+  </Accordion>
+
+  <Accordion title="I edited an approved template and now I cannot send it">
+    Editing an approved template sends it back to Meta for review, so its status returns to **Pending** and it is unsendable until Meta answers. Review usually takes up to 24 hours.
+
+    **What to do.** Wait for the status to return to **Approved**, or send a different template meanwhile. If you need the old wording live while you change the new one, create a second template rather than editing the one in use.
+
+    [Message templates](/whatsapp/templates)
+  </Accordion>
+
+  <Accordion title="The send is refused for a missing value">
+    Meta rejects the **whole** message if one parameter is missing, so every sending surface in Watx refuses first and names the gap — *"Still needed: …"*.
+
+    **Check.** What a template needs depends on its shape: a value for each body variable, the header's own value or media, latitude, longitude, place name **and** address for a location header, the value substituted into a dynamic URL button, the code for a copy-code button, and media plus body and button values for **every** carousel card.
+
+    **What to do.** Fill in what is named. If you changed the selected template part-way, everything you had filled in was cleared on purpose — the values are keyed to one template's shape.
+
+    [What a send must carry](/whatsapp/templates)
+  </Accordion>
+
+  <Accordion title="A carousel template fails every time">
+    Meta re-fetches each card's image or video on **every send** rather than reusing what the template was approved with. A carousel sent with body values alone is refused.
+
+    **What to do.** Supply media for every card at send time. A card with a saved image only needs an override; a card without one needs a file or a link each time. Keep empty card entries in place — cards are matched by position, so removing one hands the next card's image to the wrong product.
+
+    [Message templates](/whatsapp/templates)
+  </Accordion>
+
+  <Accordion title="The template I want is not in the picker">
+    Pickers list **Approved** templates only, and for a payment or an invoice they list only templates that can actually carry the thing being sent.
+
+    **Check.** If it was approved in Meta's WhatsApp Manager rather than here, press **Sync from Meta** on the Templates page. Meta's sample `hello_world` is hidden from pickers deliberately — it can only be sent from Meta's own test numbers.
+
+    [Message templates](/whatsapp/templates) · [Razorpay payments](/integrations/razorpay)
+  </Accordion>
+</AccordionGroup>
+
+## Receiving and connection
+
+<AccordionGroup>
+  <Accordion title="Nothing is arriving in the inbox">
+    You can send, and nothing comes back. This is the failure that looks like success: your access token is valid, but Meta is not delivering events to Watx.
+
+    **Check.** **WhatsApp → Channel Settings** splits those two facts apart. **Credentials valid** means sending works. **Registered — Meta will deliver events to Watx** means receiving works. Press **Verify with Meta** to re-run the live check; it reports whether the phone metadata reads back, whether your WhatsApp Business Account has a subscribed app, and whether Meta considers the number registered.
+
+    **What to do.** If a registration attempt failed, its error is quoted on the page — supply or correct the two-step verification PIN and save. If the check finds the number live, Watx repairs its own record and the warning stops.
+
+    [Channel settings](/whatsapp/settings) · [Connect your number](/whatsapp/connect)
+  </Accordion>
+
+  <Accordion title="Meta says sending is blocked on my number">
+    A restriction banner is about your **account standing at Meta**, not about the connection. The number can be perfectly connected and registered and still refuse every send.
+
+    **The most common cause** is no valid payment method on the WhatsApp Business Account — Meta bills you for conversations directly, and until that is set up, incoming messages work but anything your business starts fails.
+
+    **What to do.** Fix it in Meta Business Settings or WhatsApp Manager. Nothing on the Watx settings page changes account standing; Watx shows Meta's own description and suggested fix so you know what to act on.
+
+    [Channel settings](/whatsapp/settings)
+  </Accordion>
+
+  <Accordion title="My access token expires soon, or has expired">
+    Watx warns when the stored token lapses within seven days. Once it lapses, sending stops and the messaging tier and quality rating stop refreshing.
+
+    **What to do.** **Connect a different number** at the foot of the connected card runs the signup again and refreshes the credentials — it is the way to renew the token, even when the number is not changing.
+
+    [Channel settings](/whatsapp/settings)
+  </Accordion>
+
+  <Accordion title="This number is already connected to another workspace">
+    A phone number can be connected to one Watx workspace at a time, and the connect is refused with a message saying so.
+
+    **What to do.** Disconnect it from the other workspace first — **Reset Configuration** on that workspace's channel settings deletes the stored credentials without changing anything at Meta — then connect it here. If you do not know which workspace holds it, write to [support@watx.in](mailto:support@watx.in).
+
+    [Connect your number](/whatsapp/connect) · [Workspaces](/getting-started/workspaces)
+  </Accordion>
+
+  <Accordion title="Registration fails with a two-step verification PIN mismatch">
+    Once two-step verification is set on the number at Meta, registering it again needs that exact PIN. Any other PIN is refused.
+
+    **What to do.** Find the 6-digit PIN in Meta Business Manager under WhatsApp Accounts → Phone Numbers → Two-step verification, and enter it. If the number is already registered at Meta, Watx skips the registration call rather than re-running it — a live connection is never wiped because a PIN was wrong.
+
+    If you connected the number while keeping the WhatsApp Business app (**coexistence**), registration is skipped by design: Meta forbids re-registering a number the app still owns. The connected card says so under **Mode**.
+
+    [Connect your number](/whatsapp/connect)
+  </Accordion>
+</AccordionGroup>
+
+## Broadcasts, limits and quality
+
+<AccordionGroup>
+  <Accordion title="The broadcast finished with nothing sent">
+    A broadcast that ends **Failed** sent no messages at all. The recipient table carries a reason per row, and that is where the answer is.
+
+    **The reasons you will see.** `Contact opted out of marketing`, `No phone number on contact`, `Invalid phone number`, `WhatsApp not configured` — plus whatever Meta said for a template rejection.
+
+    **What to do.** A throttle or a network failure is retried automatically. A rejection on the merits — an unapproved template, a bad parameter, a number that cannot receive template messages — is never retried, because it would fail identically. Fix the template or the mapping and start a new broadcast.
+
+    [Broadcasts](/whatsapp/broadcasts)
+  </Accordion>
+
+  <Accordion title="Fewer people received it than I expected">
+    Two groups are dropped from **every** audience, whatever you selected: contacts who have **opted out**, and contacts with **no phone number** — an Instagram-only or website-only contact cannot receive a WhatsApp message.
+
+    **Check.** The estimated recipient count shown while you build the audience already has both rules applied. Your own **exclude tags** and **exclude segments** apply to every audience type too, not just to segments. If everyone in an audience has opted out, the send is refused with the count so it does not read as a broken filter.
+
+    [Broadcasts](/whatsapp/broadcasts) · [Segments](/contacts/segments)
+  </Accordion>
+
+  <Accordion title="The broadcast is still Queued or Sending">
+    **Queued** means it was accepted and the fan-out has not started; **Sending** means messages are going out. Sending is paced deliberately — roughly 10 messages a second by default — so a large audience takes a while. The list polls while anything is sending, so counters move without a reload.
+
+    **What to do.** Wait. Delete is disabled while a broadcast is queued or sending, because messages already in flight would leave the report inconsistent. If the server restarts mid-send the broadcast resumes and only the still-pending recipients are sent.
+
+    [Broadcasts](/whatsapp/broadcasts)
+  </Accordion>
+
+  <Accordion title="I am at, or near, my daily conversation limit">
+    Meta caps how many customers your number may start a conversation with in a rolling 24 hours. An unverified number is capped at 250 a day; verifying your business in Meta Business Manager moves it up a tier.
+
+    **Check.** **Analytics → Sending capacity** shows the tier, the rating and the usage meter, and broadcast step 4 warns when the audience looks larger than your remaining allowance. That warning never blocks a send.
+
+    <Warning>
+      The usage meter counts **broadcast recipients only**. Messages from the inbox, automations and flows consume the same Meta quota and are not counted, so treat the number as a floor rather than a total.
+    </Warning>
+
+    [Messaging limits and quality](/whatsapp/limits-and-quality)
+  </Accordion>
+
+  <Accordion title="My quality rating went yellow or red">
+    Meta grades the number from how recipients react — blocks, reports and "not useful" feedback. At **Low quality**, Meta may throttle or pause delivery, and individual templates can be paused for the same reason.
+
+    **What to do.** Stop bulk sends until it recovers, send to smaller and more relevant audiences, and check that the templates going out are ones people asked for. The rating refreshes from Meta every six hours, and **Refresh** on the card asks for it now.
+
+    [Messaging limits and quality](/whatsapp/limits-and-quality)
+  </Accordion>
+
+  <Accordion title="My campaign schedule never ran">
+    A campaign schedule is a **record of a plan**, not a timer. Creating one does not start the broadcast at the scheduled time, and **Next run** and **Runs** stay empty.
+
+    **What to do.** Send broadcasts from **WhatsApp → Broadcasts** until that changes.
+
+    [Campaign schedules](/whatsapp/campaigns)
+  </Accordion>
+</AccordionGroup>
+
+## Still stuck
+
+- The connection itself: [Channel settings](/whatsapp/settings) has **Verify with Meta** and **Test API Connection**.
+- An automation or agent that should have sent something: [Automations and agents](/troubleshooting/automations-and-agents).
+- A store, payment or invoice message: [Integrations](/troubleshooting/integrations).
+- Anything else: [support@watx.in](mailto:support@watx.in).

@@ -1,0 +1,99 @@
+---
+title: "Integrations"
+description: "The directory of everything Watx can talk to — stores, payments, sales documents, Google, Zapier and n8n — and what each card's status means."
+icon: "plug"
+---
+
+**Integrations** in the sidebar is one page listing everything Watx can connect to. Each
+integration is a card: what it does, whether it is set up, and one button to set it up or
+open it.
+
+Watx is a CRM first. **Every integration on this page is optional** — the inbox, contacts,
+automations, flows and agents all work with nothing connected at all.
+
+## The directory
+
+The header counts what is on the page: `2 connected · 1 needs attention · 3 available`.
+The chips below filter by category — **All**, **Stores**, **Payments**, **Productivity**
+and **Automation**.
+
+<CardGroup cols={2}>
+  <Card title="Shopify" icon="bag-shopping" href="/integrations/shopify">
+    Orders, abandoned carts and the catalogue arrive as they happen, with a console for
+    your store.
+  </Card>
+  <Card title="WooCommerce" icon="store" href="/integrations/woocommerce">
+    Orders and carts from your WordPress store, with webhooks you create in WooCommerce.
+    In beta.
+  </Card>
+  <Card title="Razorpay" icon="credit-card" href="/integrations/razorpay">
+    Collect from your customers through your own Razorpay account. Nothing passes through
+    Watx.
+  </Card>
+  <Card title="Sales documents" icon="file-invoice" href="/integrations/sales-documents">
+    Invoices, GST bills, quotations and receipts, sent as a PDF on WhatsApp. No payment
+    gateway needed.
+  </Card>
+  <Card title="Google" icon="google" href="/integrations/google">
+    Gmail, Calendar, Meet and Sheets through one script that runs in your own Google
+    account.
+  </Card>
+  <Card title="Zapier" icon="bolt" href="/integrations/zapier">
+    Trigger Zaps when contacts, conversations and messages arrive.
+  </Card>
+  <Card title="n8n" icon="diagram-project" href="/integrations/n8n">
+    Trigger n8n workflows, cloud or self-hosted.
+  </Card>
+  <Card title="Other services" icon="code" href="/integrations/other-services">
+    Slack, Notion, Airtable and anything else, as a pre-filled HTTP request step.
+  </Card>
+</CardGroup>
+
+## What a status means
+
+| Status | What it means |
+| --- | --- |
+| **Not set up** | Nothing connected. The button says **Connect** or **Set up**. |
+| **Connected** | Working. For Razorpay the label is **Live** or **Test mode**; for Sales documents it is **On** or **On · GST**. |
+| **Needs attention** | Connected but something is wrong or unfinished — a failed sync, events not arriving, a disconnected store, an abandoned setup, or company details missing. |
+
+A card that needs attention lists the reason underneath: `Sync error`, `Disconnected`,
+`Finish setup`, `Events not arriving`, `No webhook secret`, `Needs company details`.
+
+<Warning>
+  A green status is meant to be true. If a store's app was uninstalled in Shopify, or an
+  OAuth round trip was abandoned, the card says so rather than staying green — reconnecting
+  is the only fix and a tick is what stops anyone looking for it.
+</Warning>
+
+## Who can connect one
+
+Connecting, changing or disconnecting an integration is **owner and admin** work. Other
+roles see the cards and the consoles, with the buttons disabled and a reason on hover. See
+[Members and roles](/settings/members-and-roles).
+
+## Store limits
+
+There is **one store per workspace per platform** — one Shopify store and one WooCommerce
+store. To connect a different one, disconnect the first.
+
+## Free tools
+
+Below the directory is a **Free tools** group. These are small utilities on the Watx
+website — nothing to connect and nothing to set up — and they open in a new tab:
+
+| Tool | What it does |
+| --- | --- |
+| Chat button generator | Builds a floating "Chat on WhatsApp" button for your website and gives you the code. |
+| QR code generator | Turns your WhatsApp number into a scannable QR code with a pre-filled first message. |
+| Pricing calculator | Estimates what Meta will bill you per month under per-message pricing. |
+
+## If what you need is not here
+
+The last row on the page points at the public API. Issue a key under
+**Settings → API keys**, or point a webhook at us, and build your own — see
+[API keys](/settings/api-keys) and [Webhooks](/api/webhooks).
+
+Inside an automation you can also call any service directly with an
+[HTTP request step](/automations/steps), pre-filled from the
+[Other services](/integrations/other-services) list.

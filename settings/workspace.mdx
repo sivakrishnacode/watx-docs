@@ -1,0 +1,124 @@
+---
+title: "Workspace settings"
+description: "Fields and tags, canned replies, deals and currency, phone number formatting, and the appearance of the app."
+sidebarTitle: "Workspace settings"
+icon: "sliders"
+---
+
+The **Workspace** group in Settings holds the configuration everyone in the
+workspace shares. Appearance is here too, although it is yours alone — it is
+saved to your device, not to the workspace.
+
+## Workspace name and logo
+
+These live on **Settings → Your profile**, on the card below your own details.
+Admins and the owner can change them; the name appears in the sidebar, in the
+header and on every invite link.
+
+The logo accepts a PNG, JPEG or WebP.
+
+## Fields & tags
+
+Three cards, all about the shape of a contact.
+
+### Tags
+
+A **tag** is a colour-coded label on one contact — `vip`, `wholesale`,
+`needs-callback`. Add one by typing a name, picking a colour swatch and pressing
+**Add**; delete one through a confirmation.
+
+Tags are for facts about a person. If you want a named audience with a purpose
+("March webinar attendees"), use a **segment** instead — see
+[Segments](/contacts/segments).
+
+### Custom fields
+
+Extra fields on every contact — ZIP code, lead source, account number. They
+appear on every contact record and in the **Update Contact Field** automation
+step, so an automation can write to them.
+
+<Note>
+  This card is **admin-only** and does not appear for Agents or Viewers. Editing
+  is refused at the database level as well, so there is nothing to work around.
+</Note>
+
+Field types and where custom fields show up are covered in [Fields and
+tags](/contacts/fields-and-tags).
+
+### Phone number formatting
+
+Contacts are stored in canonical international form — `+919791766444` — on every
+channel. A number typed without a country code has to be resolved against
+something, and that cannot be guessed globally: the same ten digits are an
+Indian mobile in one workspace and a US one in another.
+
+Pick the **default country**; the card shows a live sample of how a locally
+typed number will be stored and displayed. Everyone can see the setting; only
+admins and the owner can change it.
+
+## Canned replies
+
+Saved answers your team drops into a chat by typing `/shortcut` in the inbox
+composer.
+
+They are **shared by the whole workspace** — the point is that everyone answers
+the same question the same way, so there are no private libraries. Any member
+who can send messages can add, edit and delete them.
+
+Each reply has:
+
+| Field | Notes |
+| --- | --- |
+| **Name** | What you see in the picker, for example `Refund policy` |
+| **Shortcut** | What you type after `/`. Lower-cased, spaces become hyphens, other characters dropped, 32 characters maximum. Derived from the name if you leave it blank, and unique within the workspace |
+| **Message** | Up to 4,096 characters |
+
+Using them in a conversation: [Canned replies](/inbox/canned-replies).
+
+## Deals & currency
+
+One **default currency** per workspace. It seeds new deals and formats every
+pipeline and dashboard total.
+
+<Note>
+  Existing deals keep the currency they were saved with. Changing the default
+  does not rewrite history.
+</Note>
+
+Everyone can see the setting; only admins and the owner can change it. See
+[Pipelines and deals](/contacts/pipelines-and-deals).
+
+## Appearance
+
+Two independent controls, both applying the moment you pick them — there is no
+save button.
+
+- **Mode** — light or dark. Light is the default.
+- **Accent colour** — Watx Green (the default), Violet, Emerald, Cobalt, Amber
+  or Rose.
+
+<Note>
+  Appearance is saved **to this device**, not to your profile or the workspace.
+  Your teammates are unaffected, and the same login on another browser starts
+  from the default until you set it there too.
+</Note>
+
+The same mode and accent controls also sit in the user menu at the bottom of
+the sidebar.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Members and roles" icon="user-group" href="/settings/members-and-roles">
+    Who can change any of this.
+  </Card>
+  <Card title="API keys" icon="key" href="/settings/api-keys">
+    Credentials for the public REST API.
+  </Card>
+  <Card title="Contacts" icon="users" href="/contacts/overview">
+    Where fields and tags are actually used.
+  </Card>
+  <Card title="Integrations" icon="plug" href="/integrations/overview">
+    Stores, payments, Google, Zapier, n8n and sales documents.
+  </Card>
+</CardGroup>

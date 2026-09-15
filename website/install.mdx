@@ -1,0 +1,100 @@
+---
+title: "Install the widget"
+description: "Allow your domain, paste the snippet into your site, and the channel goes live on the first visitor load."
+icon: "code"
+---
+
+Installing the widget is three steps, and the last one happens on its own. There is no
+account to authorise and nothing to approve — **Channels → Web → Channel Settings** shows
+where you are in the sequence every time you open it.
+
+## Install it
+
+<Steps>
+  <Step title="Allow your domain">
+    Under **Allowed domains**, type the domain you will serve the widget from — for example
+    `example.com` — and press **Add**.
+
+    Only listed domains may load the widget. **An empty list allows nothing**, which is the
+    safe default but a silent one: a snippet pasted before a domain is added shows nothing
+    at all. Subdomains are not included automatically, so list `shop.example.com` as well if
+    you serve the widget there.
+  </Step>
+  <Step title="Copy the snippet">
+    **Install snippet** holds the snippet with your own widget key already filled in. Press
+    **Copy**.
+
+    ```html
+    <script>
+      window.watxSettings = { widgetKey: 'wk_YOUR_WIDGET_KEY' };
+    </script>
+    <script async src="https://app.watx.in/widget/v1/loader.js"></script>
+    ```
+
+    Copy it from the product rather than from here — the key is yours and the loader address
+    follows your workspace.
+  </Step>
+  <Step title="Paste it on your site">
+    Into your site's HTML, just before the closing `</body>` tag, on every page you want the
+    widget to appear on. Most sites have one template that covers all of them. The script
+    loads asynchronously and does not hold up your pages.
+
+    Pasting the snippet twice is harmless — the loader refuses to start a second widget.
+  </Step>
+  <Step title="Wait for the first load">
+    The channel is marked live the moment Watx sees the widget load from an allowed domain.
+    Open your own site to make that happen. **Channel Settings** then says **Web widget is
+    live**, with **Last seen** underneath.
+  </Step>
+</Steps>
+
+## If the widget does not appear
+
+The channel's status message in the sidebar names the likely cause. In order of how often
+it is the answer:
+
+| What you see | What it means |
+| --- | --- |
+| *Add your website's domain to finish setup* | The allowed-domains list is empty, so nothing may load |
+| *Install the widget snippet on your website* | A domain is allowed but no load has been seen yet |
+| *The web widget is turned off* | Somebody used **Turn widget off** |
+| The launcher never appears, and your browser console shows a warning about `widgetKey` | The first `<script>` block was not pasted, or was pasted without the key |
+
+The widget is deliberately loaded inside its own frame, so nothing on your site can change
+how it looks and nothing it does can break your layout. The launcher is a frame too, which
+is why there is no element on your page for your CSS to catch.
+
+## Controlling it from your own page
+
+The loader exposes a small API for opening the chat from your own buttons:
+
+```js
+watx.open();     // open the chat panel
+watx.close();    // close it
+watx.toggle();   // open if closed, close if open
+watx.isOpen();   // true or false
+```
+
+## The two keys
+
+**Channel Settings → Keys** holds both.
+
+| Key | What it is | Rotating it |
+| --- | --- | --- |
+| **Widget key** | Public. It appears in your page source, identifies your workspace, and grants nothing on its own | The widget stops loading everywhere until you paste the new snippet, and setup returns to step two |
+| **Signing secret** | Private, and never shown. It signs visitor sessions and verifies logged-in visitors | Everyone currently chatting is disconnected. The installed snippet keeps working |
+
+Both are confirmed before they rotate. Rotate the widget key if it has been pasted on a
+site that is not yours; rotate the secret if you believe it has leaked.
+
+<Note>
+Every request that touches a conversation needs a signed session token as well as the
+widget key, so somebody copying your key out of your page source cannot read or write
+anyone's chat.
+</Note>
+
+## Turning the widget off
+
+**Turn widget off** removes it from your site immediately. Domains, appearance and chat
+history are all kept, and **Turn it back on** restores it. Use this rather than deleting the
+snippet when you want to pause the channel.

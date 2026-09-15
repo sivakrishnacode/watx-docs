@@ -1,0 +1,95 @@
+---
+title: "Settings"
+description: "A map of the settings rail — what belongs to you, what belongs to the workspace, and who can see each section."
+sidebarTitle: "Settings"
+icon: "gear"
+---
+
+**Settings** is the last row of the sidebar. Opening it replaces the second
+panel with the settings list, and the page shows whichever section you pick. The
+landing screen is an **Overview** with your identity, your role in this
+workspace and a few shortcuts.
+
+Every section is deep-linkable: the URL carries `?tab=` (for example
+`/settings?tab=api`), so you can bookmark one or paste it to a colleague.
+
+## The two groups
+
+The rail is split by **who a setting belongs to**. That distinction matters most
+when you belong to several workspaces: the Account group follows you everywhere,
+the Workspace group changes when you switch.
+
+### Account — yours, everywhere
+
+| Section | What it holds |
+| --- | --- |
+| **Your profile** | Your name, email and avatar — plus the card that renames the workspace and sets its logo |
+| **Login & security** | Change your password; sign out of every device |
+| **Appearance** | Light or dark mode and the accent colour, saved to this device |
+
+### Workspace — shared with everyone in it
+
+| Section | What it holds |
+| --- | --- |
+| **Fields & tags** | Contact tags, custom fields, and the default country for phone numbers |
+| **Canned replies** | The saved answers the inbox composer offers when an agent types `/` |
+| **Deals & currency** | The default currency for new deals and for totals |
+| **API keys** | Credentials for the public REST API |
+| **Users & Roles** | Who has access, their roles, invitations, and the team performance report |
+| **Plan & billing** | The plan, its limits, automatic renewal and checkout |
+
+## Who sees what
+
+Almost every section is visible to every member; what changes is whether the
+controls are editable.
+
+<CardGroup cols={2}>
+  <Card title="Everyone" icon="users">
+    Your profile, Login & security, Appearance, Canned replies, API keys (the
+    list), Users & Roles (the roster), and the read-only view of Fields & tags
+    and Deals & currency.
+  </Card>
+  <Card title="Admins and the owner" icon="shield">
+    Renaming the workspace, the custom-fields catalogue, the default currency
+    and phone country, inviting and removing members, changing roles, and
+    creating or revoking API keys.
+  </Card>
+</CardGroup>
+
+<Warning>
+  **Plan & billing is owner-only** — stricter than admin-only. The row does not
+  appear for anyone else, and typing the URL shows "Only the workspace owner can
+  view billing". A workspace has one plan and one person paying for it. See
+  [Plans and billing](/getting-started/plans-and-billing).
+</Warning>
+
+## Settings that live elsewhere
+
+Not everything configurable is in Settings. Three things moved out because you
+work in them rather than set them once:
+
+- **Channel settings** — per channel, under **Channels → WhatsApp → Channel
+  Settings** and its equivalents. A channel's connection and behaviour are
+  there, not here.
+- **Integrations** — connected stores, Razorpay, Google, Zapier, n8n and Sales
+  documents each have a card, and some have a whole console. See
+  [Integrations](/integrations/overview).
+- **Sales documents** — your company details, GST mode, numbering and document
+  design are in its own console at **Integrations → Sales documents**.
+
+## Sections in detail
+
+<CardGroup cols={2}>
+  <Card title="Members and roles" icon="user-group" href="/settings/members-and-roles">
+    What each role can do, inviting, changing a role, removing someone.
+  </Card>
+  <Card title="Workspace settings" icon="sliders" href="/settings/workspace">
+    Fields and tags, canned replies, currency, phone format and appearance.
+  </Card>
+  <Card title="API keys" icon="key" href="/settings/api-keys">
+    Create a key, choose its scopes, revoke it.
+  </Card>
+  <Card title="Plan and billing" icon="credit-card" href="/getting-started/plans-and-billing">
+    Plans, the trial, renewal, failed payments and cancelling.
+  </Card>
+</CardGroup>

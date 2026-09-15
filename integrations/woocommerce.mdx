@@ -1,0 +1,84 @@
+---
+title: "WooCommerce"
+description: "Connect a WooCommerce store with REST API keys, then create the webhooks by hand in WordPress so orders and products reach Watx."
+icon: "store"
+---
+
+WooCommerce brings your products and orders into Watx and gives the store the same
+[console](/integrations/store-console) Shopify gets. It is labelled **Beta**: the
+connection is read-only, and the webhooks are created by hand in WordPress rather than
+registered for you.
+
+## Connect the store
+
+<Steps>
+  <Step title="Create a REST API key in WordPress">
+    **WooCommerce → Settings → Advanced → REST API → Add key**. Give it a description,
+    pick a user, and set permissions to **Read**. Watx never writes to your store.
+  </Step>
+  <Step title="Copy both halves">
+    Press **Generate API key**. The **Consumer key** (`ck_…`) and **Consumer secret**
+    (`cs_…`) are shown once — copy both before leaving the page.
+  </Step>
+  <Step title="Paste them into Watx">
+    **Integrations → WooCommerce → Connect**. Enter the store's root URL (for example
+    `https://yourstore.com`), the consumer key and the consumer secret.
+  </Step>
+  <Step title="Choose a webhook secret">
+    The **Webhook secret** field is a secret you invent. Type the same value into every
+    WooCommerce webhook you create in the next section — it is how Watx verifies that a
+    delivery really came from your store.
+  </Step>
+  <Step title="Connect store">
+    The catalogue sync starts and you land on the store console.
+  </Step>
+</Steps>
+
+Watx reads the store's own currency during the sync, so prices arrive in the currency your
+shop charges in.
+
+## Create the webhooks in WordPress
+
+Nothing is registered for you. Open the console's **Overview** tab and copy the delivery
+URL it shows, then in WordPress go to **WooCommerce → Settings → Advanced → Webhooks** and
+add one webhook per topic:
+
+| Topic | What it does in Watx |
+| --- | --- |
+| `order.created` | Fires the **Order placed** trigger, creates the contact and a WhatsApp thread |
+| `order.updated` | Everything after placement — cancelled, completed and refunded are worked out by comparing the order's status against the one Watx holds |
+| `product.created`, `product.updated`, `product.deleted` | Keeps the catalogue current between syncs |
+
+For each webhook: set the **Delivery URL** to the URL from the Overview tab, and the
+**Secret** to the same secret you saved in Watx.
+
+<Warning>
+  With the wrong secret every delivery is refused as a forgery and nothing happens, with
+  no error anywhere in WordPress. The Overview tab's per-topic **Last received** column is
+  how you check: a topic you created in WooCommerce that never receives anything is a
+  secret mismatch.
+</Warning>
+
+## What differs from Shopify
+
+| | WooCommerce |
+| --- | --- |
+| Webhook registration | By hand, in WordPress |
+| Order lifecycle | One `order.updated` topic; cancelled, completed and refunded are diffed from the status |
+| Abandoned carts | Watx accepts a cart webhook on the same URL, but nothing creates one for you — carts appear only if your store sends them |
+| Cash on delivery | Orders paid by the `cod` gateway are recognised, but tagging and cancelling the order at the store are Shopify operations |
+| Reconnecting | **More actions → Reauthenticate** takes the webhook secret only |
+| Catalogue sync | Products, prices, stock and the store's currency |
+
+Everything else — the console's tabs, order messages, cart recovery rules, the delivery
+log, admin alerts — works the same way. See [The store console](/integrations/store-console).
+
+## Reconnecting and disconnecting
+
+**More actions → Reauthenticate** replaces the webhook secret. **Disconnect store** removes
+the store, its synced catalogue, orders and carts, and the message automations built for
+it; the webhooks you created in WordPress are yours to delete there.
+
+<Note>
+  One WooCommerce store per workspace. To connect a different one, disconnect the first.
+</Note>

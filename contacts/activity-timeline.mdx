@@ -1,0 +1,46 @@
+---
+title: "Activity timeline"
+description: "Everything that has happened to one contact — orders, payments, carts, deals, notes, forms, campaigns and messages — in one list."
+sidebarTitle: "Activity timeline"
+icon: "clock-rotate-left"
+---
+
+The **Activity** tab in the contact drawer is the whole relationship in one list, newest first. It pulls from every part of Watx that knows something about this person and merges the results into a single column, grouped by day.
+
+## What appears
+
+Only entries that exist show up. There are no section headings and no "Orders (0)" — a workspace with nothing but WhatsApp messages gets a timeline that reads as finished rather than mostly empty.
+
+| Entry | Raised by |
+| --- | --- |
+| Added to contacts | The contact record, with how they arrived — "via WhatsApp", "imported", "from a connected store" |
+| Opted out of marketing | Marketing consent being withdrawn, and how |
+| Order placed · fulfilled · cancelled · refunded | A [connected store](/integrations/store-console). One order can produce several entries — that sequence is the story the timeline exists to tell |
+| Abandoned cart reminder sent · Cart recovered | The abandoned-cart flow on a connected store |
+| Payment link sent · Payment received · Payment link cancelled · Payment link expired | [Razorpay payment links](/integrations/razorpay). The detail line says which surface asked for the money — the inbox, an AI agent, an automation, a flow or the API |
+| Deal opened | A deal raised against this contact, with the stage it started in |
+| Note added | A note on the contact |
+| Form submitted | A [form or booking](/forms/overview) |
+| Campaign message sent · read · failed to deliver | A [broadcast](/whatsapp/broadcasts) this contact was a recipient of |
+| Messages exchanged | Messages, rolled up per day and channel |
+| AI handed the conversation to a human | An [AI agent](/ai-agents/overview) escalating |
+
+Entries that point at something — a store order, a payment page, a deal — open it in a new tab, so the drawer you are reading stays where it is.
+
+## Messages are rolled up, not listed
+
+One row per day and channel, reading like *"14 received, 9 sent"*, with the last thing you replied underneath. It is per channel as well as per day, so somebody who wrote on WhatsApp and Instagram the same afternoon shows as two rows rather than one merged count.
+
+The Inbox is the transcript, and **Open chat** is at the top of the same drawer. Repeating every message here would bury the order, the payment and the deal under three hundred "hi"s.
+
+## Money
+
+Entries about money show the amount on the right, in the currency the record was written in. A payment link that lapsed unpaid gets an **expired** entry; one that was paid does not, because it has a **Payment received** entry instead.
+
+## How far back it goes
+
+Each source contributes up to its most recent 50 entries, and messages are scanned back a few hundred rows before being rolled up. When a source hits that cap the timeline says **"Showing the most recent activity only."**
+
+<Note>
+This is a drawer, not a report. For a full export, use the CSV exports on the dashboard or the [public API](/api/introduction).
+</Note>

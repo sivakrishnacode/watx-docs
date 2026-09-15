@@ -1,0 +1,84 @@
+---
+title: "DM agents"
+description: "What answers an Instagram DM when nobody on your team has yet — the order the engines are consulted in, and the Instagram rules that change how an agent behaves."
+icon: "robot"
+---
+
+**Channels → Instagram → DM agents** reports what would answer an incoming Instagram DM
+right now, and what is different about Instagram when it does.
+
+It is not a second AI setup screen. Agents, automations and knowledge are shared with
+WhatsApp and the website — one agent can cover all three — and this page links to the same
+editors rather than duplicating them.
+
+## Who replies first
+
+Every inbound Instagram DM is offered to the engines in order, and **the first one that
+handles it stops the rest**, so a customer gets one reply rather than three.
+
+<Steps>
+  <Step title="Comment funnels">
+    If the DM is a tap on a button a [comment funnel](/instagram/comment-funnels) sent, the
+    funnel owns it and carries the person to the next step.
+  </Step>
+  <Step title="Automations">
+    Active rules with a message trigger — a new message, a first message, a keyword match,
+    a story reply. Set them up under [Automations](/automations/overview), or through
+    [Intents](/instagram/intents) for keyword rules.
+  </Step>
+  <Step title="An AI agent">
+    Answers anything the rules above did not. Its name, model and per-conversation reply
+    limit are shown on this page when one covers Instagram.
+  </Step>
+</Steps>
+
+<Note>
+[Flows](/flows/overview) are WhatsApp-only. A flow can send lists, templates and catalogue
+products, none of which exist on Instagram, so the flow engine is not offered on this
+channel. Automations are the channel-agnostic engine and do run here.
+</Note>
+
+## Which agent answers
+
+A workspace can run several agents. An Instagram DM reaches the first **active** agent
+whose channels include Instagram — or whose channel list is **empty**, which means every
+channel. Agents are consulted in their priority order, and there is no fallback beyond
+that: an agent scoped only to WhatsApp will not answer an Instagram thread just because it
+is the only agent you have.
+
+Once an agent has replied in a conversation it stays with that thread, so reordering your
+agents does not change who the customer is talking to mid-sentence. Full detail on
+[Routing](/ai-agents/routing).
+
+This page names the agent that would answer, its model, and how many times it will reply
+in one conversation. If that agent covers Instagram but auto-reply is off, it says so —
+the agent then drafts replies for a human to send rather than answering by itself. See
+[Test mode and playground](/ai-agents/testing).
+
+## How agents behave differently on Instagram
+
+Each of these produces a "why didn't the bot reply?" question if you do not know it up
+front, so the page states them plainly.
+
+**Nothing replies outside the 24-hour window.** An agent can only answer within 24 hours of
+the customer's last message. Unlike WhatsApp there is no template to re-open a closed
+thread, so a rule that fires late simply cannot send.
+
+**Replies you send from the Instagram app do not trigger agents.** They appear in the
+Inbox so the history is complete, but the engines ignore them deliberately — otherwise the
+assistant would answer your own messages.
+
+**Template and catalogue steps are skipped.** Instagram supports neither. A shared
+automation containing one still runs; that step is refused with a logged reason rather than
+sending something unintended. See
+[Channels and the 24-hour window](/automations/channels-and-window).
+
+**List messages are not supported.** Use a buttons step instead — Instagram allows up to 13
+quick replies.
+
+## Turning it off
+
+Auto-reply, test mode and the per-conversation reply cap are all agent settings, under
+[AI agents](/ai-agents/overview). If a bot is silent and you cannot see why, the readiness
+checklist on the agent is the place to look — it mirrors the same gates in the same order.
+See [Why is my agent silent?](/ai-agents/readiness).

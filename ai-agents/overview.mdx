@@ -1,0 +1,95 @@
+---
+title: "AI agents"
+description: "What an agent does, how several of them share one workspace, and the limits it works inside."
+icon: "robot"
+---
+
+An AI agent reads a conversation and writes the next reply for a customer — on WhatsApp, on Instagram DMs and in the website chat. It answers from what you tell it about your business and from your own documents, and it steps aside when the question is not one it should answer.
+
+Agents are for every kind of business here, not only shops. A brand-new agent needs no store, no payment gateway and no Google account: only **FAQ & support** and **Human handoff** are switched on to begin with, and neither of them calls anything. Every skill that depends on an integration stays off until you turn it on.
+
+## Where agents live
+
+**AI Agents & Bots** in the sidebar lists every agent in the workspace. Opening one takes you to its studio, which has six tabs and a **Test agent** drawer reachable from all of them.
+
+| Tab | What you set there |
+| --- | --- |
+| Persona | The agent's name, what the business does, its ground rules and its voice |
+| Knowledge | Which of the workspace's documents this agent may read |
+| Skills | The jobs it is allowed to do, and the settings each job needs |
+| Actions | Which of your own API actions it may call |
+| Behaviour | When it replies, how often, and what it does when it cannot help |
+| Routing | Whether it is on, which channels it covers, and which model it runs |
+
+## Several agents, one list
+
+A workspace can run more than one agent — support on Instagram, sales on WhatsApp, a bookings agent above both. **The order of the list is the routing order**: an inbound message goes to the first agent on the list whose channels cover it. Move an agent with the up and down arrows on its row. See [Routing](/ai-agents/routing).
+
+How many you may have is a plan limit: **Starter 1**, **Growth 5**, **Enterprise unlimited**. A paused agent still occupies a slot. The meter under the page title says where you are.
+
+## Three ways to run one
+
+<CardGroup cols={3}>
+  <Card title="Drafts only" icon="pen-to-square">
+    The agent writes nothing by itself. Your team presses the sparkle button in the inbox composer and reads the suggestion before sending it.
+  </Card>
+  <Card title="Test mode" icon="flask">
+    It answers automatically, but only up to three phone numbers you nominate. Everyone else is left for a person.
+  </Card>
+  <Card title="Live" icon="bolt">
+    It answers inbound messages automatically on the channels you gave it, and hands over when it should.
+  </Card>
+</CardGroup>
+
+The pill on the agent's row says which of these it is doing:
+
+| Pill | Meaning |
+| --- | --- |
+| **Off** | The agent is switched off. It neither drafts nor replies. |
+| **Drafts only** | Switched on, but **Answer inbound messages automatically** is off. |
+| **Test mode** | Answering automatically, but only your test numbers. |
+| **Live** | Answering inbound messages automatically. |
+
+## What belongs to the workspace, and what to the agent
+
+| Shared by every agent | Set on each agent |
+| --- | --- |
+| The provider key or the built-in AI credits | Persona, ground rules and voice |
+| The knowledge library and its indexing | Which documents and actions this agent uses |
+| Custom API actions | Skills and their settings |
+| The credit wallet and its balance | Channels, position in the list, test mode |
+
+The provider is never per-agent: there is one key for the workspace and it belongs to one provider. An agent can choose a **model**, and only while the workspace runs on its own key. See [Credits and your own key](/ai-agents/credits-and-byok).
+
+## What it will not do
+
+- It never claims to be a human being.
+- It is told to answer from your business description and your knowledge base, and to say it will check rather than invent a price, a delivery date or an order number.
+- It can send one of your approved WhatsApp templates only if you have listed that template yourself. An empty list means none.
+- One message gets one reply. If an automation already answers a message, the agent stays quiet on it.
+- Each conversation has a cap on automatic replies — three by default — after which the thread waits for a person.
+
+When an agent is quieter than you expect, the studio's readiness checklist names the reason. See [Why is my agent silent?](/ai-agents/readiness).
+
+## Where to go next
+
+<CardGroup cols={2}>
+  <Card title="Create an agent" icon="plus" href="/ai-agents/create">
+    Start blank or from a role, and what happens to the plan limit.
+  </Card>
+  <Card title="Persona, voice and behaviour" icon="user-pen" href="/ai-agents/persona-and-behaviour">
+    Identity, ground rules, escalation and how replies are formatted per channel.
+  </Card>
+  <Card title="Knowledge" icon="book-open" href="/ai-agents/knowledge">
+    Upload, crawl or paste the material it answers from.
+  </Card>
+  <Card title="Skills" icon="bolt" href="/ai-agents/skills">
+    The full catalogue: what each skill unlocks and what it needs.
+  </Card>
+  <Card title="Custom API actions" icon="plug" href="/ai-agents/custom-actions">
+    Let the agent call your own endpoints.
+  </Card>
+  <Card title="Test mode and the playground" icon="flask" href="/ai-agents/testing">
+    Try it safely before a customer sees it.
+  </Card>
+</CardGroup>

@@ -1,0 +1,324 @@
+---
+title: "Webhooks"
+description: "Register an https endpoint and Watx posts a signed JSON event to it when a message arrives, a status changes, a conversation opens or a contact is created."
+icon: "bell"
+---
+
+Instead of polling, register an endpoint and Watx will `POST` to it when
+something happens in your workspace. Every delivery is signed, retried on
+failure, and identified so you can deduplicate.
+
+## Events
+
+| Event | Fires when |
+| --- | --- |
+| `message.received` | A customer sends you a message, on any channel. |
+| `message.status_updated` | A message you sent changed delivery status. |
+| `conversation.created` | A new conversation is opened for a contact. |
+| `contact.created` | A contact is created, however it was created. |
+
+These four are the whole list. An endpoint must subscribe to at least one, and
+an unknown event name is refused when you register.
+
+## The delivery
+
+Each delivery is a `POST` with this envelope:
+
+```json
+{
+  "id": "8f3c1e2a-4b5c-4d6e-8f90-1a2b3c4d5e6f",
+  "event": "message.received",
+  "occurred_at": "2026-09-14T09:58:31.000Z",
+  "account_id": "6f5a0d6e-1d1a-4a1e-9f2f-2c9a1b7b5f10",
+  "data": { }
+}
+```
+
+- `id` identifies the **event**, not the attempt. A retry carries the same `id`,
+  so deduplicate on it.
+- `occurred_at` is when the thing happened, not when we last tried to tell you.
+- `account_id` is the workspace. It is the same for every delivery to a given
+  endpoint.
+
+Three headers ride along:
+
+| Header | Value |
+| --- | --- |
+| `X-Watx-Event` | The event name, matching `event` in the body. |
+| `X-Watx-Webhook-Id` | The id of the endpoint being delivered to. |
+| `X-Watx-Signature` | `t=<unix seconds>,v1=<hex>` — see below. |
+
+<Note>
+The same three values are also sent as `X-Converse360-Event`,
+`X-Converse360-Webhook-Id` and `X-Converse360-Signature`. They are the retired
+names, kept so receivers written before the rename keep working. Read either
+pair, not both; new receivers should read `X-Watx-*`.
+</Note>
+
+### `data` per event
+
+<CodeGroup>
+```json message.received (WhatsApp)
+{
+  "conversation_id": "3c5b1e77-90aa-4c0e-8f71-1d2a3b4c5d6e",
+  "contact_id": "7e2d9c01-55b4-4a3d-9c8e-0f1a2b3c4d5e",
+  "whatsapp_message_id": "wamid.HBgMOTE5ODc2NTQzMjEwFQIAERgS",
+  "content_type": "text",
+  "text": "Has it shipped yet?"
+}
+```
+
+```json message.received (Instagram)
+{
+  "channel": "instagram",
+  "conversation_id": "3c5b1e77-90aa-4c0e-8f71-1d2a3b4c5d6e",
+  "contact_id": "7e2d9c01-55b4-4a3d-9c8e-0f1a2b3c4d5e",
+  "instagram_message_id": "aWdfZG1fMTpc",
+  "content_type": "text",
+  "text": "Is this still available?"
+}
+```
+
+```json message.received (Website)
+{
+  "channel": "web",
+  "conversation_id": "3c5b1e77-90aa-4c0e-8f71-1d2a3b4c5d6e",
+  "contact_id": "7e2d9c01-55b4-4a3d-9c8e-0f1a2b3c4d5e",
+  "message_id": "1f2e3d4c-5b6a-4978-8695-a4b3c2d1e0f9",
+  "content_type": "text",
+  "text": "Do you deliver to Coimbatore?"
+}
+```
+
+```json message.status_updated
+{
+  "whatsapp_message_id": "wamid.HBgMOTE5ODc2NTQzMjEwFQIAERgS",
+  "conversation_id": "3c5b1e77-90aa-4c0e-8f71-1d2a3b4c5d6e",
+  "status": "delivered"
+}
+```
+
+```json conversation.created
+{
+  "conversation_id": "3c5b1e77-90aa-4c0e-8f71-1d2a3b4c5d6e",
+  "contact_id": "7e2d9c01-55b4-4a3d-9c8e-0f1a2b3c4d5e"
+}
+```
+
+```json contact.created
+{
+  "contact_id": "7e2d9c01-55b4-4a3d-9c8e-0f1a2b3c4d5e",
+  "phone": "+919876543210",
+  "name": "Priya Nair"
+}
+```
+</CodeGroup>
+
+`message.received` carries `channel` on Instagram and website events and omits
+it on WhatsApp, where the platform message id is `whatsapp_message_id`. A
+contact created from an Instagram thread has `phone: null` and carries
+`instagram_username` instead. Treat `data` as an open object: read the keys you
+need and ignore the rest.
+
+`message.status_updated` reports WhatsApp delivery only — Instagram has no
+delivery receipt. The same status can arrive more than once and statuses can
+arrive out of order, because that is how the platform reports them.
+
+## Register an endpoint
+
+All five management calls need the `webhooks:manage` scope.
+
+```bash
+curl -X POST https://api.watx.in/v1/webhooks \
+  -H "Authorization: Bearer $WATX_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+        "url": "https://example.com/hooks/watx",
+        "events": ["message.received", "message.status_updated"]
+      }'
+```
+
+```json
+{
+  "data": {
+    "id": "5b6c7d8e-9f01-4a2b-8c3d-4e5f6a7b8c9d",
+    "url": "https://example.com/hooks/watx",
+    "events": ["message.received", "message.status_updated"],
+    "is_active": true,
+    "last_delivery_at": null,
+    "failure_count": 0,
+    "created_at": "2026-09-15T06:41:02.000Z",
+    "provider": "api",
+    "secret": "whsec_Zm9vYmFyYmF6cXV4MTIzNDU2Nzg5MGFiY2RlZmdoaWo"
+  }
+}
+```
+
+<Warning>
+`secret` is returned **once**, when the endpoint is created. It always starts
+with `whsec_`. Watx keeps only an encrypted copy and no other endpoint returns
+it. Store it with your other credentials; if you lose it, delete the endpoint
+and register a new one.
+</Warning>
+
+The `url` must be `https://` and must resolve to a public address. Loopback,
+private network and link-local targets are refused — at registration and again
+on every delivery attempt, because DNS can change underneath us.
+
+The rest of the management surface:
+
+- `GET /webhooks` — list every endpoint in the workspace. Never returns secrets.
+- `GET /webhooks/{id}` — read one.
+- `PATCH /webhooks/{id}` — change `url`, `events` or `is_active`.
+- `DELETE /webhooks/{id}` — remove one. Deliveries stop immediately.
+
+### Zapier and n8n are the same endpoints
+
+Connecting [Zapier](/integrations/zapier) or [n8n](/integrations/n8n) from the
+dashboard registers exactly this kind of endpoint, subscribed to the same four
+events and delivered the same way. Each row carries a read-only `provider` of
+`api`, `zapier` or `n8n`, saying which surface created it.
+
+`GET /webhooks` returns all of them, so you will see endpoints you did not
+create through the API — and deleting one here disconnects that integration.
+`provider` has no effect on delivery; it only decides which dashboard page
+manages the endpoint. The **Send test event** button lives on those pages and
+sends a `zapier.test` or `n8n.test` event; there is no test endpoint in the API.
+
+## Verify the signature
+
+```
+X-Watx-Signature: t=1789012345,v1=5f2b8c1d4e…
+```
+
+`v1` is `HMAC-SHA256(secret, "<t>.<raw request body>")`, hex-encoded. Compute it
+over the **raw bytes** of the request — a body that has been parsed and
+re-serialised will not match — compare in constant time, and reject a timestamp
+older than a few minutes so an old delivery cannot be replayed at you.
+
+<CodeGroup>
+```js Node.js
+import crypto from 'node:crypto';
+
+const TOLERANCE_SECONDS = 300;
+
+export function verifyWatxSignature(rawBody, header, secret) {
+  if (!header) return false;
+
+  const parts = Object.fromEntries(
+    header.split(',').map((kv) => {
+      const i = kv.indexOf('=');
+      return [kv.slice(0, i).trim(), kv.slice(i + 1)];
+    })
+  );
+
+  const t = Number(parts.t);
+  const v1 = typeof parts.v1 === 'string' ? parts.v1.trim().toLowerCase() : '';
+  if (!Number.isFinite(t) || !v1) return false;
+
+  const now = Math.floor(Date.now() / 1000);
+  if (Math.abs(now - t) > TOLERANCE_SECONDS) return false;
+
+  const expected = crypto
+    .createHmac('sha256', secret)
+    .update(`${t}.${rawBody}`)
+    .digest('hex');
+
+  if (expected.length !== v1.length) return false;
+  return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(v1));
+}
+
+// Express: keep the raw body.
+// app.post('/hooks/watx', express.raw({ type: 'application/json' }), (req, res) => {
+//   const ok = verifyWatxSignature(req.body.toString('utf8'), req.get('X-Watx-Signature'), process.env.WATX_WEBHOOK_SECRET);
+//   if (!ok) return res.sendStatus(400);
+//   const event = JSON.parse(req.body.toString('utf8'));
+//   res.sendStatus(200);           // answer fast, then do the work
+// });
+```
+
+```python Python
+import hashlib
+import hmac
+import time
+
+TOLERANCE_SECONDS = 300
+
+
+def verify_watx_signature(raw_body: bytes, header: str, secret: str) -> bool:
+    if not header:
+        return False
+
+    parts = {}
+    for piece in header.split(","):
+        key, _, value = piece.partition("=")
+        parts[key.strip()] = value
+
+    try:
+        t = int(parts["t"])
+        v1 = parts["v1"].strip().lower()
+    except (KeyError, ValueError):
+        return False
+
+    if not v1 or abs(int(time.time()) - t) > TOLERANCE_SECONDS:
+        return False
+
+    expected = hmac.new(
+        secret.encode("utf-8"),
+        f"{t}.".encode("utf-8") + raw_body,
+        hashlib.sha256,
+    ).hexdigest()
+
+    return hmac.compare_digest(expected, v1)
+
+
+# Flask: request.get_data() is the raw body.
+# ok = verify_watx_signature(
+#     request.get_data(),
+#     request.headers.get("X-Watx-Signature", ""),
+#     os.environ["WATX_WEBHOOK_SECRET"],
+# )
+```
+</CodeGroup>
+
+The timestamp is fresh on every attempt, so a delivery retried twenty minutes
+later still verifies — the `t` it carries is the time that attempt was made.
+
+## Delivery, retries and auto-disable
+
+- **Success is any 2xx.** Anything else is a failure. Answer quickly and do your
+  work afterwards: a delivery that takes longer than **5 seconds** is abandoned
+  and treated as a failure.
+- **Redirects are not followed.** A `301` or `302` counts as a failure, so
+  register the final URL.
+- **Retries.** A timeout, a connection error, a `5xx`, a `408` or a `429` is
+  retried — up to **5 attempts**, with exponential backoff starting at about 3
+  seconds. Every other `4xx` is treated as permanent and not retried: your
+  receiver has said the request is wrong, and it will be just as wrong later.
+- **One endpoint at a time.** Each endpoint gets its own delivery, so one
+  receiver being down does not delay or duplicate anyone else's.
+- **Auto-disable.** A failed *event* — after its retries are spent — counts once
+  against the endpoint. After **15 consecutive failures** the endpoint is set
+  `is_active: false` and deliveries stop. Any successful delivery resets the
+  count to zero.
+- **Re-enable with a PATCH.** `{"is_active": true}` turns the endpoint back on
+  and clears the failure counter at the same time.
+
+```bash
+curl -X PATCH https://api.watx.in/v1/webhooks/5b6c7d8e-9f01-4a2b-8c3d-4e5f6a7b8c9d \
+  -H "Authorization: Bearer $WATX_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{ "is_active": true }'
+```
+
+`failure_count` and `last_delivery_at` on each endpoint are how you check this
+from the outside: a climbing count with an old `last_delivery_at` means your
+receiver is refusing deliveries.
+
+<Warning>
+**Order is not guaranteed, and neither is exactly-once.** Deliveries can arrive
+out of order, and an event whose receipt we never saw can arrive twice. Make
+your handler idempotent on `id`, and treat the API's read endpoints as the
+source of truth when something must be certain — `GET /conversations/{id}/messages`
+for a thread, `GET /broadcasts/{id}` for a broadcast's counters.
+</Warning>

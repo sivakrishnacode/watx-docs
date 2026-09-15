@@ -1,0 +1,80 @@
+---
+title: "Zapier"
+description: "Trigger Zaps when contacts, conversations and messages arrive — paste a Catch Hook URL from Zapier and pick the events it should fire on."
+icon: "bolt"
+---
+
+Zapier connects by pointing a Zap's webhook URL at Watx. When one of the events below
+happens, Watx POSTs signed JSON to that URL and your Zap runs. There is no Zapier account to
+link and no API key to paste.
+
+One connection is one Zap. Add as many as you like; each subscribes to its own events.
+
+## Connect a Zap
+
+<Steps>
+  <Step title="Create a Zap">
+    In Zapier, start a Zap with the **Webhooks by Zapier** trigger, choose **Catch Hook**,
+    and copy the custom webhook URL it gives you.
+  </Step>
+  <Step title="Paste it into Watx">
+    **Integrations → Zapier → Connect**, paste the URL, and tick which events should trigger
+    it. The URL must be `https://`.
+  </Step>
+  <Step title="Test and turn it on">
+    Press **Send test** on the new connection, confirm Zapier picked it up in your Zap
+    history, then publish your Zap.
+  </Step>
+</Steps>
+
+## The events
+
+| Event | Fires when |
+| --- | --- |
+| `message.received` | An inbound message was received from a contact |
+| `message.status_updated` | A message you sent changed delivery status (sent, delivered, read, failed) |
+| `conversation.created` | A new conversation was opened |
+| `contact.created` | A new contact was added to the CRM |
+
+Pick at least one. You can change the selection later from the connection's card.
+
+## The signing secret
+
+A **signing secret** is shown once, immediately after you connect. It is optional for
+Zapier: the Catch Hook trigger accepts the request either way. Use it if you want a
+**Code by Zapier** step to verify the `X-Watx-Signature` header before acting on the
+payload.
+
+The full payload shape and the verification recipe are on [Webhooks](/api/webhooks).
+
+## Managing a connection
+
+Each connected Zap is a card showing its URL, the events it subscribes to, whether it is
+**Active** or **Paused**, and when it last received a delivery.
+
+| Control | What it does |
+| --- | --- |
+| The switch | Pauses or re-enables the connection. Re-enabling clears the failure count |
+| **Send test** | Fires a real delivery now and reports what came back. The event is named `zapier.test` |
+| The bin | Disconnects it. It stops receiving events immediately |
+
+<Note>
+  The test event is `zapier.test`, and it stays that way — Zaps filtering on that name are
+  already live.
+</Note>
+
+## Delivery, retries and failures
+
+A delivery is attempted up to five times with an increasing gap. When every attempt for one
+event fails, the connection counts one **consecutive delivery failure**; the card shows the
+running count with a hint to check that the Zap is still published and its Catch Hook URL has
+not changed. After 15 consecutive failures the connection is switched off automatically, so a
+dead endpoint is not retried for ever.
+
+A successful delivery resets the count to zero.
+
+## Zapier in the other direction
+
+This page is about Watx telling Zapier something happened. To have an **automation** call a
+Zap mid-sequence — with the contact and the message in hand — use the Zapier preset in
+[Other services](/integrations/other-services) instead.

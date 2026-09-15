@@ -1,0 +1,113 @@
+---
+title: "Connect your number"
+description: "Run Meta's Embedded Signup from inside Watx, register your number, and confirm that messages are actually arriving."
+sidebarTitle: "Connect your number"
+icon: "plug"
+---
+
+Connecting WhatsApp is done once, by an administrator of your business's Facebook account. Most of it happens inside Meta's own wizard; Watx opens it, stores the result and then tells you whether the number is live.
+
+## Before you start
+
+- **A Facebook account that administers your business.** Sign in with the profile you already use to manage WhatsApp, not a personal one you keep separate.
+- **A phone number for customers to message**, on which you can receive an SMS or a call to verify it. You can either add a new number, or connect the number already running on your WhatsApp Business app — that route keeps the number and can import up to six months of chat history.
+- **A payment method on your WhatsApp Business Account.** Meta charges you for conversations directly. Watx does not resell or meter them.
+
+<Note>
+  A phone number can be connected to one Watx workspace at a time. If the number is already linked to another workspace, the connect is refused with a message saying so.
+</Note>
+
+## Connect
+
+<Steps>
+  <Step title="Open the channel settings">
+    In the sidebar, open **WhatsApp → Channel Settings**. If nothing is connected yet you get a seven-step preview of Meta's wizard, with **Continue with Facebook** underneath.
+
+    The same checklist is on **Onboarding**, which shows one card per channel and whether it is connected.
+  </Step>
+
+  <Step title="Press Continue with Facebook">
+    A Facebook popup opens. Sign in with the admin account of your Meta business and grant the permissions it asks for.
+  </Step>
+
+  <Step title="Fill in your business information">
+    Select an existing **business portfolio** or create one, then add your business name, website and country. Customers do not see any of this on WhatsApp.
+  </Step>
+
+  <Step title="Choose how to connect">
+    Either connect your existing WhatsApp Business app — keeping your current number and chat history — or start fresh with a new phone number.
+  </Step>
+
+  <Step title="Add your business phone number">
+    Enter the number customers will message and verify it by SMS or call inside the popup. If you are migrating, it must match the number on your WhatsApp Business app account.
+  </Step>
+
+  <Step title="Confirm the WhatsApp Business Account">
+    Review the account name that will be shared and set its time zone.
+  </Step>
+
+  <Step title="Share chat history, if you are migrating">
+    Open your WhatsApp Business app, find the message from the official Facebook Business account and tap **Scan QR code** to import contacts and up to six months of history.
+
+    <Warning>
+      Whether you share existing chats cannot be changed later.
+    </Warning>
+  </Step>
+
+  <Step title="Let Watx finish">
+    When the popup reports success, Watx exchanges the authorisation code for an access token, registers the number for the Cloud API, subscribes to your WhatsApp Business Account so Meta delivers incoming messages, and stores the credentials encrypted. Nothing is stored before Meta has verified the number.
+  </Step>
+</Steps>
+
+## What "connected" means
+
+Once the connection is healthy, the settings page replaces the wizard with a single card showing:
+
+| Row | What it tells you |
+| --- | --- |
+| Heading | The **verified name** Meta holds for the number, and the display number it sends from |
+| **Quality rating** | Meta's grade for the number — see [Messaging limits and quality](/whatsapp/limits-and-quality) |
+| **Receiving events** | Since when Meta has been delivering incoming messages to Watx |
+| **Mode** | Shown only for a coexistence connection: the number stays on the WhatsApp Business app |
+| **Access token** | An expiry date, when Meta gave one |
+| **Phone number ID** and **WhatsApp Business Account ID** | Meta's identifiers for the connection |
+
+Two separate facts sit behind that card, and they are worth keeping apart:
+
+- **Credentials valid** — your access token authenticates with Meta, so sending works.
+- **Registered** — Meta is delivering incoming messages to Watx.
+
+A valid token with no registration is the failure that looks like success: you can send, and nothing ever arrives. When those two disagree, Watx splits them back into separate banners rather than showing one green box.
+
+**Verify with Meta** re-runs the check on demand and lists what it found — whether the phone metadata reads back, whether your WhatsApp Business Account has a subscribed app, and whether Meta itself considers the number registered.
+
+## Coexistence — keeping the WhatsApp Business app
+
+If you chose to connect an existing WhatsApp Business app rather than migrate away from it, Watx records the connection as **coexistence** and deliberately skips the registration call: Meta forbids re-registering a number the app still owns. The connected card says so under **Mode**.
+
+## After connecting
+
+1. **Add a payment method** to your WhatsApp Business Account in Meta Business Settings, if you have not already. Without it, incoming messages work but anything your business starts will fail.
+2. **Create or sync your templates** — see [Message templates](/whatsapp/templates). If you already had templates approved elsewhere, **Sync from Meta** pulls them in.
+3. **Send a first message** from the [inbox](/inbox/sending), or follow the [Quickstart](/getting-started/quickstart).
+
+## Reconnecting or changing the number
+
+**Connect a different number** at the bottom of the connected card runs the signup again and replaces the credentials stored for this workspace. It is also how you refresh an access token that is about to expire — Watx warns you when the expiry is within seven days, because messages stop sending once it lapses.
+
+**Reset Configuration** deletes the credentials stored for this workspace so you can enter them again. Your conversations, contacts and templates are untouched, and nothing changes at Meta — but sending stops until you reconnect.
+
+## Entering credentials by hand
+
+Most businesses never need this. If your deployment cannot offer Embedded Signup, if this workspace was connected manually before, or if you are connecting Meta's test number, the settings page offers a **Manual setup** tab instead.
+
+<Accordion title="What manual setup asks for">
+  - **Phone Number ID** and **WhatsApp Business Account ID** — from WhatsApp → API Setup in the Meta App Dashboard.
+  - **Permanent Access Token** — generated from Business Settings → System Users. Stored encrypted; the field shows dots once saved and has to be re-entered to change it.
+  - **Two-step verification PIN** (optional) — the 6-digit PIN from Meta Business Manager → WhatsApp Accounts → Phone Numbers → Two-step verification. It is needed only to wire **incoming** messages for a production number. Meta test numbers have no PIN and are pre-registered; leaving it blank also leaves an existing registration untouched.
+  - **Webhook Callback URL** (read-only, with a copy button) and a **Webhook Verify Token** you invent — both are pasted into WhatsApp → Configuration in the Meta App Dashboard, where you also subscribe to the `messages` field.
+
+  A sidebar on the same screen walks through creating the Meta app, adding the WhatsApp product, copying the credentials and configuring the webhook.
+</Accordion>
+
+More detail on everything the settings screen shows: [Channel settings](/whatsapp/settings).

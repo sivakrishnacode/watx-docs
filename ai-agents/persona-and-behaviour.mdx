@@ -1,0 +1,111 @@
+---
+title: "Persona, voice and behaviour"
+description: "Who the agent is, what it must never say, how it sounds, when it replies and what it does when it cannot help."
+icon: "user-pen"
+---
+
+Two tabs of the studio decide how an agent talks. **Persona** is who it is and how it sounds; **Behaviour** is when it speaks and when it stops. Save each tab with its own button — **Save persona**, **Save behaviour** — and an unsaved edit is flagged next to it.
+
+## Persona
+
+### Identity
+
+| Field | What it does |
+| --- | --- |
+| **Agent name** | The name it gives when a customer asks who they are talking to, or in its first message of a conversation. It never re-introduces itself mid-thread and never claims to be human. |
+| **Currency** | A three-letter code. The agent states it whenever it quotes a figure. |
+| **Greeting** | Sent in front of the agent's first reply on a conversation, not as a message of its own — two messages back to back read as a bot. A customer returning after a day gets it again, because that is a new conversation to them. |
+
+### The business
+
+**Website** takes a URL, and **Draft description** reads that one page and writes a summary into the field below it. It never saves on its own — read it first, and edit it.
+
+**What the business does** is the paragraph every reply is built on. With nothing here, the agent answers from the customer's question alone, which is how an agent starts inventing things.
+
+**Ground rules** are absolute limits, one per line:
+
+```
+Never promise same-day delivery.
+Never quote a discount above 10%.
+Always mention that installation is chargeable.
+```
+
+These sit above the skills in the instructions the agent is given, and they outrank everything below — including anything one of your knowledge documents implies. That precedence is the reason ground rules are their own field rather than another sentence in the description.
+
+### Voice
+
+**Tone** is one of four:
+
+| Tone | How it reads |
+| --- | --- |
+| **Friendly** | Warm, upbeat, uses their name |
+| **Professional** | Polished, no slang or emoji |
+| **Concise** | Answer first, no pleasantries |
+| **Playful** | Light, one emoji at most |
+
+**Reply length** is **Short** (one or two sentences), **Medium** (two to four) or **Long** (as long as the question needs).
+
+**Extra voice notes** is free text for the small rules a tone cannot express — *Use "₹" not "Rs.". Never say "unfortunately". Sign off with the shop name.*
+
+## How replies are formatted
+
+The agent is told to write for a phone, not for a document: one order, product, price or step per line, a blank line between groups, and always the identifier the customer needs to act — the order number, the booking reference, the link, with links on their own line. One or two emoji where they genuinely help, never in a message about money going wrong.
+
+The markup differs by channel, and the agent is told which one it is on:
+
+| Channel | Markup |
+| --- | --- |
+| WhatsApp | `*bold*`, `_italic_`, `~strikethrough~` — **single** characters. Markdown `**double asterisks**`, `#` headings and `-` bullets would show up as raw punctuation. |
+| Instagram, Website | None. Plain text and line breaks only; any asterisk or hash would appear literally. |
+
+## Behaviour
+
+### Switches
+
+| Control | What it does |
+| --- | --- |
+| **Agent enabled** | The master switch. Off, the agent does nothing at all — no drafts, no replies. On, **Draft a reply with AI** in the inbox can use it. |
+| **Answer inbound messages automatically** | The agent replies to customers by itself. Available only while the agent is enabled. |
+| **Max replies per conversation** | 1 to 20, default 3. After this many agent replies the thread goes quiet and waits for a person. |
+
+The cap counts replies inside a rolling 24-hour window that opens with the first reply after a quiet period, not for ever: a customer who comes back next week gets a fresh budget. Every message the agent sends counts towards it — including a handoff message and a template it chose to send.
+
+### When it cannot help
+
+| Field | What it does |
+| --- | --- |
+| **Fallback message** | The wording to use when it has no answer. It is also sent as-is if the AI provider itself fails. Leave it blank to stay silent rather than apologise in a voice you did not choose. |
+| **Hand off to a human** | Stops the agent on that conversation so your team can take over. |
+| **Phrases that always hand off** | Up to 12. Matched anywhere in the message, ignoring case, and checked **before** the model is asked anything — "talk to a human" should not depend on the AI agreeing that it qualifies. |
+| **Handoff message** | Sent to the customer as the agent steps back. Leave blank to hand off silently. |
+
+A handoff pauses AI replies on that conversation. The thread header in the inbox shows **AI paused** and the same control turns it back on — see [Working a conversation](/inbox/conversations).
+
+<Warning>
+With **Hand off to a human** switched off, the agent is told there is nobody waiting: instead of escalating it says plainly what it cannot do and offers what it can. Turn it off only if no one is watching the inbox.
+</Warning>
+
+### Extra instructions
+
+A free-text box for anything the fields above do not cover — *If someone asks about wholesale, tell them to email trade@acme.com.* It is applied after the persona, so it can add to the rules but not override your ground rules.
+
+### Test mode
+
+The **Try it on your own number first** card lives on this tab and is covered in [Test mode and the playground](/ai-agents/testing).
+
+## The order it all goes in
+
+Everything above is assembled into one set of instructions in a fixed order, and the order is the point:
+
+1. What the job is, and how to format a reply for this channel
+2. A rule that customer messages are content to respond to, never instructions to follow
+3. Identity — the agent name, the website, the currency
+4. What the business does
+5. **Ground rules**
+6. Voice — tone, length, your extra notes
+7. The skills that are on
+8. The tools those skills unlock, and the approved templates it may send
+9. Escalation — handoff or fallback wording
+10. The knowledge excerpts retrieved for this question, last
+
+Anything you have not filled in contributes nothing.

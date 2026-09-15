@@ -1,0 +1,67 @@
+---
+title: "Intents"
+description: "Keyword rules that route an Instagram DM to the right response, which rules reach Instagram at all, and how comments are handled instead."
+icon: "heart"
+---
+
+**Channels → Instagram → Intents** lists the keyword rules that reach Instagram. An intent
+is "when someone says X, do Y" — reply with a link when somebody says *price*, tag them and
+open a deal when they say *demo*.
+
+## Intents are automations
+
+There is no second rules engine here. Every row on this page is an
+[automation](/automations/overview) with a **Keyword match** trigger, and creating or
+editing one happens in the automation editor. **New intent** takes you straight there.
+
+What this page adds is the framing: it shows only the keyword rules that can actually fire
+on Instagram, and tells you how many of your other keyword rules are scoped away from it.
+
+## Which rules appear here
+
+A rule is listed when its channel scope reaches Instagram. An automation scoped to no
+channel runs everywhere, so it is listed as **All channels**; one scoped to Instagram is
+listed as **Instagram only**; one scoped to another channel is not listed, but the page
+still counts it, so an empty list never reads as a bug.
+
+To bring a rule here that is scoped elsewhere, add Instagram to its channels in the
+automation editor. See
+[Channels and the 24-hour window](/automations/channels-and-window).
+
+## What a row shows
+
+| Column | Meaning |
+| --- | --- |
+| Name | Links to the automation editor |
+| **Active** / **Paused** | Whether the rule runs at all |
+| Channel scope | **All channels**, **Instagram only**, or the list it is scoped to |
+| Keywords | Every word the trigger matches |
+| Runs | How many times it has fired, and when it last did |
+
+A keyword rule with **no keywords configured** is flagged: it can never match, and without
+the warning the row looks perfectly healthy.
+
+## Acting on comments
+
+A **Keyword match** intent matches direct messages. To act on a comment, use one of these
+instead:
+
+| You want to | Use |
+| --- | --- |
+| Do something when a **known contact** comments on a post | An automation with the **Instagram comment** trigger |
+| Do something when **anyone** comments, including someone who has never messaged you | A [comment funnel](/instagram/comment-funnels) |
+| Do something when someone replies to a story | An automation with the **Instagram story reply** trigger |
+
+The distinction matters. The automations engine works on a contact, and a comment from a
+stranger produces no contact — so an automation cannot reach the exact audience the
+"comment a keyword, get a DM" pattern is aimed at. A comment funnel can, because it opens
+the DM with a private reply.
+
+When a comment funnel claims a comment, the Instagram comment trigger does not also fire on
+it, so a commenter who happens to be a contact gets one DM rather than two.
+
+## A first one
+
+The common starting point: reply with a link whenever somebody DMs *price*. Create an
+automation with a **Keyword match** trigger, add the words, and add a send-message step. For
+the full catalogue see [Triggers](/automations/triggers) and [Steps](/automations/steps).

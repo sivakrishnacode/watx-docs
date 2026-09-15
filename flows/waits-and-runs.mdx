@@ -1,0 +1,109 @@
+---
+title: "Waits, hand-offs and runs"
+description: "What happens between messages: parked runs, unmatched replies, timeouts, hand-offs, and the run history."
+sidebarTitle: "Waits and runs"
+icon: "hourglass"
+---
+
+A run is one customer's journey through one flow. This page covers what happens while it
+is waiting, how it ends, and where to look afterwards.
+
+## One active run per contact
+
+A contact can be in one flow at a time. Everything else follows from that:
+
+- **Connect flow** ends the current run before starting the target, rather than nesting.
+  An accidental loop between two flows therefore terminates.
+- A run that goes quiet is closed by a sweep, so it does not block that contact from
+  starting anything else. The default cutoff is **24 hours** without progress.
+- If somebody on your team replies to the contact by hand, the run is marked **paused by
+  agent** and stops advancing. A person owns the conversation now.
+
+## Waiting for a reply
+
+Every **Send buttons**, **Send list**, **Ask a question**, **Ask location**, **Ask for a
+file** and **Take a payment** node stops and waits. Whatever the customer sends next is
+matched against what that node is waiting for.
+
+When it does not match — they type a sentence instead of tapping a button, or send a
+photo when a document was asked for — the flow re-sends the same prompt. By default it
+does that **twice**, and then hands the conversation to a person.
+
+An unanswered run is not left open forever: once it has been silent past its cutoff, the
+sweep marks it **timed out**.
+
+## Waiting for a clock: the Wait node
+
+A **Wait** does not hold anything open. The run is **parked**: where to resume and when
+are recorded on the run itself, and a scheduled job wakes it. If that job is lost the
+periodic sweep picks up every run whose resume time has passed and continues it, so a
+parked customer is never stranded.
+
+- The delay is clamped to at least **1 minute** and at most **30 days**.
+- Everything the run captured is still there when it resumes.
+- The flow is re-read when it wakes, so a flow you edited during a two-day wait resumes
+  against what you have now.
+
+<Warning>
+  The [24-hour messaging window](/whatsapp/messaging-window) keeps running while a run is
+  parked. After a wait of a day or more, only a **Template** node will send unless the
+  customer has messaged again. The editor warns on the **Wait** node itself.
+</Warning>
+
+## Waiting for money: Take a payment
+
+**Take a payment** creates a [Razorpay payment link](/integrations/razorpay), sends it,
+and parks the run the same way a **Wait** does — pointed at the *If they don't, go to*
+path, with the link's expiry as the deadline.
+
+If the payment arrives first, it claims that parking and the run continues down *When
+they pay, go to* instead. Exactly one of the two wins, so a customer who pays in the last
+minute never gets both the receipt and "your link expired".
+
+If the link cannot be created at all — Razorpay is not connected, or the keys were
+revoked — there is nothing to wait for, so the run takes the *If they don't* path
+immediately rather than parking forever.
+
+## Ending a run
+
+| Ending | What it does |
+| --- | --- |
+| **End** node | The run is completed. |
+| **Handoff to agent** | The conversation is set to **pending**, optionally assigned to the member you chose, and your internal note is recorded on the run. |
+| **Hand to AI agent** | The conversation is pinned to that [AI agent](/ai-agents/overview) — or left to normal routing if you named none — and the run ends. |
+| **Connect flow** | The run ends and the target flow starts fresh. |
+| Timed out | The sweep closed it after the silence cutoff. |
+| Paused by agent | Somebody on your team replied by hand. |
+| Failed | A node could not run — an **API request** set to fail on error, a path pointing nowhere, a payment that could not be parked. |
+
+## The runs screen
+
+**Runs** in the editor toolbar opens the run history — the 50 most recent, newest first.
+The number beside the button is the flow's total run count.
+
+Each row shows the contact, the status, when it started, how long it ran, and the number
+of re-prompts if there were any. An active run also shows which node it is sitting on.
+
+| Status | Meaning |
+| --- | --- |
+| **Active** | Still going — waiting on a reply, or parked at a wait or a payment. |
+| **Completed** | Reached an **End** node. |
+| **Handed off** | Given to a person or to an AI agent. |
+| **Timed out** | Closed by the sweep after going quiet. |
+| **Paused by agent** | Somebody on your team replied. |
+| **Failed** | A node could not run. |
+
+Expanding a row shows two things:
+
+- **Captured vars** — everything the run stored, as JSON.
+- **The event timeline** — the engine's own log, with a timestamp, the event and the node
+  it happened on: `started`, `node_entered`, `message_sent`, `reply_received`,
+  `fallback_fired`, `handoff`, `timeout`, `error`, `completed`.
+
+This is the place to answer "why didn't my flow advance?".
+
+<Note>
+  The text of a customer's reply is **not** written to the event log — only its length,
+  and which button or row id was tapped. A prompt that asks for something sensitive would
+  otherwise leave the answer sitting in a log for anyone with access to it.
+</Note>

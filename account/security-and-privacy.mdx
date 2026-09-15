@@ -1,0 +1,126 @@
+---
+title: "Security and privacy"
+description: "How your login is protected, what other members of a workspace can see, how connected credentials are stored, and how data-deletion requests are handled."
+sidebarTitle: "Security and privacy"
+icon: "shield-halved"
+---
+
+What Watx does with your credentials, what your teammates can see, and where to
+go when someone asks for their data to be deleted.
+
+## Your login
+
+Sign-in is by email and password or Sign in with Google. A password must be at
+least 6 characters when you create it or reset it.
+
+### Changing your password
+
+**Settings → Login & security → Password.** You are asked for your **current
+password** as well as the new one, and the new password must be at least 8
+characters. If the current password is wrong, nothing is changed.
+
+If you have forgotten it, use **Forgot password?** on the sign-in screen
+instead — see [Signing in](/account/sign-in).
+
+### Signing out everywhere
+
+**Settings → Login & security → Active sessions → Sign out of all devices.**
+
+This revokes every session for your login, on every device, including the one
+you are using. Everyone who is signed in as you has to sign in again. Use it if
+a device is lost or a password has been shared.
+
+## What other members can see
+
+A workspace is shared. Every member of a workspace can read its contacts,
+conversations, messages, deals and templates — that is the point of a shared
+inbox. What changes between members is what they may **write**, which is decided
+by their role:
+
+| | Owner | Admin | Agent | Viewer |
+| --- | --- | --- | --- | --- |
+| Read contacts, conversations and messages | Yes | Yes | Yes | Yes |
+| Send messages, edit contacts and deals | Yes | Yes | Yes | No |
+| Manage members, settings and integrations | Yes | Yes | No | No |
+| See and change the plan | Yes | No | No | No |
+
+Workspaces are isolated from each other. A member of one workspace cannot read
+another's data, even when the same login belongs to both — what you see is
+always the workspace you have open. Full detail: [Members and
+roles](/settings/members-and-roles).
+
+## Credentials Watx stores for you
+
+Connecting a channel or an integration means Watx holds a credential on your
+behalf. All of them are **encrypted at rest** (AES-256-GCM), decrypted only at
+the moment they are used, and never returned in an API response or written to a
+log:
+
+- WhatsApp and Instagram access tokens from Meta
+- Shopify and WooCommerce store credentials
+- Your Razorpay key secret, if you collect payments from your own customers
+- The shared secret for the Google Apps Script bridge
+- An AI provider API key, if you bring your own
+- Headers on a custom AI action, which is why the interface shows header
+  **names** only
+- Signing secrets for outbound webhooks
+
+<Note>
+  Two kinds of credential are shown **once and never again**, because Watx
+  stores only a hash of them: **API keys** and **invite links**. There is no way
+  to reveal either a second time — revoke it and create a new one.
+</Note>
+
+### API keys
+
+An API key authenticates the public REST API on behalf of the whole workspace,
+so it is as powerful as the scopes granted to it. Grant only what an integration
+needs, name it after the integration, and revoke it the moment it is no longer
+in use. See [API keys](/settings/api-keys).
+
+### The Google Apps Script bridge
+
+The Google integration works the other way round from most: a small script runs
+in **your own** Google account and Watx calls it. Watx holds the deployment URL
+and a secret it minted for you. Because the deployment belongs to you, Watx
+cannot revoke it — you can, by deleting the deployment in Apps Script. See
+[Google](/integrations/google).
+
+## Data-deletion requests
+
+### From a customer who messaged you
+
+Conversations and contact records live in the workspace of the business the
+customer messaged. They belong to that business, so that business controls them:
+a member with the Agent role or above can delete a contact from [Contacts](/contacts/overview). If a customer
+writes to Watx instead, we point them at the business and help where we can.
+
+### Instagram
+
+Anyone can ask Meta to delete the data an app holds for them, or remove Watx
+from their Instagram settings. Meta then sends the request to Watx and links the
+person to a public status page on `app.watx.in` that confirms what was deleted.
+It needs no login, and it quotes the confirmation code Meta issued.
+
+When such a request arrives, the Instagram connection it relates to is deleted
+along with the access token stored for it — Watx can no longer read or send
+messages, or read comments, on that Instagram account.
+
+<Warning>
+  Conversations and contacts already saved in a business's workspace are **not**
+  removed by that request. They belong to the business, not to the connection.
+  To have those deleted, the customer contacts the business, or writes to
+  support and we help.
+</Warning>
+
+### Disconnecting an integration
+
+Disconnecting a store, a payment connection or the Google bridge from
+[Integrations](/integrations/overview) removes the stored credential and stops
+Watx acting on your behalf. Records already written into your workspace — orders,
+payments, conversations — stay, because they are your business records.
+
+## Reaching us
+
+Security questions, data-deletion help and anything you would rather not put in
+a support ticket: **[support@watx.in](mailto:support@watx.in)**.

@@ -1,0 +1,58 @@
+---
+title: "Routing"
+description: "Which agent answers a conversation: channels, the order of the list, stickiness, and what happens when nothing covers a channel."
+icon: "route"
+---
+
+When a message arrives, exactly one agent may answer it — or none. This page is how that is decided.
+
+## The rule
+
+<Steps>
+  <Step title="Has an agent already answered this conversation?">
+    The first AI reply on a thread latches that agent to it, and every later message goes to the same one. Without that, routing would be re-decided per message: reorder the list on a Tuesday afternoon and the customer gets a different name, a different tone and no memory of the promise made two messages ago.
+  </Step>
+  <Step title="Otherwise, the first agent on the list that covers the channel">
+    Only agents that are **switched on** are considered, in list order, top to bottom. The first whose channels include this conversation's channel answers.
+  </Step>
+  <Step title="Otherwise, nobody">
+    There is no fallback. An agent scoped to Instagram will not answer a WhatsApp thread just because it is the only one you have. The conversation is simply left for a person.
+  </Step>
+</Steps>
+
+If the latched agent has since been switched off or deleted, the thread is re-routed by the rule above rather than staying mute for ever.
+
+## Channels
+
+On the **Routing** tab, the **Channels** chips are **WhatsApp**, **Instagram** and **Web chat**. Each is a toggle and saves immediately.
+
+**Selecting none means every channel.** That is the usual answer with one agent, and it is what an agent carries by default. Selecting some means only those: conversations on the others are left for another agent, or for a human.
+
+## The order of the list
+
+The list on **AI Agents & Bots** *is* the routing order, which is why it is a list rather than a grid. Each row has up and down arrows and its position number. If two agents both cover WhatsApp, the one higher up answers.
+
+A sensible arrangement for a workspace with several:
+
+1. The narrow, specific agent — bookings, or an Instagram-only DM agent
+2. The general one, covering every channel, catching whatever falls through
+
+## Name and model
+
+**Name in your list** is internal. Customers never see it — that is the **Agent name** on the [Persona tab](/ai-agents/persona-and-behaviour).
+
+**Model** is editable only while the workspace runs on its own provider key. Leave it empty to follow the workspace default. On built-in AI credits the field reads *Built-in AI (chosen for you)* and is disabled: one shared key serves every workspace, so it runs on a tier that stays fast for everyone. The provider itself is never per-agent — there is one key for the workspace and it belongs to one provider. See [Credits and your own key](/ai-agents/credits-and-byok).
+
+## Overriding routing on one conversation
+
+The thread header in the inbox has an owner control listing **AI agents** and then **Teammates**. Picking an agent hands that thread to it, clears any human owner and resumes AI replies there. Picking a teammate gives the thread to a person, which silences the agent on it — see [Working a conversation](/inbox/conversations).
+
+Beside it, a bot button pauses and resumes AI replies for that one conversation. A handoff sets that pause automatically, and this is how you lift it.
+
+## When an agent will not be reached at all
+
+Routing is only the first of several gates. A message can reach the right agent and still get no reply — because a flow or an automation already answered it, because the thread is assigned to a person, because test mode excludes that number, or because the conversation's reply budget is used up. [Why is my agent silent?](/ai-agents/readiness) lists them in the order they are checked.
+
+<Note>
+Instagram DM agents are ordinary agents scoped to Instagram — the same engine, the same studio. The **Channels → Instagram → DM agents** screen shows which of them apply and in what order. See [DM agents](/instagram/dm-agents).
+</Note>

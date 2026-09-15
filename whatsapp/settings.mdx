@@ -1,0 +1,53 @@
+---
+title: "Channel settings"
+description: "The WhatsApp connection screen: status banners, the connected card, diagnostics, reconnecting and resetting."
+sidebarTitle: "Channel settings"
+icon: "gear"
+---
+
+**WhatsApp → Channel Settings** is the one place the connection to Meta is set up, checked and repaired. It is the same screen the Settings rail links to, so there is only ever one copy of it.
+
+If nothing is connected yet, start at [Connect your number](/whatsapp/connect).
+
+## Status banners
+
+The page opens with whatever is currently true. When everything is healthy the banners collapse into the connected card, so a working setup shows one statement instead of several.
+
+| Banner | What it means | What to do |
+| --- | --- | --- |
+| **Credentials valid** | The access token authenticates with Meta. It says nothing about whether messages arrive. | Check the registration banner below it. |
+| **Not Connected** | No credentials, or Meta rejected them. | Connect, or reconnect. |
+| **Registered — Meta will deliver events to Watx** | Incoming messages are wired up, with the date it started. | Nothing. Use **Verify with Meta** if messages stop arriving. |
+| **Not registered — Meta will not deliver events** | You can send, but nothing will come in. | If a registration attempt failed, its error is quoted; enter or correct the two-step PIN and save. |
+| **Sending is blocked by Meta** | Meta reports a restriction on the number, with its own description and suggested fix. | Fix it in WhatsApp Manager — Meta owns billing and account standing, so nothing on this page changes it. The most common cause is no valid payment method. |
+| **Access token expires soon** | The stored token lapses within seven days. | Reconnect with Facebook to refresh it before messages stop sending. |
+| **Stored token can't be decrypted** | The credentials cannot be read back. | **Reset Configuration**, then connect again. |
+
+<Note>
+  A restriction banner is about sending, not about the connection. A number can be perfectly connected and registered and still refuse every send — which is why Watx shows Meta's own wording for the blocker rather than the generic error the send API returns.
+</Note>
+
+## The connected card
+
+Once the token authenticates **and** Meta is delivering events, the setup walkthrough is replaced by a card showing the verified name, the display number, the quality rating, since when events have been arriving, the access-token expiry (when Meta gave one), the phone number ID and the WhatsApp Business Account ID. A coexistence connection also shows **Mode**.
+
+## Actions
+
+- **Verify with Meta** — re-runs the live check and lists each result: whether the configuration exists, whether the stored token can be decrypted, whether the phone metadata reads back, whether your WhatsApp Business Account has a subscribed app, and whether Meta itself considers the number registered. Any errors are listed underneath in Meta's words. If the check finds the number live, Watx repairs its own record so the warning that sent you here stops appearing.
+- **Test API Connection** — a one-press check that the saved credentials still work.
+- **Connect a different number** — runs Embedded Signup again and replaces this workspace's credentials. Also how you refresh an expiring token.
+- **Reset Configuration** — deletes the stored credentials after a confirmation. Conversations, contacts and templates are untouched and nothing changes at Meta, but sending stops until you reconnect.
+- **Save Configuration** — only on the manual tab; saves the credentials you typed and, when a PIN is supplied, retries registration.
+
+## What is configured elsewhere
+
+| Setting | Where it lives |
+| --- | --- |
+| **Meta Catalog ID** — required before product messages will send | [Catalog and orders](/whatsapp/catalog-and-orders), on the Catalogue tab |
+| Message templates | [Templates](/whatsapp/templates) |
+| Messaging tier and quality rating | Shown on [Analytics](/whatsapp/analytics); explained in [Messaging limits and quality](/whatsapp/limits-and-quality) |
+| Who may use the workspace at all | [Members and roles](/settings/members-and-roles) |
+
+## Credentials and safety
+
+The access token is encrypted before it is stored and is never shown again — the manual form displays dots and requires you to re-enter it to change it. Nothing on this page exposes the token to the browser, and no other workspace can read it.

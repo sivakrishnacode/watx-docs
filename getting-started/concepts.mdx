@@ -1,0 +1,170 @@
+---
+title: "Core concepts"
+description: "The vocabulary Watx uses — workspaces, members, contacts, conversations, channels, templates, and the difference between automations, flows and AI agents."
+icon: "book-open"
+---
+
+Everything in these docs is built out of a small number of ideas. This page
+defines them once so the rest can be brief.
+
+## Workspace
+
+A **workspace** is one business's tenant. Every contact, conversation, template,
+automation and connected integration belongs to exactly one workspace, and no
+workspace can see another's data.
+
+A single login can belong to several workspaces with a different role in each,
+and switches between them from the first row of the sidebar. See
+[Workspaces](/getting-started/workspaces).
+
+## Members and roles
+
+A **member** is a person in a workspace. There are four roles, from most to
+least privileged:
+
+| Role | In short |
+| --- | --- |
+| **Owner** | The one who pays. Everything an admin can do, plus billing and ownership. |
+| **Admin** | Runs the workspace: members, settings, integrations, agents. |
+| **Agent** | Works the product: inbox, contacts, deals, broadcasts, automations, flows. |
+| **Viewer** | Read-only across the app. |
+
+There is exactly one owner per workspace. Full capability table:
+[Members and roles](/settings/members-and-roles).
+
+<Note>
+  The role named **Agent** is a person. An **AI agent** is software. These docs
+  always spell out "the Agent role" when the human is meant.
+</Note>
+
+## Contact
+
+A **contact** is one person, held once no matter how many channels they use.
+Phone numbers are stored in canonical international form (`+919791766444`), so
+the same person who DMs you on Instagram and later messages your WhatsApp number
+is one record with one history.
+
+Contacts carry built-in fields (name, phone, company, address), any **custom
+fields** your workspace defines, **tags**, and membership of **segments**. See
+[Contacts](/contacts/overview).
+
+## Conversation
+
+A **conversation** is a thread between your workspace and one contact on one
+channel. It has a status — open or closed — an optional assignee, and it is what
+the Inbox shows. Messages belong to a conversation.
+
+A contact can therefore have more than one conversation: a WhatsApp thread and
+an Instagram thread are separate conversations against the same contact.
+
+## Channel
+
+A channel is where a conversation arrived. There are exactly three:
+`whatsapp`, `instagram` and `web`.
+
+They are not interchangeable, and the differences matter when you build
+anything:
+
+| | WhatsApp | Instagram | Website |
+| --- | --- | --- | --- |
+| Free-reply window after the customer's last message | 24 hours | 24 hours | No window |
+| Templates | Yes | No | No |
+| Broadcasts | Yes | No | No |
+| Reply buttons | Yes | Yes | Yes |
+| Interactive lists | Yes | No | Yes |
+| Product catalogue messages | Yes | No | No |
+| Delivery receipts | Yes | Read receipts only | Yes |
+| Flows (the Watx chatbot builder) | Yes | No | No |
+| Automations | Yes | Yes | Yes |
+
+Broadcasts need templates to be compliant, which is why only WhatsApp has them.
+A website visitor is only reachable while their tab is open, so there is no
+audience to bulk-send to at all.
+
+## Template and the 24-hour window
+
+A **template** is a message whose wording Meta has approved in advance. It is
+the only thing that will send on WhatsApp once the conversation's window has
+closed.
+
+The rule: once a customer messages your business, you have **24 hours** to reply
+with anything — text, media, interactive messages. After that, a free-form
+message is refused by Meta and only an approved template will go out. Watx
+applies the same rule everywhere it sends: the inbox composer, broadcasts,
+automations, flows, payment links and sales documents all check it before
+sending.
+
+Instagram has a 24-hour reply window too, and no template mechanism at all — so
+once it closes, the honest answer is to wait for the customer. The website
+widget has no window: Watx is the transport, so nobody imposes one.
+
+See [Message templates](/whatsapp/templates) and [The 24-hour
+window](/whatsapp/messaging-window).
+
+## Automations, flows and agents
+
+Three different things do work without a human typing. Choosing between them is
+the most common early question.
+
+<AccordionGroup>
+  <Accordion title="Automation — a trigger and a sequence of steps">
+    An **automation** fires on an event (a message arrives, a form is submitted,
+    an order is placed, a payment is received) and runs a sequence of steps. A
+    branching step owns a `yes` and a `no` sequence, so it is a tree rather than
+    a free graph.
+
+    Automations are **channel-agnostic**: one automation answers a WhatsApp
+    message and an Instagram DM without being written twice. Anything that must
+    work off WhatsApp belongs here.
+
+    See [Automations](/automations/overview).
+  </Accordion>
+
+  <Accordion title="Flow — a conversational graph, WhatsApp only">
+    A **flow** is a graph of typed nodes run against one conversation at a time:
+    ask a question, branch on the answer, send a list, collect a payment, hand
+    off to a human. It is the chatbot builder.
+
+    Flows are **WhatsApp only**, because they send lists, templates and
+    catalogue products — none of which exist on the other channels. One contact
+    can have only one active flow run at a time.
+
+    See [Flows](/flows/overview).
+  </Accordion>
+
+  <Accordion title="AI agent — a configured model that answers in its own words">
+    An **AI agent** reads the thread and writes a reply. You configure its
+    persona, voice, ground rules, the documents it may read and the skills it
+    may use; it is not a decision tree.
+
+    A workspace can run several agents and route between them by channel and
+    priority. An agent can draft replies for a human to send, or answer
+    automatically.
+
+    See [AI agents](/ai-agents/overview).
+  </Accordion>
+</AccordionGroup>
+
+<Tip>
+  A rough rule: **fixed wording on a fixed trigger** is an automation, **a
+  scripted conversation with choices** is a flow, and **an open question you
+  cannot enumerate** is an agent. They compose — a flow can hand off to an
+  agent, and an automation can start a flow.
+</Tip>
+
+## Segment and tag
+
+A **tag** is a fact about one person ("vip"). A **segment** is a named audience
+with a purpose ("March webinar attendees") — either an explicit list or a saved
+filter that recomputes itself. Broadcasts, automations and flows all take
+segments as audiences. See [Segments](/contacts/segments).
+
+## Plan and entitlement
+
+A workspace runs on one **plan**, which sets its limits: contacts, messages per
+month, broadcasts per month, flows, team members, storage and AI agents. Limits
+are checked before an action, not after.
+
+A workspace whose subscription has lapsed keeps all its data but stops being
+able to send and create. See [Plans and
+billing](/getting-started/plans-and-billing).

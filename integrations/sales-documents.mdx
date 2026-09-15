@@ -1,0 +1,178 @@
+---
+title: "Sales documents"
+description: "Issue invoices, GST bills, quotations, receipts and delivery challans to your own customers — no payment gateway and no store required."
+icon: "file-invoice"
+---
+
+**Sales documents** is the invoicing integration. It issues a document your business gives
+**its own customer**: an invoice, a GST bill, a quotation, a proforma invoice, a payment
+receipt, a delivery challan or a credit note — and sends the PDF on WhatsApp.
+
+<Note>
+  Not to be confused with **Settings → Plan & billing**, which is what you pay Watx.
+</Note>
+
+<Warning>
+  **Nothing here needs Razorpay, a store or any other integration.** The first use case is a
+  shop owner handing a bill to a walk-in who paid cash, and a clinic billing a
+  consultation. The only thing required is your company details.
+</Warning>
+
+## Switching it on
+
+The card on the Integrations page opens the console at **Integrations → Sales documents**,
+with four tabs — **Overview**, **Documents**, **Design** and **Settings** — and a switch in
+the header.
+
+The switch is **off** for a new workspace. Turning it on lets documents be raised here, by
+an automation and from a store order. Turning it off stops new ones being created; it does
+**not** strand anything already issued — the list, marking paid, sending and the public
+link all keep working.
+
+The status beside the console title mirrors what the service checks, in order:
+
+| Status | Meaning |
+| --- | --- |
+| **Off** | Nothing new will be issued |
+| **Needs company details** | On, but no legal name — every document would fail. Fix this first |
+| **On** / **On · GST** | Ready |
+
+The **Overview** tab is the same checklist in full: is it on, is there a legal name and
+address, GST mode or plain bills, what the next number looks like and how many the format
+allows, and whether a WhatsApp template is chosen.
+
+Switching it on or off and editing the company details are **owner and admin** work.
+
+## Company details
+
+**Settings** tab. These print at the top of every document, and a copy is **frozen onto
+each document as it is issued** — changing them later never rewrites what you have already
+sent.
+
+| Group | Fields |
+| --- | --- |
+| **Your business** | Legal name (required), address, address line 2, city, postal code, email, phone |
+| **GST** | GSTIN, and when it is set: default HSN/SAC code and default GST rate |
+| **Invoice numbers** | Prefix, digits, include the financial year, round the total to whole rupees |
+| **Sending on WhatsApp** | The template that carries the PDF — see [Creating and sending](/integrations/sales-documents-sending) |
+| **Payment details** | Account name, account number, IFSC, UPI ID |
+| **Wording** | Terms, notes, footer |
+
+Bank details print **only while something is still owed**. An account number on a settled
+receipt invites a second payment.
+
+## GST is a mode, not a requirement
+
+Leave the **GSTIN** blank if you are not registered — below the threshold, not Indian, or
+simply not filing. Your documents are then plain bills titled **INVOICE**, with no HSN
+column, no tax columns and no rate summary. That is the common case and it is meant to look
+finished, not stripped.
+
+Set a GSTIN and the same documents become **TAX INVOICE**s with tax columns, and your state
+is filled in for you.
+
+With GST on:
+
+- **Rates are per line**, not per document — one bill legitimately carries 18% on one row
+  and 12% on another.
+- **Which tax depends on where.** Your state and the place of supply the same → CGST and
+  SGST, half each. Different → IGST at the whole rate.
+- **A missing place of supply is refused**, not guessed. Guessing would charge a local
+  customer the wrong tax and file it against the wrong state, invisibly.
+- **Default HSN/SAC code** matters for automatic documents: Shopify sends no HSN code, so an
+  invoice raised from an order uses this. Without it, those documents have an empty HSN
+  column.
+- The GSTIN checksum is checked and **warns**; it never blocks you from saving.
+
+## The document types
+
+The type decides the title, the wording, which columns appear, and **which number series it
+draws from**.
+
+| Type | Prints as | Default prefix | Tax document | Shows a balance |
+| --- | --- | --- | --- | --- |
+| Tax invoice | TAX INVOICE | `INV` | Yes | Yes |
+| Invoice / Bill | INVOICE | `INV` | Yes | Yes |
+| Payment receipt | PAYMENT RECEIPT | `RCT` | No | No |
+| Quotation / Estimate | QUOTATION | `QT` | No | No |
+| Proforma invoice | PROFORMA INVOICE | `PI` | No | Yes |
+| Delivery challan | DELIVERY CHALLAN | `DC` | No | No |
+| Credit note | CREDIT NOTE | `CN` | Yes | No |
+
+Each type carries its own wording: "Quotation no." rather than "Invoice no.", "Valid until"
+rather than "Due", or no second date at all. Every non-tax type prints a line saying it is
+not a tax invoice — a quotation that looks like one is how a quotation gets filed as one.
+
+A delivery challan drops the tax columns entirely: it accompanies goods, not money. A
+receipt, quotation, challan and credit note drop the balance, the PAID stamp and the bank
+details.
+
+<Note>
+  A document typed as a tax invoice prints as a plain **INVOICE** when the workspace has no
+  GSTIN. Calling it a tax invoice while you are not registered would be a false statement on
+  a financial document. Nothing is ever promoted the other way.
+</Note>
+
+## Numbering
+
+A document number is a legal artefact: consecutive, unique within the financial year, and
+at most **16 characters**. `INV/2026-27/0042` is exactly 16, with nothing to spare.
+
+You control three things on the Settings tab:
+
+- **Prefix** — 1 to 8 letters or digits.
+- **Digits** — `0042` is four digits.
+- **Include the financial year** — `INV/2026-27/0042`. Required for GST; the numbering
+  restarts each April.
+
+The tab shows an example of your next number and how many documents the format allows —
+"Room for 9,999 invoices a year". A prefix that overflows 16 characters is reported when you
+save the format, not three months later when a number cannot be issued.
+
+The financial year runs 1 April to 31 March and is evaluated in the invoice's own time zone,
+so a bill raised at 6am on 1 April lands in the new year's series.
+
+**Each type keeps its own series.** Quote ten jobs and win two, and your tax invoice series
+still has no holes. The prefix you set applies to the invoice series; receipts, quotations,
+proformas, challans and credit notes use their own (`RCT`, `QT`, `PI`, `DC`, `CN`).
+
+Numbers are only consumed at the moment a document is issued — an abandoned draft burns
+none, and a failed creation returns the number it took.
+
+## Statuses, and correcting a mistake
+
+| Status | Meaning |
+| --- | --- |
+| **Draft** | Being built. No number yet, not public |
+| **Issued** | Numbered and final. Money owed |
+| **Part paid** | Some of the amount received |
+| **Paid** | Settled |
+| **Cancelled** | Withdrawn |
+
+<Warning>
+  **An issued document cannot be edited.** What may still change is its status, the payment
+  recorded against it, and whether it has been sent. A mistake is corrected the way GST
+  requires — cancel it and issue a fresh one — never by editing. This is what makes the PDF
+  safe to render on demand: re-opening an old document always reproduces exactly what the
+  customer was given.
+</Warning>
+
+## Where documents come from
+
+- **By hand** — the **Documents** tab. See
+  [Creating and sending](/integrations/sales-documents-sending).
+- **Automations** — the `send_invoice` [step](/automations/steps), from an order in context
+  or from one line of tokens.
+- **Store orders** — the **Send an invoice** recipe on a connected store's
+  [Messaging tab](/integrations/store-console).
+
+## Next
+
+<CardGroup cols={2}>
+  <Card title="Creating and sending" icon="paper-plane" href="/integrations/sales-documents-sending">
+    The four-step dialog, the customer picker, the preview, and how the PDF reaches WhatsApp.
+  </Card>
+  <Card title="Document design" icon="palette" href="/integrations/sales-documents-design">
+    Layouts, accent colour, density, paper size and the optional blocks.
+  </Card>
+</CardGroup>

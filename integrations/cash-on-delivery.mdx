@@ -1,0 +1,113 @@
+---
+title: "Cash on delivery confirmation"
+description: "Ask a cash-on-delivery customer to confirm on WhatsApp before you ship, tag or cancel the order at your store, and auto-cancel the ones nobody answers."
+sidebarTitle: "Cash on delivery"
+icon: "truck"
+---
+
+Cash-on-delivery orders are the ones most often returned undelivered, and most of those
+are orders the customer never meant to place. The **Cash on delivery** tab of a
+[store console](/integrations/store-console) sends one template with two buttons the
+moment a COD order lands, and acts on the answer.
+
+## How it runs
+
+<Steps>
+  <Step title="A COD order lands">
+    The store's webhook says the gateway was cash on delivery.
+  </Step>
+  <Step title="Watx asks on WhatsApp">
+    Your chosen template goes out with two buttons — confirm, or cancel.
+  </Step>
+  <Step title="They tap">
+    **Confirm** tags the order at the store. **Cancel** cancels it there and restocks, if
+    you have that switched on.
+  </Step>
+  <Step title="Or the timer decides">
+    After your deadline, an unanswered order is cancelled — only if the message was
+    actually delivered.
+  </Step>
+</Steps>
+
+The customer's reply is handled before automations, flows and AI agents: "Cancel" tapped
+on this template is an answer to you, not a keyword.
+
+## Turning it on
+
+**Ask COD customers to confirm** is the master switch. With it on, a new COD order gets
+the confirmation template instead of the ordinary order message.
+
+| Setting | Default | What it does |
+| --- | --- | --- |
+| **Confirmation template** | none | An approved template with **two quick-reply buttons** — one to confirm, one to cancel. Only templates that qualify are offered |
+| **"Confirm" is the button** / **"Cancel" is the button** | Confirm / Cancel | The button labels, read off the template when you pick it and stored, so editing the template later cannot silently flip which tap means what |
+| **Cancel at the store when they tap Cancel** | On | Cancels the order at Shopify and restocks it. Off, the order is only tagged |
+| **Tag on confirm** / **Tag on cancel** | `cod-confirmed` / `cod-cancelled` | Written to the order at the store |
+| **Cancel automatically when nobody answers** | Off | Turns on the timer below |
+| **Deadline** | 24 hours | Hours after the message was sent. Between 1 hour and 14 days |
+| **Only if the message was delivered** | On | The guardrail — see below |
+| **Alert admins when an order is left open** | On | Uses the admin numbers and template on the Messaging tab |
+
+If you have no suitable template, the picker offers the **store bundle**, which includes
+`store_cod_confirm` with both buttons already on it. See
+[Template library and packs](/whatsapp/template-library).
+
+<Warning>
+  Cancelling and tagging an order at the store needs the `write_orders` scope. The Overview
+  tab and this tab both say so when the token does not have it — cancels will fail until
+  the store is reconnected with that permission.
+</Warning>
+
+## The guardrail
+
+**Only if the message was delivered** is on by default, and it is the difference between
+cancelling an order the customer declined and cancelling one they were never asked about.
+Auto-cancel only fires when Meta reported the confirmation as **delivered**. An order whose
+confirmation never reached the phone is left open and flagged as **Need a human**.
+
+Switching it off means a customer who never received the message is treated as if they
+declined, and real orders are cancelled.
+
+## What the statuses mean
+
+| Status | Meaning |
+| --- | --- |
+| **Awaiting reply** | The confirmation was sent; nobody has answered |
+| **Confirmed** | The customer confirmed, or you confirmed on their behalf. The order is tagged at the store |
+| **Cancelled by customer** | They tapped cancel. Cancelled at the store if that is on, and tagged |
+| **Auto-cancelled** | The deadline passed with no answer and the guardrail was satisfied |
+| **Need a human** | The deadline passed but the message was never delivered. Nothing was cancelled |
+| **Cancelled at store** | The order was cancelled in Shopify rather than here |
+| **Failed to send** | The confirmation template never went out |
+
+Every exit from **Awaiting reply** happens once. A customer who taps Confirm while the
+sweep is running does not have their confirmed order cancelled underneath them — the first
+write wins. If the store then refuses the cancellation, the row carries the error and says
+the order is still open at the store, which is recoverable.
+
+The sweep runs every 15 minutes.
+
+## Reading a reply
+
+The button tap arrives as the button's own label, so a tap is unambiguous. People who type
+instead of tapping are matched on whole words — "cancel" cancels, "confirm" confirms. A
+message containing **both** words ("cancel my other order but confirm this one") is nobody's
+decision to guess, so it is left for a human.
+
+## The confirmations list
+
+Every COD order that entered the flow, newest first, filterable by status. Each row shows
+the order number, the customer and their phone, the total, the status (with the store's
+error underneath when there is one), and when the message was **sent · delivered**.
+
+Rows that are **Awaiting reply** or **Need a human** carry **Confirm** and **Cancel order**
+buttons, so you can settle one by hand after a phone call.
+
+The four tiles above the list: **Awaiting reply**, **Confirmed · 7d**, **Cancelled · 7d**
+and **Need a human**.
+
+## What the customer sees
+
+The confirmation template, then a short acknowledgement of whichever way they answered. If
+you also have the **Order received** recipe on, tick **Skip cash-on-delivery orders** when
+setting it up — two messages about one order in the same minute reads as a fault.

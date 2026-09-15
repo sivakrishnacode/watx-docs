@@ -1,0 +1,112 @@
+---
+title: "Settings and analytics"
+description: "The Instagram channel settings page — subscribed events, messaging rules and disconnecting — plus what the Instagram analytics overview reports."
+icon: "chart-line"
+---
+
+Two screens sit either side of the day-to-day work: **Channel Settings**, which is the
+connection and its health, and **Analytics → Overview**, which is how the channel is doing.
+
+## Channel Settings
+
+**Channels → Instagram → Channel Settings**. Before you have connected, this is the connect
+screen — see [Connect Instagram](/instagram/connect). Afterwards it carries four things.
+
+### The account card
+
+Profile picture, `@handle`, the account id, the date you connected, and how long the
+current access lasts: **Access renews automatically · 42 days left**. Renewal is automatic
+and happens well ahead of the deadline. An arrow opens the profile on Instagram.
+
+If access has expired or been revoked, an **Access expired** banner replaces the countdown
+with a **Reconnect** button.
+
+### Subscribed events
+
+What Instagram will notify Watx about. A green dot means the event is subscribed.
+
+| Event | What it brings in |
+| --- | --- |
+| **Direct messages** | Inbound DMs and story replies |
+| **Button & ice-breaker taps** | Taps on buttons, so an automation or a funnel can act on them |
+| **Read receipts** | When the customer reads your message |
+| **Reactions** | Emoji reactions on a message |
+| **ig.me link attribution** | Which link brought someone into the DMs |
+| **Comments** | Comments on your posts |
+| **Live comments** | Comments during a live video |
+| **Mentions** | Mentions of your account. Subscribed alongside comments; they are not added to the comment queue |
+
+<Warning>
+If any are missing, a banner names them and offers **Re-subscribe**. Act on it: an account
+with an incomplete subscription looks perfectly healthy and simply never receives those
+events. There is no other symptom. **Refresh subscription** does the same thing at any time.
+</Warning>
+
+### Messaging rules
+
+A plain statement of the three Instagram limits that generate support questions, so nobody
+discovers them when a send fails:
+
+- **The reply window.** You can reply freely for 24 hours after each customer message;
+  after that the thread closes until they write again. Workspaces on a deployment holding
+  Meta's Human Agent permission see **7-day reply window** here instead, with the same card
+  explaining it.
+- **No broadcasts.** Instagram has no approved-template mechanism, so there is no compliant
+  way to send bulk DMs. Instagram contacts are excluded from broadcast audiences
+  automatically.
+- **No delivery receipts.** Instagram reports when a message is *read* but never when it is
+  *delivered*, so sent messages stay on one tick until the customer opens them.
+
+### Disconnect
+
+Stops everything new — no DMs, no comments, and every comment automation halts — while
+keeping existing conversations and comments. Confirmed first, and reversible by
+reconnecting.
+
+## The comment-automation master switch
+
+The workspace-wide switch for comment funnels is **not** on this page. It lives at the top
+of [Posts](/instagram/posts) and of
+[Comment funnels](/instagram/comment-funnels) — the two places you are already on when you
+decide the automations should stop. Both are the same switch.
+
+## Analytics
+
+**Channels → Instagram → Analytics → Overview** covers DMs, comment moderation,
+comment-to-DM funnels and post performance. Choose **Last 7 days**, **Last 30 days**,
+**Last 90 days** or a custom range; each headline figure is compared with the previous
+period of the same length. **Refresh** re-reads it and **Export** downloads the whole report
+as CSV.
+
+### The headline figures
+
+| Figure | What it counts |
+| --- | --- |
+| **DMs sent** | Outgoing direct messages |
+| **DMs received** | Incoming direct messages |
+| **Active conversations** | Threads with activity in the period |
+| **Avg first response** | How long a customer waits for the first reply |
+| **Replies by AI** | Split between AI and human replies |
+| **Comments received** | With how many are still open |
+| **Comment reply rate** | With how many were answered privately |
+| **Funnel deliveries** | Links delivered, out of the comments matched |
+
+Several of the tiles are also filters — clicking one narrows the whole page to, say,
+outgoing messages, and the active filter shows as a removable chip in the header.
+
+### The panels
+
+- **DM volume** — daily incoming and outgoing messages.
+- **Who is answering** — AI agent versus a teammate.
+- **Busiest hours** — incoming DMs by day and hour, in your timezone.
+- **Most active people** — by total messages exchanged.
+- **Comment activity** — comments received, replied and privately replied, per day.
+- **Comment → DM funnel** — matched, awaiting opt-in, awaiting follow, reward delivered,
+  across every funnel.
+- **Comment funnels** — one row per funnel. Clicking one filters the page by it.
+- **Top posts** — clicking a post scopes the comment panels above to that post.
+- **Contacts and deals from Instagram** — new contacts, deals created and deals won, with
+  deals attributed through the conversation they came from.
+
+The export contains daily DM volume, daily comments, per-funnel results and per-post
+performance as separate sections of one CSV file.

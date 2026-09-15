@@ -1,0 +1,117 @@
+---
+title: "API keys"
+description: "Create a key for the public REST API, choose its scopes, and revoke it when it is no longer needed."
+sidebarTitle: "API keys"
+icon: "key"
+---
+
+**Settings → API keys** holds the credentials that authenticate the public REST
+API, so you can build your own integrations on top of your workspace.
+
+Every member can see the list. **New API key** and **Revoke** appear for admins
+and the owner.
+
+<Warning>
+  A key acts for the **whole workspace**, with exactly the scopes granted to it
+  — not with the role of the person who created it. Treat it like a password:
+  grant the least it needs, keep it server-side, and revoke it the moment it is
+  out of use.
+</Warning>
+
+## Create a key
+
+<Steps>
+  <Step title="Name it">
+    Press **New API key** and give it a name of up to 80 characters. Name it
+    after the integration that will use it — `Zapier automation`, `Warehouse
+    sync` — so the list stays readable and you know what a revoke will break.
+  </Step>
+  <Step title="Choose its scopes">
+    Tick only the scopes that integration needs. They are listed below.
+  </Step>
+  <Step title="Copy the key">
+    Press **Create key**. The full key is shown **once**, in the dialog. Copy it
+    and store it somewhere safe.
+  </Step>
+</Steps>
+
+<Warning>
+  Watx stores only a hash of the key and the first few characters for display.
+  There is no way to reveal it again — if you lose it, revoke it and create a
+  new one.
+</Warning>
+
+A new key looks like `watx_live_…`. Keys issued before the rename begin
+`converse360_live_` and still work; there is no need to rotate them.
+
+## Scopes
+
+Authorisation for the public API is **scopes only**. An endpoint declares the
+one scope it requires, and a key without it is refused.
+
+| Scope | What it allows |
+| --- | --- |
+| `messages:send` | Send WhatsApp messages |
+| `messages:read` | Read messages and their delivery status |
+| `contacts:read` | List and read contacts |
+| `contacts:write` | Create and update contacts |
+| `conversations:read` | List and read conversations |
+| `broadcasts:send` | Launch broadcast campaigns |
+| `webhooks:manage` | Register and manage outbound event webhooks |
+
+<Note>
+  A key with **no scopes** still authenticates. It can call `GET /v1/me` to
+  confirm it works, and nothing else — which makes it a safe way to test that a
+  key reached the right place.
+</Note>
+
+Segments are covered by `contacts:read` and `contacts:write` rather than having
+a scope of their own, so keys issued before segments shipped keep working.
+
+## Using a key
+
+Send it as a bearer token:
+
+```bash
+curl https://api.watx.in/v1/me \
+  -H "Authorization: Bearer watx_live_your_key_here"
+```
+
+Requests are rate-limited **per key** — 120 requests a minute — and a request
+over the limit comes back as `429` with headers saying when to retry.
+
+Full reference: [Authentication](/api/authentication), [Requests and
+responses](/api/requests-and-responses) and [Webhooks](/api/webhooks).
+
+## The list
+
+Each key shows its name, the visible prefix, its scopes, when it was created,
+and when it was last used — or **never used**, which is the quickest way to
+spot a key nobody needs.
+
+A key is in one of three states:
+
+| State | Meaning |
+| --- | --- |
+| **Active** | Working. |
+| **Revoked** | Switched off by an admin. Permanent. |
+| **Expired** | Past an expiry date it was created with. |
+
+Keys created from this screen have no expiry date, so in practice a key is
+active until someone revokes it.
+
+## Revoke a key
+
+Press **Revoke** on the key's row. It stops working immediately and cannot be
+un-revoked; the row stays in the list, struck through, so you keep the record of
+what existed.
+
+<Note>
+  Anything using that key starts getting `401` at once. A revoked key, an unknown
+  key and an expired key all return the same `401`, on purpose — so someone
+  guessing keys cannot tell which is which.
+</Note>
+
+Revoke a key when the integration using it is retired, when it may have leaked,
+or when the person who set it up leaves. To rotate one, create the replacement
+first, move the integration over, then revoke the old one.

@@ -1,0 +1,146 @@
+---
+title: "Members and roles"
+description: "The four roles and what each can do, inviting a teammate with a link, changing a role, removing someone, and transferring ownership."
+sidebarTitle: "Members and roles"
+icon: "user-group"
+---
+
+**Settings → Users & Roles** is who has access to this workspace, what their
+role lets them do, and how much they are handling. It holds the member roster,
+outstanding invitations and the team performance report.
+
+## The four roles
+
+| Role | Can do |
+| --- | --- |
+| **Owner** | Everything an admin can, plus: see and change the plan, pay, cancel the renewal, and hand the workspace to someone else. Exactly one per workspace. |
+| **Admin** | Invite, remove and re-role members. Edit workspace settings — custom fields, default currency, phone country, integrations, AI agents, forms, the website widget. Everything the Agent role can do. |
+| **Agent** | Work the product: send messages, create and edit contacts, move deals, run broadcasts, build automations and flows. No settings and no member management. |
+| **Viewer** | Read-only across the app. Cannot send or edit anything. |
+
+Roles are ranked, so anything an Agent can do an Admin can do too.
+
+<Note>
+  A **member** is a person. An **AI agent** is software. The role spelled
+  "Agent" here is always the human one.
+</Note>
+
+### What each role decides, in practice
+
+| | Owner | Admin | Agent | Viewer |
+| --- | --- | --- | --- | --- |
+| Read contacts, conversations, deals, templates | Yes | Yes | Yes | Yes |
+| Send messages, edit contacts, move deals | Yes | Yes | Yes | No |
+| Create and edit automations and flows | Yes | Yes | Yes | No |
+| Manage canned replies | Yes | Yes | Yes | No |
+| Invite, remove and re-role members | Yes | Yes | No | No |
+| Custom fields, default currency, phone country | Yes | Yes | No | No |
+| Connect integrations and configure AI agents | Yes | Yes | No | No |
+| Create and revoke API keys | Yes | Yes | No | No |
+| Rename the workspace and set its logo | Yes | Yes | No | No |
+| See **Plan & billing**, pay, cancel | Yes | No | No | No |
+| Transfer ownership | Yes | No | No | No |
+
+Your role is **per workspace**. If you belong to several, you may be the owner
+of one and an Agent in another; the switcher shows which role you hold in each.
+See [Workspaces](/getting-started/workspaces).
+
+## The roster
+
+Each row shows the member's avatar with a presence dot (online, away or
+offline), their name and email, when they joined, and their role. Your own row
+is marked **You**. A summary line above the list counts who is online, away and
+offline.
+
+## Inviting a teammate
+
+Invitations are **links**, not emails — Watx generates one and you share it
+however you like.
+
+<Steps>
+  <Step title="Open the dialog">
+    Press **Invite member** (admins and the owner only).
+  </Step>
+  <Step title="Choose the role">
+    **Admin**, **Agent** or **Viewer**. The dialog describes each as you pick
+    it. You cannot invite someone as owner.
+  </Step>
+  <Step title="Choose how long the link lives">
+    **1 day**, **7 days** or **30 days**. Seven is the default.
+  </Step>
+  <Step title="Add a label (optional)">
+    Up to 80 characters, for example `Sara — support team`. It only ever appears
+    in your pending list, to remind you who you sent the link to.
+  </Step>
+  <Step title="Generate and share">
+    Press **Generate link**. Copy it, or press **Send via WhatsApp** to open a
+    pre-filled message naming the workspace and how long the link is valid.
+  </Step>
+</Steps>
+
+<Warning>
+  **The link is shown once.** Watx stores only a hash of it, so there is no
+  "copy again" button and no way to recover it. If you lose it, revoke the
+  pending invitation and create a new one.
+</Warning>
+
+Inviting counts against your plan's **team members** limit — if the workspace is
+at the cap, creating the invitation is refused with the number you have used.
+See [Plans and billing](/getting-started/plans-and-billing).
+
+What the invitee sees when they open the link — including what happens if they
+have no account yet — is on [Signing in](/account/sign-in).
+
+### Pending invitations
+
+Below the roster, admins and the owner see every invitation that has not been
+accepted and has not expired, with its role, when it was created and when it
+expires. **Revoke** kills the link immediately.
+
+Accepted and expired invitations drop off the list.
+
+## Changing someone's role
+
+Admins and the owner can change a role from the dropdown on that member's row.
+Three rules:
+
+- The **owner's row cannot be changed** here.
+- You cannot change **your own** role.
+- **Owner is never an option.** Promoting someone to owner is a transfer, not a
+  role change.
+
+The change takes effect immediately.
+
+## Removing a member
+
+Press the delete button on their row (admins and the owner; never on the owner's
+row, never on your own). The confirmation says what happens:
+
+- they lose access to **this** workspace immediately;
+- any **other** workspace they belong to is untouched;
+- their **login is not deleted**.
+
+<Note>
+  Watx does not create a replacement workspace for someone you remove. If it was
+  their only one they will see "You're not in any workspace" — a real state, not
+  an error — and an invite puts them straight back.
+</Note>
+
+## Transferring ownership
+
+There is exactly one owner per workspace, and the owner is the one the plan is
+billed to. Ownership transfer is **not self-serve today** — contact
+[support@watx.in](mailto:support@watx.in) and we will move it, along with the
+subscription.
+
+<Warning>
+  A login can own only one workspace at a time today. If the person you want to
+  hand it to already owns a workspace of their own, the transfer is refused —
+  tell us and we will work out the right arrangement with you.
+</Warning>
+
+## Team performance
+
+Below the roster on the same page is the **team performance** report, covering
+how much each member is handling. It sits here on purpose: access first, then
+output. See [Team performance](/contacts/team-performance).

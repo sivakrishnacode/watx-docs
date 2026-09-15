@@ -1,0 +1,101 @@
+---
+title: "Node types"
+description: "Every node a WhatsApp flow can contain, what it sends or asks, and where it can go next."
+icon: "shapes"
+---
+
+A flow is built from 21 node types, grouped in the palette by what they are for. Every
+node stores the key of the node it continues to, which is what the arrows on the canvas
+draw.
+
+Text in a node is interpolated before it is sent, so `{{ vars.name }}` and
+`{{ contact.name }}` work anywhere a message does. `{{ contact.name }}`,
+`{{ contact.phone }}`, `{{ contact.email }}` and `{{ contact.company }}` are available on
+every run that has a contact, and `{{ vars.<key> }}` reads anything the flow has captured
+or set.
+
+## Message types
+
+| Node | What it does | Settings | Goes to |
+| --- | --- | --- | --- |
+| **Send message** | Sends a plain WhatsApp text message. | Text sent to the customer | One path |
+| **Send buttons** | Sends up to 3 quick replies. The customer taps one. | Body text, Footer, and each button's title and id | One path **per button** |
+| **Send list** | Sends a tappable list of options, up to 10 rows across sections. | Body text, tap-to-expand button label, Footer, and the sections with their rows | One path **per row** |
+| **Send media** | Sends an image, video or document. | Media type, the file (uploaded to the [media library](/contacts/media-library) or a URL), Caption, and a filename for documents | One path |
+| **Template** | Sends an approved [template](/whatsapp/templates) — the only message that will send outside the 24-hour window. | Template name, Language code, and the template's own values: body variables, header variable or media, location header, button values, carousel cards | One path |
+| **Products** | Sends one catalogue product, or a multi-product list. See [Catalog and orders](/whatsapp/catalog-and-orders). | One product or a list, catalogue id (optional — the workspace's is used otherwise), the product ids, Header, Body, Footer | One path |
+
+A **Products** node in single mode with more than one product sends only the first, and
+the validator warns. A multi-product message needs body text; WhatsApp rejects the send
+without it.
+
+## Ask and capture
+
+These are the nodes that stop and wait for the customer.
+
+| Node | What it does | Settings | Goes to |
+| --- | --- | --- | --- |
+| **Ask a question** | Sends a prompt and stores the customer's next reply. | Prompt sent to the customer, Variable key, and where to go after capturing | One path |
+| **Ask location** | Asks the customer to share their location and stores the pin — latitude, longitude, name and address. | Prompt, Variable key | One path |
+| **Ask for a file** | Asks for a photo or document and stores the file's URL. | Prompt, Variable key, and **Accept**: any file, photos only, videos only, documents only, voice notes only | One path |
+| **Take a payment** | Sends a [Razorpay payment link](/integrations/razorpay) and parks the run until it is paid or the link expires. | Amount, Currency, What the payment is for, Message sent with the link, Template for closed chats, Link expires after (hours) | **Two paths**: *When they pay, go to* and *If they don't, go to* |
+
+A variable key must start with a letter or underscore and use letters, numbers and
+underscores only — it is read back as `{{ vars.<key> }}`.
+
+**Ask for a file**'s **Accept** narrows what counts as an answer: a run waiting for a
+document should not be satisfied by a sticker. Anything else the customer sends goes
+through the flow's unmatched-reply handling.
+
+The media URL an **Ask for a file** stores is served by us, not Meta's short-lived one,
+so a value captured today is still fetchable tomorrow.
+
+## Actions and data
+
+| Node | What it does | Settings | Goes to |
+| --- | --- | --- | --- |
+| **If / else** | Branches on a rule. | Subject — a flow variable, a contact field, or whether the contact has a tag — with an operator (**equals**, **contains**, **present**, **absent**) and a value | **Two paths**: *If true → advance to*, *If false → advance to* |
+| **Tag contact** | Adds or removes a [tag](/contacts/fields-and-tags). | Action (add / remove), Tag | One path |
+| **Segment contact** | Adds or removes them from a saved audience. Static [segments](/contacts/segments) only. | Action (add / remove), Segment | One path |
+| **Set attribute** | Saves a value onto the contact or into a flow variable. | Save to — a contact field, a custom field, or a flow variable — the key, and the value (interpolated, so `{{ vars.answer }}` is the common case) | One path |
+| **API request** | Calls your endpoint mid-flow and stores `{ status, body }` for a later **If / else** to branch on. | Method, URL, Headers, Body, Save the response as, and whether a non-2xx response stops the run | One path |
+
+A failed **Tag contact**, **Segment contact** or **Set attribute** does not abandon the
+customer mid-conversation — the failure is recorded on the run and the flow carries on.
+An **API request** with *fail on error* switched on does end the run.
+
+<Note>
+  The URL of an **API request** goes through the same protection as an AI agent's custom
+  actions: private, loopback and internal addresses are refused, and redirects are
+  re-checked at every hop.
+</Note>
+
+## Flow control
+
+| Node | What it does | Settings | Goes to |
+| --- | --- | --- | --- |
+| **Start** | The entry marker. | Advances to | One path |
+| **Wait** | Parks the run and continues later. | Pause for (a number) and a unit — minutes, hours or days | One path |
+| **Connect flow** | Hands the customer to another flow. The current run **ends** and the target starts fresh. | Continue in (the flow) | Terminal |
+| **Handoff to agent** | Hands the conversation to a person. Terminal. | Internal note for whoever picks it up, and optionally who to assign it to | Terminal |
+| **Hand to AI agent** | Lets an [AI agent](/ai-agents/overview) take the conversation. Terminal. | Agent — leave it unset for whichever agent normal routing would pick — and a note | Terminal |
+| **End** | Ends the run. | — | Terminal |
+
+<Warning>
+  A **Wait** of 24 hours or more closes
+  [WhatsApp's messaging window](/whatsapp/messaging-window). After it, only a **Template**
+  node will send unless the customer has written again in the meantime. The validator
+  warns rather than blocking, because a template after a long wait is perfectly valid.
+</Warning>
+
+**Connect flow** does not nest, and that is deliberate: a contact can only be in one flow
+at a time, so ending first is also what makes an accidental loop between two flows
+terminate instead of growing. Leaving **Hand to AI agent** without a specific agent is the
+right default — routing order is a setting the workspace already made, and pinning one
+agent in a flow would quietly outrank it.
+
+## What a node needs before you can activate
+
+Every non-terminal node must point somewhere real, every message node needs its text, and
+every capture node needs a prompt and a variable key. The editor's validation bar lists
+what is missing and jumps to the node. See [The flow editor](/flows/editor).

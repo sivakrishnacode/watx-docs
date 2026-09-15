@@ -1,0 +1,88 @@
+---
+title: "Forms and bookings"
+description: "Hosted forms that capture leads, feedback and appointments, and route every answer into your contacts and automations."
+sidebarTitle: "Overview"
+icon: "clipboard-list"
+---
+
+A form in Watx is a list of fields on a page you can hand to anyone — a link in a WhatsApp message, a QR code on a table card, an iframe on your own site. Every answer is stored against the form, can be written onto the contact, and can start an automation.
+
+Forms live at **Website → Forms & bookings → Forms**. They are not tied to a channel: a form works whether or not WhatsApp, Instagram or the chat widget are connected.
+
+## The two kinds
+
+<CardGroup cols={2}>
+  <Card title="A form" icon="file-lines">
+    Questions and answers. Published at `app.watx.in/f/<name>`. Use it for enquiries, feedback, registrations, or anything else you would otherwise ask for by hand.
+  </Card>
+  <Card title="A booking form" icon="calendar-check">
+    The same thing with an **Appointment slot** field in it. The visitor picks from times you are genuinely free, and the slot is held. Also published at `app.watx.in/book/<name>`.
+  </Card>
+</CardGroup>
+
+There is no separate booking product and no appointment-type setup. Adding an **Appointment slot** field is what turns a form into a booking form, and removing it turns it back. See [Booking forms](/forms/bookings).
+
+## What happens to a submission
+
+<Steps>
+  <Step title="It is checked on the server">
+    Required answers, lengths, formats and choices are all re-checked after the page sends them, so a rule holds even if somebody edits the page in their browser.
+  </Step>
+  <Step title="It is stored">
+    Keyed by each field's own key, which is what the Submissions table and the CSV export are built from. See [Submissions](/forms/submissions).
+  </Step>
+  <Step title="It finds or creates a contact">
+    Only fields you mapped to a contact field count. A phone number is matched first, then an email; if neither matches, a new contact is created with the source **form**.
+  </Step>
+  <Step title="It fires the Form submitted trigger">
+    Any automation listening for **Form submitted** runs, with every answer available as a token. See [Triggers](/automations/triggers).
+  </Step>
+</Steps>
+
+If the form carries a slot picker, the time is reserved at this point too, and the visitor is told which time they got — or that it has just gone.
+
+## Draft and published
+
+A new form is a draft. Its link exists but returns nothing until you press **Publish** in the editor header; the address does not change when you publish, so a link you shared while drafting starts working rather than breaking.
+
+Publishing is refused unless the form has at least one field someone can actually fill in — a page of headings and page breaks is not a form.
+
+**Archive** takes a form off its public URL and out of the list while keeping every submission it collected. Deleting a form outright is not offered, because that would take the leads with it.
+
+## Who can do what
+
+Creating, editing, publishing, duplicating and archiving a form all need the **owner** or **admin** role. Everyone in the workspace, including the Agent and Viewer roles, can read the forms list and the submissions. Marking an appointment as completed or a no-show needs the Agent role or above. See [Members and roles](/settings/members-and-roles).
+
+## Starting from a template
+
+The forms page offers five quick-start templates — **Lead Capture**, **Contact Us**, **Customer Feedback**, **Event / Webinar RSVP** and **Newsletter Signup**. Each one creates a real form with its fields, submit button label and success message already filled in, which you then edit like any other.
+
+<Note>
+A template's fields are not mapped to contact fields. If you want the name, email or phone from a template form to land on the contact record, set **Save to contact** on those fields yourself — see [Field types](/forms/field-types).
+</Note>
+
+## Where to go next
+
+<CardGroup cols={2}>
+  <Card title="The form builder" icon="pen-ruler" href="/forms/builder">
+    The editor, its tabs, and how a field is added and configured.
+  </Card>
+  <Card title="Field types" icon="table-list" href="/forms/field-types">
+    Every field, what it collects, and the validation it can enforce.
+  </Card>
+  <Card title="Conditional logic and steps" icon="code-branch" href="/forms/conditional-logic">
+    Show a field only when an earlier answer matches, and split a long form into steps.
+  </Card>
+  <Card title="Appearance" icon="palette" href="/forms/appearance">
+    Colour scheme, accent, header and corners for the hosted page.
+  </Card>
+  <Card title="Booking forms" icon="calendar-days" href="/forms/bookings">
+    Availability, slot length, buffers, capacity and the customer's manage link.
+  </Card>
+  <Card title="Submissions" icon="inbox" href="/forms/submissions">
+    Reading them, exporting them, and what they do to your contacts.
+  </Card>
+  <Card title="Sharing a form" icon="share-nodes" href="/forms/sharing">
+    The public link, the QR code, the embed snippet and sending a form into a chat.
+  </Card>
+</CardGroup>

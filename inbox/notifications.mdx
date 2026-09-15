@@ -1,0 +1,68 @@
+---
+title: "Notifications"
+description: "The in-app notification feed, what raises an entry, and the sound and desktop alerts for new messages."
+icon: "bell"
+---
+
+Watx has two separate things that tell you something happened: the **notification feed** behind the bell, and the **new-message alert** that makes a sound or raises a desktop popup. They are unrelated, and this page covers both.
+
+## The feed
+
+The bell sits in the top bar on every screen. When you have unread notifications it carries a count — past nine it reads **9+**.
+
+Clicking it shows your five most recent notifications. The items are a preview: clicking one opens the full page rather than acting on it. **View all notifications** does the same.
+
+### The notifications page
+
+The page lists your 100 most recent notifications, newest first. Each row shows a title, an optional line of detail, and how long ago it arrived. Unread rows are bold and carry a dot.
+
+- **Clicking a row** marks it read. If the notification is about a conversation, it also opens that conversation in the Inbox.
+- **Mark all as read** in the page header clears every unread one at once.
+
+New notifications appear without a refresh, and marking one read on your phone clears it on your laptop.
+
+There is no way to delete a notification, mark one unread again, or archive it — a notification is read or unread and nothing else.
+
+<Note>
+Notifications are personal. Each one is addressed to one member, so "mark as read" is about your own copy and never affects a teammate's.
+</Note>
+
+### What raises one
+
+| Notification | Who gets it | When |
+| --- | --- | --- |
+| A conversation is assigned to you | The person it was assigned to | Somebody hands you a conversation in the Inbox. Assigning a conversation to yourself does not notify you. |
+| A payment arrives | Everyone in the workspace | A Razorpay payment link you sent is paid. Clicking it opens the customer's conversation. |
+| An automation notifies the team | Whoever the automation names — everyone, the member the conversation is assigned to, or one specific person | An automation runs a **Notify team** step. The title and the detail are whatever the automation's author wrote, so these read however your team wrote them. See [Steps](/automations/steps). |
+| A Shopify privacy request | Everyone in the workspace | A customer asks your Shopify store for their data or to be deleted, and there is something for you to do about it. See [Shopify](/integrations/shopify). |
+
+### Settings
+
+There are no per-type notification settings, no email digest and no quiet hours. The feed shows everything raised for you.
+
+## New-message alerts
+
+A sound and an optional desktop popup when a **customer** message arrives. Your own replies and AI replies never alert.
+
+Both are controlled from the speaker icon next to the bell in the top bar:
+
+- **Mute new-message sound** / **Unmute new-message sound**
+- **Play test sound**
+- **Turn on desktop alerts** / **Turn off desktop alerts**
+
+Sound is on by default; desktop alerts are off until you turn them on, at which point the browser asks for permission. If you have already blocked notifications for the site, the menu says so — you have to re-enable them in your browser's site permissions.
+
+### When an alert fires
+
+- Only for messages from a customer.
+- Only when you are **not** looking at Watx — a hidden tab, or a window that does not have focus. Nothing interrupts you while you are working in the app.
+- Only for messages that just arrived, so waking a laptop does not replay yesterday.
+- The sound is throttled, so a burst of messages announces itself once rather than ten times.
+
+The popup shows the message text, or a short description for media — "Sent a photo", "Sent a voice note", "Shared a location". Clicking it brings the Watx window to the front.
+
+<Warning>
+Alerts need the browser open. Another tab is fine, and so is another application with the browser still running in the background. Once the browser is fully closed, nothing is delivered — there are no push notifications, no email alerts and no WhatsApp alerts.
+</Warning>
+
+Your sound and desktop choices are stored in the browser you made them in, so they follow the device rather than the login. Changing them in one tab changes them in every tab on that device.

@@ -1,0 +1,101 @@
+---
+title: "Instagram"
+description: "Instagram DMs, story replies and comments on your posts, in the same inbox as WhatsApp — and the platform rules that make the channel behave differently."
+icon: "instagram"
+---
+
+Connect an Instagram professional account and its direct messages, story replies and post
+comments arrive in Watx. DMs land in the shared [Inbox](/inbox/overview) against the same
+contacts as WhatsApp; comments get their own queue, because a comment is public, attached
+to a post, and has no thread.
+
+The channel is built for people who work a backlog after a post lands: a comment triage
+desk with keyboard shortcuts, comment-to-DM automations you can put on one post or on all
+of them, and the same [automations](/automations/overview) and [AI agents](/ai-agents/overview)
+you already use elsewhere.
+
+## What arrives
+
+| | Where it goes |
+| --- | --- |
+| Direct messages | The Inbox, as a conversation on the **Instagram** channel |
+| Story replies | The same conversation, with the story kept as context |
+| Reactions | On the message they were applied to |
+| Button and ice-breaker taps | Treated as a reply, so an automation can act on them |
+| Comments on your posts | **Comments**, the moderation queue — not the Inbox |
+| Live comments | The same queue |
+| Replies you send from the Instagram app | The Inbox, marked as yours |
+
+A reply you type in the Instagram app appears in the thread so the history is complete,
+but it deliberately does **not** start automations or an AI agent — otherwise the
+workspace would answer its own messages.
+
+## How Instagram differs from WhatsApp
+
+These are Meta's rules, not settings, and most of the channel's behaviour follows from
+them.
+
+| | WhatsApp | Instagram |
+| --- | --- | --- |
+| Reply window | 24 hours | 24 hours |
+| Re-opening a closed thread | An approved template | **Not possible** — wait for the customer to write |
+| Message templates | Yes | **None at all** |
+| Broadcasts | Yes | **Not available** |
+| Delivery receipts | Sent → delivered → read | Sent → read. There is no delivered tick |
+| List messages | Yes | No. Use buttons instead (up to 13 quick replies) |
+| Product catalogue | Yes | No |
+| Identity | Phone number | Instagram handle. No phone number |
+
+<Warning>
+There is no compliant way to send bulk Instagram DMs, because there is no template
+mechanism to pre-approve them. Contacts who exist only on Instagram carry no phone
+number, so they are left out of broadcast audiences automatically.
+</Warning>
+
+## The two windows
+
+**The 24-hour reply window** applies to DMs. You can reply freely for 24 hours after each
+message the customer sends. After that the thread closes until they write again. Watx
+refuses an out-of-window send before it reaches Meta and tells you why, rather than letting
+it fail silently. Some workspaces are on a deployment that holds Meta's Human Agent
+permission, which extends this to 7 days; **Channel Settings** states which applies to
+yours.
+
+**The 7-day private-reply window** applies to comments. Meta allows exactly **one** private
+reply per comment, within **7 days** of it being posted. That private reply is the only way
+to open a DM thread with somebody who has never messaged you — which is what comment
+funnels are built on. Both limits are permanent for a given comment, so Watx disables the
+DM button and names the reason instead of letting you write a message that will be refused.
+
+## Contacts are not merged across channels
+
+An Instagram identity carries no phone number, so there is no reliable way to tell that
+`@someone` is the same person as a number in your contact list. The same human on both
+channels is two contacts. Watx resolves the handle and display name so the Inbox shows a
+person rather than a numeric id.
+
+## Where things live
+
+<CardGroup cols={2}>
+  <Card title="Connect Instagram" icon="plug" href="/instagram/connect">
+    What the account needs, the Business Login flow, and keeping access alive.
+  </Card>
+  <Card title="Posts and automation" icon="table-cells" href="/instagram/posts">
+    Coverage across your posts, automating one or many, and moderating from a post.
+  </Card>
+  <Card title="Comments" icon="comments" href="/instagram/comments">
+    The triage desk: filters, keyboard shortcuts, public replies and DMs.
+  </Card>
+  <Card title="Comment funnels" icon="gift" href="/instagram/comment-funnels">
+    Comment a word, get the link in the DMs — the editor and its results.
+  </Card>
+  <Card title="DM agents" icon="robot" href="/instagram/dm-agents">
+    What answers an Instagram DM when nobody on your team has yet.
+  </Card>
+  <Card title="Intents" icon="heart" href="/instagram/intents">
+    Keyword rules that reach both DMs and comments.
+  </Card>
+  <Card title="Settings and analytics" icon="chart-line" href="/instagram/settings-and-analytics">
+    Subscribed events, messaging rules, the master switch and the overview report.
+  </Card>
+</CardGroup>

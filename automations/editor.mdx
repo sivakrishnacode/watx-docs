@@ -1,0 +1,127 @@
+---
+title: "The canvas editor"
+description: "Build an automation on a canvas: add steps, wire branches, name each step, and save or activate it."
+sidebarTitle: "The canvas editor"
+icon: "pen-ruler"
+---
+
+The editor is full-screen: a canvas with a docked settings panel on the right and a
+toolbar across the top. Every card on the canvas is either the trigger or a step, and
+every arrow between them is a fact about the order they run in.
+
+## The toolbar
+
+| Control | What it does |
+| --- | --- |
+| Back arrow | Returns to **Automations**. Unsaved changes are not kept. |
+| Name | Click to rename. Blank saves as *Untitled automation*. |
+| **Checks** | The pre-flight panel. Reads **All checks pass**, or the number of problems and warnings. See [Diagnostics and logs](/automations/diagnostics-and-logs). |
+| **Active** | The switch that puts it live. |
+| **Save** / **Save draft** | Writes the automation. On a new one it saves a draft and then stays open on the saved copy. |
+
+Activating is the only thing that can be refused. If the server rejects the save it
+returns the first problem and where it is, and the automation is left as it was.
+
+## Adding a step
+
+**Add step** sits at the top left of the canvas and opens the picker. It has a search
+box, a category rail down the left (**All**, the seven step categories, and **Apps**),
+and the steps themselves in two columns.
+
+Three kinds of entry appear there:
+
+- **Built-in steps**, grouped by category — Messaging, Contact, Deals &amp; team,
+  Conversation, Logic &amp; timing, Data, Orchestration.
+- **Google** actions, one row per action ("Google Sheets · Append row"), delivered
+  through the [Apps Script bridge](/integrations/google). A row is marked **set up
+  first** when the bridge is not connected yet.
+- **Other services** — Slack, Notion, Airtable and the rest. Each one adds an **HTTP
+  request** step with that service's URL shape pre-filled; you supply the key. The card
+  says which key before you pick it. See [Other services](/integrations/other-services).
+
+A step added this way lands at the end of the top-level sequence, and the settings panel
+opens on it. It never drops inside a branch by itself — a step silently landing inside a
+condition is how an automation starts doing something nobody wrote.
+
+A step that cannot run on this automation's channels is shown greyed out with the reason,
+rather than hidden. See [Channels and the 24-hour window](/automations/channels-and-window).
+
+## Moving steps and wiring branches
+
+Drag a card to arrange the canvas; positions are saved with the automation. The first
+time you open an automation that has never been arranged, the whole graph is laid out
+automatically.
+
+Dragging from a card's output port onto another card is a **move**, not a link:
+
+- From an ordinary step's port, the target becomes the next step in that sequence.
+- From a **Yes** or **No** port, the target moves to the top of that branch.
+- From the trigger, the target becomes the first step of the automation.
+
+A branching step's card carries **Yes** and **No** ports in a two-column footer. A
+**dashed** edge labelled *continues after* leaves the branching card and points at
+whatever follows it in the parent sequence — that is where the automation resumes once
+either branch finishes. Without it, every condition looks like the end of the automation.
+
+Select a card and press <kbd>Backspace</kbd> or <kbd>Delete</kbd> to remove it. With the
+keyboard, <kbd>Tab</kbd> moves between cards and <kbd>Enter</kbd> or <kbd>Space</kbd>
+opens the settings for the focused one.
+
+<Note>
+  Below 1024px wide the canvas stays readable but stops being wireable — the ports are
+  too small for a finger. Tapping a card still opens its settings, which slide in from
+  the right.
+</Note>
+
+## The settings panel
+
+The panel has three tabs.
+
+**Setup** shows the step type (with **Change** to swap it), **Runs on** — one sentence
+saying whether this step works on every channel this automation can fire on — and the
+category with its one-line description.
+
+**Configure** holds the step's own fields, plus two collapsible sections:
+
+- **Advanced** — **If this step fails** (*Stop the run*, the default, or *Carry on to the
+  next step*), **Also save the result as** (a short name so the output reads
+  `{{ vars.order }}` instead of the full step path), and **Note for your team**, which is
+  never sent anywhere.
+- **What this step produces** — every value this step publishes. Click one to copy its
+  token.
+
+**Test** previews the step against real sample data: a real contact, their last message,
+and what earlier steps returned on previous runs. **Preview this step** resolves every
+token and shows the exact payload without sending anything, and lists any token that
+resolved to nothing. For a step that reaches a person or changes a third-party system, a
+separate **Send for real** button does it for real, with its own warning.
+
+The footer carries **Duplicate** and **Delete**. The switch in the panel header pauses a
+step: it stays on the canvas, greyed out, and is recorded as skipped in the run log.
+
+## Reference names
+
+Every step has a reference name shown under the panel header as `steps.<name>`. It is how
+other steps address this one — `{{ steps.lookup.body.id }}` — so it is the identity that
+matters, not the position on the canvas.
+
+- Letters, numbers and underscores only. Anything else is converted when you click away.
+- It must be unique; a name already in use is refused and the field reverts.
+- The copy button next to it copies the token.
+- Renaming a step does **not** rewrite tokens elsewhere. The checks panel flags any token
+  now pointing at a name that does not exist.
+- Changing a step's **type** keeps the reference name — so tokens still resolve — but
+  resets the settings, because they belonged to the old type.
+
+## The trigger card
+
+Clicking the trigger card opens its own panel: **When this happens** (the trigger
+picker), **Channels**, and whatever the chosen trigger needs — keywords, a tag, a
+schedule, a form, an appointment type.
+
+For a keyword trigger, the panel also warns when another automation or a
+[flow](/flows/overview) already listens for the same word. Both will fire on the same
+message, and nothing else would tell you.
+
+Switching to a trigger that belongs to one channel locks the channel picker to it.
+Switching to one that carries no channel hides the picker and clears whatever was set.

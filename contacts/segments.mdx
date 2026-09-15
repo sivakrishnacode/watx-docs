@@ -1,0 +1,95 @@
+---
+title: "Segments"
+description: "Named audiences — an explicit list, or a saved filter that works out its own members — and how they are used."
+icon: "layer-group"
+---
+
+A segment is a set of people with a purpose: "March webinar attendees", "customers who bought last quarter". A [tag](/contacts/fields-and-tags) is a fact about one person. Both exist because collapsing them is how a tag list becomes sixty entries nobody dares delete.
+
+Open **Segments** from the Contacts page header.
+
+## Two kinds
+
+<CardGroup cols={2}>
+  <Card title="List" icon="layer-group">
+    You choose who is in it — from Contacts, the Inbox, an import, an automation or a flow.
+  </Card>
+  <Card title="Filter" icon="filter">
+    Membership is worked out from rules every time it is read, so it is never out of date.
+  </Card>
+</CardGroup>
+
+<Warning>
+The kind is chosen when you create the segment and **cannot be changed afterwards**. A filter has no membership list to keep, and a list has no rules to apply — so switching either way would throw something away.
+</Warning>
+
+## Creating one
+
+<Steps>
+  <Step title="Name it and pick a colour">
+    The name has to be unique in the workspace. The colour is what you see on chips in the contact drawer and the Inbox sidebar.
+  </Step>
+  <Step title="Add a description">
+    Optional, and only shown for a list segment — a filter segment describes itself with its rules.
+  </Step>
+  <Step title="Choose List or Filter">
+    This is the permanent decision above.
+  </Step>
+  <Step title="For a filter, add rules">
+    See below.
+  </Step>
+</Steps>
+
+The manager lists every segment with its kind, its member count, and a one-line summary — the description for a list, the rules read out for a filter.
+
+## Filter rules
+
+A filter segment holds a set of rules and a match mode: **all of the rules** or **any of the rules**.
+
+| Field | Group | Operators |
+| --- | --- | --- |
+| Tag | Contact | has, does not have |
+| Phone number | Contact | is (set / empty) |
+| Source | Contact | is, is not |
+| Name | Contact | contains, is exactly, is not, is set, is empty |
+| Email | Contact | contains, is exactly, is not, is set, is empty |
+| Company | Contact | contains, is exactly, is not, is set, is empty |
+| Created | Activity | after, before |
+| Any custom field | Custom fields | contains, is exactly, is not, is set, is empty |
+
+**is set** and **is empty** take no value; every other operator needs one.
+
+<Warning>
+**An unfinished rule is ignored, and a filter with no usable rules matches nobody.**
+
+A rule with no value on an operator that needs one is dropped before the segment is resolved. The editor warns when that happens — *"N unfinished rules are ignored when this segment is resolved"* — and says so more loudly when nothing usable is left. An empty audience looks exactly like an empty audience, so this warning is the only thing standing between you and a broadcast to nobody.
+</Warning>
+
+Custom fields appear in the rule list automatically once your workspace defines them.
+
+## Putting contacts into a list segment
+
+Several surfaces file somebody into a list segment, and each records how it happened — an automation adding ten thousand people is a visibly different fact from an operator ticking a box.
+
+- **Contacts** — tick rows and use **Add to segment** in the bulk bar.
+- **The contact drawer** — the **Labels** tab.
+- **The Inbox contact panel** — **Edit** beside Segments.
+- **CSV import** — **Add everyone to a segment**, which covers every row in the file including numbers you already had.
+- **The Add to segment / Remove from segment [automation steps](/automations/steps).**
+- **The Segment contact [flow node](/flows/nodes).**
+- **The public API.**
+
+Filter segments are shown in all of these but cannot be edited by hand — they work out their own members, and the picker says so rather than offering a control that would do nothing.
+
+Adding somebody who is already in the segment is a no-op, not an error. The confirmation reports how many were actually added.
+
+## Using a segment
+
+- **Filtering contacts** — the Segments filter on the Contacts page.
+- **Broadcast audiences** — pick several segments at once (the union of them), and exclude segments as well. "Everyone except last month's buyers" is the shape most suppression lists take. See [Broadcasts](/whatsapp/broadcasts).
+- **Automations and flows** — as a step or a node.
+- **The public API** — segments reuse the existing contacts scopes, so a key you already issued can use them.
+
+## Deleting
+
+Deleting a segment removes the segment and, for a list, its membership records. The contacts themselves are untouched.

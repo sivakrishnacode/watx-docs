@@ -1,0 +1,140 @@
+---
+title: "Diagnostics and logs"
+description: "The checks panel before an automation goes live, what the server refuses to activate, and how to read a run afterwards."
+sidebarTitle: "Diagnostics and logs"
+icon: "stethoscope"
+---
+
+Almost everything that goes wrong in a running automation is quiet: an unknown token
+becomes an empty gap, a step the channel cannot do is skipped, a step with nobody to send
+to is skipped. Those are the right behaviours in front of a customer, and they mean a
+broken automation looks exactly like a working one until somebody notices. This page is
+the two places where it is said out loud.
+
+## The checks panel
+
+The **checks** control sits in the editor toolbar, before the Save button. It reads
+**All checks pass**, or the number of problems and warnings, and opens a list under the
+heading *Before this goes live*.
+
+Findings come at three levels:
+
+| Level | Meaning |
+| --- | --- |
+| **Problem** | It will not work, or will not work anywhere. |
+| **Warning** | It works sometimes, or works differently from the shape of the automation. Often deliberate. |
+| **Information** | There is a better way. |
+
+Clicking a finding selects the step it is about, so you land on it instead of hunting
+across the canvas.
+
+### What it checks
+
+**The automation as a whole**
+
+- It has a trigger but no steps.
+- Two steps share a reference name — a token like `{{ steps.x.… }}` cannot say which one
+  it means.
+- A keyword trigger with no keywords, a schedule with no time, a **Tag added** trigger
+  with no tag chosen.
+
+**Every step**
+
+- A required setting is empty — the same rules the server applies on activation.
+- The step can never run on the selected channels, or is skipped on some of them. See
+  [Channels and the 24-hour window](/automations/channels-and-window).
+- A token points at a step that does not exist, or at one that runs **after** this step
+  or on the other side of a branch. It can only ever resolve to nothing.
+- A token names a variable that no **Set variable** step and no *Also save the result as*
+  ever writes.
+- A token uses a namespace that is not a real one.
+- `{{ message.text }}` on a scheduled automation, or a `form.` token on an automation
+  that is not started by a form submission.
+- A `{{` that is never closed — the braces are sent to the contact exactly as typed.
+
+**Particular steps**
+
+- A segment step pointing at a **filter** segment, which nothing can be added to or
+  removed from.
+- A **Google action** with no action chosen, an action this build does not recognise, a
+  required field left empty, or the [Apps Script bridge](/integrations/google) not
+  connected.
+- **Start flow** pointing at a flow that is not active — a draft flow is skipped, so the
+  step does nothing.
+- **Run automation** pointing at itself (refused at run time), or at an automation that
+  is switched off.
+- An **HTTP request** to a private, loopback or internal address (refused by the server),
+  or over plain `http://`. Credentials typed into the auth fields get an information note:
+  anyone who can edit the automation can read them.
+- A **Wait** longer than 30 days.
+- A sending step that lands outside WhatsApp's 24-hour window once the waits before it
+  are added up.
+- A sending step **after** a step that closed the conversation — the send reopens the
+  thread the automation just closed.
+- A branch with nothing in it.
+- A superseded step, with the name of its replacement.
+
+The checks panel mirrors run-time behaviour; it never blocks a save on its own.
+
+## What blocks activation
+
+Turning **Active** on is validated by the server, and a broken automation is refused with
+the first problem and where it is. An active automation needs at least one step, and each
+step must carry what it needs — message text, a template name, a tag, a pipeline and
+stage and title, a valid URL, a wait greater than zero with a real unit, a split
+percentage between 0 and 100, at most 3 buttons, at most 10 list rows, a variable name of
+letters, numbers and underscores.
+
+Amounts on **Request a payment** and **Send an invoice** are checked too: a literal that
+is not a number is refused now, and one that arrives from a token is checked when the
+step runs — which fails the step rather than creating a link or an invoice worth nothing.
+
+The trigger is validated as well: **Keyword match** needs at least one non-empty keyword,
+**On a schedule** needs a schedule, **Tag added** needs a tag.
+
+<Note>
+  Whether a segment still exists, still belongs to this workspace and is still static is
+  a run-time question — the answer can change after activation — so it is checked when the
+  step runs, not at save time.
+</Note>
+
+## Testing one step
+
+The settings panel's **Test** tab answers "what would this step actually do?".
+**Preview this step** resolves every token against real sample data — a real contact,
+their last message, and what earlier steps returned on recent runs — and shows the exact
+payload, along with any token that resolved to nothing. Nothing is sent.
+
+For a step that reaches a person or changes a third-party system, a separate **Send for
+real** button does it for real, with its own warning. It is a separate button rather than
+a mode toggle, because a Send message step tested carelessly reaches an actual customer.
+
+## The run log
+
+**View runs** in an automation card's menu opens every run, newest first, with the
+number of runs in the header. Each row shows the run's status, the contact, the channel, the
+trigger and the number of steps. Expanding one shows what each step did.
+
+| Run status | Meaning |
+| --- | --- |
+| **Success** | Every step ran. |
+| **Partial** | The run is still going (it is parked at a wait), or at least one step was skipped. |
+| **Failed** | A step failed. The error is shown above the step list. |
+
+| Step result | Meaning |
+| --- | --- |
+| **Success** | It ran. |
+| **Skipped** | The channel could not do it, there was nobody to send to, or the step is switched off. Not a failure — this is how "works on WhatsApp, half-works on Instagram" shows up. |
+| **Failed** | It failed. The reason is on the row. |
+
+A step set to *Carry on to the next step* on failure still marks the run failed, so a
+broken step is never invisible — the rest of the run just still happens.
+
+The run log also feeds the editor: the last run's outputs are what the token picker shows
+as sample values beside each token.
+
+## Parked runs
+
+A **Wait** or **Wait until** records *resuming in …* against the step and leaves the run
+**partial** until it continues. Everything the run collected is kept, so a step after a
+three-day wait can still read what a step before it fetched.

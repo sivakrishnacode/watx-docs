@@ -1,0 +1,158 @@
+---
+title: "Google"
+description: "Gmail, Calendar, Meet, Sheets, Contacts, Docs and Tasks through one small script you deploy in your own Google account."
+icon: "google"
+---
+
+Google in Watx works through a **bridge**: a small script that Watx writes for you and you
+deploy inside your own Google account. Watx calls that script; it never calls Google.
+
+That is the whole design. The script runs under **your** authority, so there is no Watx app
+for Google to approve, no consent screen of ours, and no limit on how many workspaces can
+use it.
+
+<Note>
+  It costs three things, and they are worth knowing before you start. The script lives in
+  your account, so an update means pasting a new one. Google's own Apps Script quotas apply
+  to you (consumer Gmail caps sending at roughly 100 recipients a day). And when something
+  fails inside Google, the detail is in **your** Apps Script execution log — Watx only sees
+  the summary.
+</Note>
+
+One deployment serves everything: **one card, one setup, one connection** for the whole
+workspace.
+
+## Setting it up
+
+**Integrations → Google → Set up** opens a four-step dialog. Two of the steps happen inside
+Google, in another tab. It takes about five minutes, and it is **owner and admin** work.
+
+<Steps>
+  <Step title="Get the script — in Watx">
+    Press **Generate my script**. Watx writes the script and puts a **fresh random secret**
+    inside it — that secret is how your Google account knows a request really came from
+    Watx. Copy it before you leave the step; it is shown once, and Watx keeps only an
+    encrypted copy.
+
+    <Warning>
+      This file is a credential for your Google account. Anyone holding it and your
+      deployment URL can send mail as you. Do not paste it into a shared document.
+    </Warning>
+  </Step>
+  <Step title="Paste it in — in Apps Script">
+    Open [script.google.com](https://script.google.com/home/projects/create) and start a
+    **New project**. Select everything in `Code.gs`, paste your script over it, and save.
+
+    In the left sidebar, next to **Services**, click **+** and add the services the script
+    names at the top of the file — **Calendar API**, **People API** and **Tasks API**.
+    Without them, calls fail with "Calendar is not defined", and the built-in calendar
+    library cannot attach a Meet link.
+
+    Then open **Project Settings** (the gear), tick **Show "appsscript.json"**, and replace
+    that file with the manifest Watx shows beside the script. It grants exactly what the
+    bridge needs and nothing more.
+  </Step>
+  <Step title="Authorize and deploy — in Apps Script">
+    Pick `authorizeOnce` in the function dropdown and press **Run**, then approve the
+    prompt. Google will warn that the app is not verified — this is your own script in your
+    own account, and **Advanced → Go to…** is the right answer. It appears once.
+
+    Then **Deploy → New deployment**, type **Web app**, with:
+
+    | Setting | Value | Why |
+    | --- | --- | --- |
+    | **Execute as** | **Me** | So it acts on your mailbox and calendar |
+    | **Who has access** | **Anyone** | Watx's server has no Google login |
+
+    <Warning>
+      "Anyone with a Google account" is a different setting and will not work — it returns a
+      login page to Watx instead of a result. Your secret is what protects the URL.
+    </Warning>
+
+    Press **Deploy** and copy the **Web app URL**. It ends in `/exec`.
+  </Step>
+  <Step title="Connect and test — back in Watx">
+    Paste the URL and press **Save URL**, then **Test connection**. The test runs the one
+    action that changes nothing — your free/busy for the next 24 hours — and reports what
+    came back.
+  </Step>
+</Steps>
+
+<Warning>
+  Only the `/exec` URL works. Apps Script also shows a `/dev` URL that looks identical in the
+  editor; it requires a signed-in browser and would fail every automation with a login page,
+  so Watx refuses it by name.
+</Warning>
+
+Steps 2 and 3 never show a completion tick. Watx cannot see what you did inside the Apps
+Script editor, and a tick it guessed at would be a lie. You can move between steps freely.
+
+## What it can do
+
+| Service | Actions |
+| --- | --- |
+| **Gmail** | Send an email, with up to five attachments |
+| **Calendar & Meet** | Create an event (optionally with a Meet link), reschedule, cancel, find events, check availability |
+| **Sheets** | Add, find, update or delete a row |
+| **Contacts** | Save a person to the address book |
+| **Docs** | Create a document |
+| **Tasks** | Add a task |
+
+Every field and output is listed in [Google actions](/integrations/google-actions).
+
+### What it deliberately cannot do
+
+- **Nothing reads your mail.** The bridge asks for send-only Gmail access. Reading a mailbox
+  or working with drafts needs permissions in a different, much more invasive category.
+- **No Drive access at all.** Nothing lists your files, which is why a spreadsheet id is
+  pasted from its URL and a tab name is typed.
+- **No standalone Meet action.** A Meet space needs an API an ordinary Apps Script project
+  cannot enable. Creating a calendar event with **Add a Google Meet link** returns a real
+  meeting URL instead, with no extra setup.
+- **No Google Chat.** It looks like the obvious "notify the team" integration, and it sits in
+  the same restricted category as Gmail and Drive.
+
+## Where the actions are used
+
+- **Automations** — one **Google** step per action, in the
+  [step picker](/automations/steps) under Apps. The step names an action and its fields;
+  it never names a connection, a URL or a secret, because the deployment is resolved from
+  the workspace.
+- **AI agents** — the **Appointments** and **Google Workspace**
+  [skills](/ai-agents/skills). An agent gets a deliberately narrower set than an automation
+  does.
+
+Until Google is connected, Google actions appear in the step picker marked **set up first**.
+
+## Keeping the script current
+
+The script reports its own version every time it answers. When Watx has newer actions than
+your deployment, the card says **Update available** and the dialog offers an update.
+
+It is an offer, not a warning: everything you have already built keeps working, and only
+actions added since your script was generated are missing. Taking it up means generating a
+new script — **which mints a new secret** — then pasting and redeploying it. If an automation
+calls an action your script has never heard of, the run fails with a message saying the
+deployed script is older than that action.
+
+## Regenerating and disconnecting
+
+**Generate a new script** on step 1 mints a new secret and stops the currently deployed
+script working until you paste and redeploy the new one. The dialog warns before you do it.
+
+**Disconnect** revokes Watx's access only. The script keeps running in Google with its
+secret — to revoke it fully, delete the deployment in Apps Script.
+
+## When something fails
+
+The dialog shows the last error with the time it happened, so a failure from this morning
+never reads as one happening now. Common causes:
+
+| Symptom | Almost always |
+| --- | --- |
+| A login page or an HTML error instead of a result | The deployment's **Who has access** is not **Anyone**, or the `/dev` URL was used |
+| "Calendar is not defined" | The Calendar, People or Tasks service was not added in step 2 |
+| "unknown action" | The deployed script is older than the action — regenerate and redeploy |
+| Nothing works after regenerating | The new script was not pasted and redeployed |
+
+More in [Troubleshooting integrations](/troubleshooting/integrations).

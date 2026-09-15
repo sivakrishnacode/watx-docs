@@ -1,0 +1,71 @@
+---
+title: "Create an agent"
+description: "Start blank or from a role, name it, and understand the plan limit before you switch it on."
+icon: "plus"
+---
+
+New agents are made from **AI Agents & Bots → New agent**. Only owners and admins can create, edit or delete one; everyone else can read the studio.
+
+<Steps>
+  <Step title="Choose a starting point">
+    **Blank agent** gives you an empty form. A role fills in the tone, the ground rules, the skills and the handoff wording that job usually needs.
+  </Step>
+  <Step title="Name it">
+    The name is what you call it in this list. What it calls itself to a customer is the **Agent name** on the Persona tab, and it is a separate field.
+  </Step>
+  <Step title="Press Create agent">
+    You land in the studio. The agent is **switched off** — nothing reaches a customer until you review it and turn it on in Routing or Behaviour.
+  </Step>
+</Steps>
+
+## The roles you can start from
+
+A role is a set of defaults, not a type. Once created, an agent from a role is an ordinary agent: every field stays editable, nothing re-applies the role later, and no field records where it came from.
+
+| Role | What it is set up for | Skills switched on |
+| --- | --- | --- |
+| **Customer support** | Answers from your knowledge base and hands over anything it cannot source | FAQ & support, Human handoff |
+| **Sales assistant** | Qualifies new enquiries, answers product questions and books the next step | FAQ & support, Lead qualification, Product recommendations, Human handoff |
+| **Appointments** | Takes booking requests, states availability and shares your booking link | Appointments, FAQ & support, Human handoff |
+| **Order tracking** | Looks up an order, reports its status and explains the returns policy | Order status, Returns & refunds, FAQ & support, Human handoff |
+| **Lead qualifier** | Collects the details your team needs before a human picks the conversation up | Lead qualification, FAQ & support, Human handoff |
+
+Each role also sets a tone, a reply length, a set of ground rules, the phrases that always hand off, and the handoff and fallback wording. It deliberately does **not** set the channels — that is a decision about your channels — and never switches automatic replying on.
+
+<Note>
+A role can switch on a skill that needs an integration. **Appointments** is the one to watch: without Google connected it cannot check a calendar or book anything, and falls back to sharing the booking link you give it. See [Skills](/ai-agents/skills).
+</Note>
+
+## How many agents you can have
+
+| Plan | Agents |
+| --- | --- |
+| Starter | 1 |
+| Growth | 5 |
+| Enterprise | Unlimited |
+
+A meter under the page title reads **2 of 5 agents on your plan**, and turns amber when it is full. **Paused agents count** — a cap you could dodge by switching an agent off would not be a cap. When you are at the limit the **New agent** button is disabled and its tooltip says how many your plan includes; [upgrading](/getting-started/plans-and-billing) is the way past it.
+
+## Duplicating
+
+The row menu has **Duplicate**. The copy carries the persona, voice, skills and their settings, the escalation wording, the channels and the agent's selection of knowledge documents and actions. It does **not** carry:
+
+- the name — the copy is called *&lt;name&gt; copy*;
+- its position in the list — a copy goes to the bottom;
+- **on/off** — a copy is always off;
+- **test mode** and the test numbers — those point at one person's phone for one rollout.
+
+A duplicate counts against the plan limit like any other agent.
+
+## Deleting
+
+**Delete** on the row menu removes the agent and its settings. Conversations it answered stay in your inbox but stop being attributed to it, and a thread it was handling is re-routed to whichever other agent covers that channel. The knowledge library and the custom actions are shared by the whole workspace and are not touched.
+
+## Turning it on
+
+Two switches decide what a new agent does, and both start off:
+
+- **Agent enabled** (Routing, or the switch on the list row) — the master switch. With it on, the agent can be asked for a draft in the inbox.
+- **Answer inbound messages automatically** (Behaviour) — the agent replies to customers by itself.
+
+Before you turn the second one on, read the readiness checklist at the top of the studio and try the agent in the [test drawer](/ai-agents/testing).

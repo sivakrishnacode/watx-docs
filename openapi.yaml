@@ -1,0 +1,2237 @@
+openapi: 3.1.0
+info:
+  title: Watx API
+  version: "1"
+  description: |
+    The Watx public REST API. Send WhatsApp messages, manage contacts and
+    segments, read conversations and messages, launch broadcasts, and register
+    webhook endpoints.
+
+    Every request authenticates with a workspace API key sent as a bearer
+    token. A key acts on exactly one workspace and can only do what its scopes
+    allow. Each operation below names the scope it requires.
+  contact:
+    name: Watx support
+    email: support@watx.in
+
+servers:
+  - url: https://api.watx.in/v1
+    description: Production
+
+security:
+  - apiKey: []
+
+tags:
+  - name: Account
+    description: Check which workspace a key belongs to and what it can do.
+  - name: Messages
+    description: Send a WhatsApp message to a phone number.
+  - name: Contacts
+    description: Create, read, update and list contacts.
+  - name: Conversations
+    description: Read conversations and their messages.
+  - name: Broadcasts
+    description: Launch a template broadcast and follow its progress.
+  - name: Segments
+    description: Named audiences — static lists and saved filters.
+  - name: Webhooks
+    description: Register endpoints that receive events from your workspace.
+
+paths:
+  /me:
+    get:
+      operationId: getMe
+      tags: [Account]
+      summary: Who am I
+      description: |
+        Returns the workspace the API key belongs to and the scopes it carries.
+
+        Requires a valid key and **no scope at all**, so a key created with no
+        scopes can still call this. Use it to check that a key works and to
+        discover what it is allowed to do.
+      responses:
+        "200":
+          description: The workspace and the key.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      account:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            format: uuid
+                          name:
+                            type: string
+                      key:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            format: uuid
+                          scopes:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/Scope"
+              example:
+                data:
+                  account:
+                    id: 6f5a0d6e-1d1a-4a1e-9f2f-2c9a1b7b5f10
+                    name: Acme Traders
+                  key:
+                    id: 2a7c9e11-4b3f-4c22-9a6d-8f1e5b0c3d44
+                    scopes: [messages:send, contacts:read]
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+
+  /messages:
+    post:
+      operationId: sendMessage
+      tags: [Messages]
+      summary: Send a message
+      description: |
+        Sends a WhatsApp message to a phone number. You pass a number, not an
+        internal id: the endpoint finds or creates the contact and the WhatsApp
+        conversation, then sends.
+
+        A free-form message (text or media) only reaches a customer inside the
+        24-hour customer service window. Outside it, send `type: "template"`
+        with an approved template.
+
+        Requires the `messages:send` scope.
+      x-required-scope: messages:send
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SendMessageRequest"
+            examples:
+              text:
+                summary: Plain text
+                value:
+                  to: "+919876543210"
+                  type: text
+                  text: "Your order has been packed."
+              template:
+                summary: Template with two body values
+                value:
+                  to: "+919876543210"
+                  type: template
+                  template:
+                    name: order_update
+                    language: en_US
+                    params: ["Priya", "A-1042"]
+              media:
+                summary: Document with a caption
+                value:
+                  to: "+919876543210"
+                  type: document
+                  media_url: https://files.example.com/invoice-1042.pdf
+                  filename: invoice-1042.pdf
+                  text: "Your invoice."
+      responses:
+        "201":
+          description: The message was accepted by WhatsApp and stored.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SendMessageResult"
+              example:
+                data:
+                  message_id: 9d1f4b2a-6c3e-4a51-bf2d-0a7c9e114b3f
+                  whatsapp_message_id: wamid.HBgMOTE5ODc2NTQzMjEwFQIAERgS
+                  conversation_id: 3c5b1e77-90aa-4c0e-8f71-1d2a3b4c5d6e
+                  contact_id: 7e2d9c01-55b4-4a3d-9c8e-0f1a2b3c4d5e
+                  contact_created: false
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "402":
+          $ref: "#/components/responses/PaymentRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "502":
+          description: |
+            WhatsApp rejected the send. `code` is `meta_error` and `message`
+            quotes what Meta said.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error:
+                  code: meta_error
+                  message: "Meta API error: (#132000) Number of parameters does not match the expected number of params"
+
+  /contacts:
+    get:
+      operationId: listContacts
+      tags: [Contacts]
+      summary: List contacts
+      description: |
+        Lists contacts, newest first, with cursor pagination.
+
+        Requires the `contacts:read` scope.
+      x-required-scope: contacts:read
+      parameters:
+        - $ref: "#/components/parameters/limit"
+        - $ref: "#/components/parameters/cursor"
+        - name: search
+          in: query
+          description: |
+            Matches the contact's name or phone number, case-insensitively.
+            Characters other than letters, digits, space and `+ @ . - _` are
+            stripped before the search runs.
+          schema:
+            type: string
+          example: priya
+        - name: tag
+          in: query
+          description: Return only contacts carrying this tag id.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: A page of contacts.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Contact"
+                  meta:
+                    $ref: "#/components/schemas/ListMeta"
+              example:
+                data:
+                  - id: 7e2d9c01-55b4-4a3d-9c8e-0f1a2b3c4d5e
+                    phone: "+919876543210"
+                    instagram_username: null
+                    channels: [whatsapp]
+                    name: Priya Nair
+                    email: priya@example.com
+                    company: Acme Traders
+                    avatar_url: null
+                    tags:
+                      - id: 1b2c3d4e-5f60-4712-8293-a4b5c6d7e8f9
+                        name: vip
+                        color: "#3b82f6"
+                    created_at: "2026-09-01T09:12:44.000Z"
+                    updated_at: "2026-09-10T11:02:10.000Z"
+                meta:
+                  next_cursor: MjAyNi0wOS0wMVQwOToxMjo0NC4wMDBafDdlMmQ5YzAx
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+    post:
+      operationId: createContact
+      tags: [Contacts]
+      summary: Create a contact
+      description: |
+        Creates a contact, or returns the existing one with the same phone
+        number. A new contact answers `201`; a match answers `200`. The phone
+        number is stored in E.164 form.
+
+        Requires the `contacts:write` scope.
+      x-required-scope: contacts:write
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateContactRequest"
+            example:
+              phone: "+919876543210"
+              name: Priya Nair
+              email: priya@example.com
+              company: Acme Traders
+              tags: [vip, newsletter]
+      responses:
+        "200":
+          description: A contact with this phone number already existed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Contact"
+        "201":
+          description: The contact was created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Contact"
+              example:
+                data:
+                  id: 7e2d9c01-55b4-4a3d-9c8e-0f1a2b3c4d5e
+                  phone: "+919876543210"
+                  instagram_username: null
+                  channels: [whatsapp]
+                  name: Priya Nair
+                  email: priya@example.com
+                  company: Acme Traders
+                  avatar_url: null
+                  tags:
+                    - id: 1b2c3d4e-5f60-4712-8293-a4b5c6d7e8f9
+                      name: vip
+                      color: "#3b82f6"
+                  created_at: "2026-09-15T06:41:02.000Z"
+                  updated_at: "2026-09-15T06:41:02.000Z"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "402":
+          $ref: "#/components/responses/PaymentRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+
+  /contacts/{id}:
+    parameters:
+      - $ref: "#/components/parameters/contactId"
+    get:
+      operationId: getContact
+      tags: [Contacts]
+      summary: Get a contact
+      description: |
+        Returns one contact. A contact belonging to another workspace answers
+        `404`.
+
+        Requires the `contacts:read` scope.
+      x-required-scope: contacts:read
+      responses:
+        "200":
+          description: The contact.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Contact"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+    patch:
+      operationId: updateContact
+      tags: [Contacts]
+      summary: Update a contact
+      description: |
+        Updates only the fields present in the body. `name`, `email` and
+        `company` accept a string or `null`; anything else is a `400`. Sending
+        `tags` replaces the contact's tags with exactly that list, creating any
+        tag name the workspace does not have yet.
+
+        The phone number cannot be changed here.
+
+        Requires the `contacts:write` scope.
+      x-required-scope: contacts:write
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateContactRequest"
+            example:
+              name: Priya Nair
+              company: null
+              tags: [vip]
+      responses:
+        "200":
+          description: The updated contact.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Contact"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+
+  /conversations:
+    get:
+      operationId: listConversations
+      tags: [Conversations]
+      summary: List conversations
+      description: |
+        Lists conversations, newest first, with cursor pagination. Each row
+        embeds its contact and that contact's tags.
+
+        Every channel is returned unless you filter, so an integration written
+        before Instagram and the website widget existed keeps seeing everything
+        it saw before, plus threads it may not recognise. Each row carries
+        `channel`.
+
+        Requires the `conversations:read` scope.
+      x-required-scope: conversations:read
+      parameters:
+        - $ref: "#/components/parameters/limit"
+        - $ref: "#/components/parameters/cursor"
+        - name: status
+          in: query
+          description: Filter by conversation status.
+          schema:
+            type: string
+            enum: [open, pending, closed]
+        - name: contact_id
+          in: query
+          description: Only this contact's conversations.
+          schema:
+            type: string
+            format: uuid
+        - name: channel
+          in: query
+          description: |
+            Only conversations on this channel. An unknown value is a `400`.
+          schema:
+            type: string
+            enum: [whatsapp, instagram, web]
+      responses:
+        "200":
+          description: A page of conversations.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Conversation"
+                  meta:
+                    $ref: "#/components/schemas/ListMeta"
+              example:
+                data:
+                  - id: 3c5b1e77-90aa-4c0e-8f71-1d2a3b4c5d6e
+                    channel: whatsapp
+                    contact_id: 7e2d9c01-55b4-4a3d-9c8e-0f1a2b3c4d5e
+                    status: open
+                    assigned_agent_id: null
+                    last_message_text: "Your order has been packed."
+                    last_message_at: "2026-09-14T10:15:00.000Z"
+                    last_inbound_at: "2026-09-14T09:58:31.000Z"
+                    unread_count: 0
+                    created_at: "2026-09-01T09:12:44.000Z"
+                    updated_at: "2026-09-14T10:15:00.000Z"
+                    contact:
+                      id: 7e2d9c01-55b4-4a3d-9c8e-0f1a2b3c4d5e
+                      phone: "+919876543210"
+                      instagram_username: null
+                      name: Priya Nair
+                      email: priya@example.com
+                      company: Acme Traders
+                      tags: []
+                meta:
+                  next_cursor: null
+        "400":
+          description: |
+            An unknown `channel` value. `code` is `invalid_request`.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error:
+                  code: invalid_request
+                  message: 'Unknown channel "sms". Valid values: whatsapp, instagram, web.'
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+
+  /conversations/{id}:
+    parameters:
+      - $ref: "#/components/parameters/conversationId"
+    get:
+      operationId: getConversation
+      tags: [Conversations]
+      summary: Get a conversation
+      description: |
+        Returns one conversation with its contact. A conversation belonging to
+        another workspace answers `404`.
+
+        Requires the `conversations:read` scope.
+      x-required-scope: conversations:read
+      responses:
+        "200":
+          description: The conversation.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Conversation"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+
+  /conversations/{id}/messages:
+    parameters:
+      - $ref: "#/components/parameters/conversationId"
+    get:
+      operationId: listConversationMessages
+      tags: [Conversations]
+      summary: List a conversation's messages
+      description: |
+        Lists the messages in one conversation, newest first, with cursor
+        pagination. The conversation is checked against your workspace first —
+        another workspace's conversation answers `404`, never an empty list.
+
+        Requires the `messages:read` scope.
+      x-required-scope: messages:read
+      parameters:
+        - $ref: "#/components/parameters/limit"
+        - $ref: "#/components/parameters/cursor"
+      responses:
+        "200":
+          description: A page of messages.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Message"
+                  meta:
+                    $ref: "#/components/schemas/ListMeta"
+              example:
+                data:
+                  - id: 9d1f4b2a-6c3e-4a51-bf2d-0a7c9e114b3f
+                    conversation_id: 3c5b1e77-90aa-4c0e-8f71-1d2a3b4c5d6e
+                    direction: outbound
+                    sender_type: agent
+                    content_type: text
+                    content_text: "Your order has been packed."
+                    media_url: null
+                    template_name: null
+                    whatsapp_message_id: wamid.HBgMOTE5ODc2NTQzMjEwFQIAERgS
+                    message_id: wamid.HBgMOTE5ODc2NTQzMjEwFQIAERgS
+                    status: delivered
+                    reply_to_message_id: null
+                    interactive_reply_id: null
+                    deleted_at: null
+                    created_at: "2026-09-14T10:15:00.000Z"
+                meta:
+                  next_cursor: null
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+
+  /broadcasts:
+    post:
+      operationId: createBroadcast
+      tags: [Broadcasts]
+      summary: Launch a broadcast
+      description: |
+        Queues a template broadcast to a list of phone numbers. Every recipient
+        is written to the database and handed to the send queue before the call
+        returns, so the `202` survives a restart. Poll
+        `GET /broadcasts/{id}` for progress.
+
+        Recipients are capped at **1000 per request**. A number that is not a
+        valid phone number is dropped and counted in `rejected`. A contact who
+        has opted out of marketing is dropped silently and is not counted in
+        `accepted`. Duplicates of the same contact are collapsed.
+
+        Requires the `broadcasts:send` scope.
+      x-required-scope: broadcasts:send
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBroadcastRequest"
+            example:
+              name: September offer
+              template_name: september_offer
+              template_language: en_US
+              recipients:
+                - to: "+919876543210"
+                  params: ["Priya"]
+                - to: "+919876543211"
+                  params: ["Arun"]
+      responses:
+        "202":
+          description: The broadcast was accepted and queued.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/BroadcastAccepted"
+              example:
+                data:
+                  broadcast_id: 4f8e2c10-77b9-4d3a-9e12-5a6b7c8d9e0f
+                  status: queued
+                  total_recipients: 2
+                  accepted: 2
+                  rejected: 0
+        "400":
+          description: |
+            A missing template name, an empty or oversized recipient list, no
+            recipient with a usable phone number, every recipient opted out, or
+            WhatsApp not connected (`whatsapp_not_configured`).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error:
+                  code: bad_request
+                  message: "A broadcast is capped at 1000 recipients per request; split larger sends"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "402":
+          $ref: "#/components/responses/PaymentRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+
+  /broadcasts/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: The broadcast id.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: getBroadcast
+      tags: [Broadcasts]
+      summary: Get a broadcast
+      description: |
+        Returns a broadcast with its live counters. `status` moves
+        `queued` to `sending` to `sent` (or `failed`), while
+        `delivered_count` and `read_count` keep climbing as WhatsApp reports
+        back.
+
+        Requires the `broadcasts:send` scope.
+      x-required-scope: broadcasts:send
+      responses:
+        "200":
+          description: The broadcast.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Broadcast"
+              example:
+                data:
+                  id: 4f8e2c10-77b9-4d3a-9e12-5a6b7c8d9e0f
+                  name: September offer
+                  template_name: september_offer
+                  template_language: en_US
+                  status: sending
+                  total_recipients: 2
+                  sent_count: 2
+                  delivered_count: 1
+                  read_count: 0
+                  replied_count: 0
+                  failed_count: 0
+                  created_at: "2026-09-15T06:41:02.000Z"
+                  updated_at: "2026-09-15T06:41:20.000Z"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+
+  /segments:
+    get:
+      operationId: listSegments
+      tags: [Segments]
+      summary: List segments
+      description: |
+        Lists every segment in the workspace, ordered by name. This list is not
+        paginated and carries no `member_count`: resolving a dynamic segment
+        reads the whole contact list, so the count is only returned by
+        `GET /segments/{id}`.
+
+        Requires the `contacts:read` scope.
+      x-required-scope: contacts:read
+      responses:
+        "200":
+          description: Every segment.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Segment"
+              example:
+                data:
+                  - id: 8c1d2e3f-4a5b-4c6d-8e9f-0a1b2c3d4e5f
+                    name: September webinar
+                    description: Everyone who registered
+                    color: "#6366f1"
+                    kind: static
+                    filter: null
+                    created_at: "2026-09-02T07:30:00.000Z"
+                    updated_at: "2026-09-02T07:30:00.000Z"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+    post:
+      operationId: createSegment
+      tags: [Segments]
+      summary: Create a segment
+      description: |
+        Creates a segment. `kind` is `static` (an explicit membership list) or
+        `dynamic` (a saved filter, recomputed on every read) and **cannot be
+        changed afterwards** — to switch, delete the segment and create a new
+        one. A `filter` is stored only for a dynamic segment.
+
+        Names are unique per workspace, case-insensitively, and are capped at
+        80 characters.
+
+        Requires the `contacts:write` scope.
+      x-required-scope: contacts:write
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSegmentRequest"
+            examples:
+              static:
+                summary: A static list
+                value:
+                  name: September webinar
+                  description: Everyone who registered
+                  kind: static
+              dynamic:
+                summary: A saved filter
+                value:
+                  name: VIPs with an email
+                  kind: dynamic
+                  color: "#16a34a"
+                  filter:
+                    match: all
+                    rules:
+                      - field: tag
+                        op: has
+                        value: vip
+                      - field: email
+                        op: is_set
+      responses:
+        "201":
+          description: The segment was created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Segment"
+              example:
+                data:
+                  id: 8c1d2e3f-4a5b-4c6d-8e9f-0a1b2c3d4e5f
+                  name: September webinar
+                  description: Everyone who registered
+                  color: "#6366f1"
+                  kind: static
+                  filter: null
+                  created_at: "2026-09-15T06:41:02.000Z"
+                  updated_at: "2026-09-15T06:41:02.000Z"
+        "400":
+          description: |
+            A missing or oversized name, or a name already used in this
+            workspace.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error:
+                  code: bad_request
+                  message: 'A segment named "September webinar" already exists'
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+
+  /segments/{id}:
+    parameters:
+      - $ref: "#/components/parameters/segmentId"
+    get:
+      operationId: getSegment
+      tags: [Segments]
+      summary: Get a segment
+      description: |
+        Returns one segment, including `member_count`. For a dynamic segment
+        the count is computed from its filter at read time.
+
+        Requires the `contacts:read` scope.
+      x-required-scope: contacts:read
+      responses:
+        "200":
+          description: The segment and its member count.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Segment"
+              example:
+                data:
+                  id: 8c1d2e3f-4a5b-4c6d-8e9f-0a1b2c3d4e5f
+                  name: VIPs with an email
+                  description: null
+                  color: "#16a34a"
+                  kind: dynamic
+                  filter:
+                    match: all
+                    rules:
+                      - field: tag
+                        op: has
+                        value: vip
+                      - field: email
+                        op: is_set
+                  member_count: 42
+                  created_at: "2026-09-02T07:30:00.000Z"
+                  updated_at: "2026-09-02T07:30:00.000Z"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+    patch:
+      operationId: updateSegment
+      tags: [Segments]
+      summary: Update a segment
+      description: |
+        Updates the fields present in the body. `kind` is immutable and is
+        ignored here; sending `filter` for a static segment is a `400`.
+
+        Requires the `contacts:write` scope.
+      x-required-scope: contacts:write
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateSegmentRequest"
+            example:
+              name: VIP buyers
+              description: null
+              filter:
+                match: any
+                rules:
+                  - field: tag
+                    op: has
+                    value: vip
+      responses:
+        "200":
+          description: The updated segment.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Segment"
+        "400":
+          description: An empty or oversized name, or a filter on a static segment.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error:
+                  code: bad_request
+                  message: Only a dynamic segment has a filter
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+    delete:
+      operationId: deleteSegment
+      tags: [Segments]
+      summary: Delete a segment
+      description: |
+        Deletes the segment and its membership rows. The contacts themselves
+        are untouched.
+
+        Requires the `contacts:write` scope.
+      x-required-scope: contacts:write
+      responses:
+        "200":
+          description: The segment was deleted.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      deleted:
+                        type: boolean
+              example:
+                data:
+                  id: 8c1d2e3f-4a5b-4c6d-8e9f-0a1b2c3d4e5f
+                  deleted: true
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+
+  /segments/{id}/contacts:
+    parameters:
+      - $ref: "#/components/parameters/segmentId"
+    get:
+      operationId: listSegmentContacts
+      tags: [Segments]
+      summary: List a segment's contacts
+      description: |
+        Returns the people in a segment — the stored list for a static segment,
+        the result of the filter for a dynamic one. This is the only correct way
+        to turn a segment into contacts.
+
+        `limit` applies (default 50, max 100) but there is no cursor here:
+        `meta.next_cursor` is always `null`.
+
+        Requires the `contacts:read` scope.
+      x-required-scope: contacts:read
+      parameters:
+        - $ref: "#/components/parameters/limit"
+      responses:
+        "200":
+          description: The segment's contacts.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Contact"
+                  meta:
+                    $ref: "#/components/schemas/ListMeta"
+              example:
+                data:
+                  - id: 7e2d9c01-55b4-4a3d-9c8e-0f1a2b3c4d5e
+                    phone: "+919876543210"
+                    instagram_username: null
+                    channels: [whatsapp]
+                    name: Priya Nair
+                    email: priya@example.com
+                    company: Acme Traders
+                    avatar_url: null
+                    tags: []
+                    created_at: "2026-09-01T09:12:44.000Z"
+                    updated_at: "2026-09-10T11:02:10.000Z"
+                meta:
+                  next_cursor: null
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+    post:
+      operationId: addSegmentContacts
+      tags: [Segments]
+      summary: Add contacts to a segment
+      description: |
+        Adds contacts to a **static** segment. A dynamic segment answers `400` —
+        its membership comes from its filter.
+
+        Up to 1000 contact ids per request. `added` counts the rows actually
+        created, so ids that were already members and ids belonging to another
+        workspace both count as zero — compare it with `requested`.
+
+        Requires the `contacts:write` scope.
+      x-required-scope: contacts:write
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SegmentContactsRequest"
+            example:
+              contact_ids:
+                - 7e2d9c01-55b4-4a3d-9c8e-0f1a2b3c4d5e
+                - 1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d
+      responses:
+        "201":
+          description: How many of the requested contacts were added.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      segment_id:
+                        type: string
+                        format: uuid
+                      requested:
+                        type: integer
+                      added:
+                        type: integer
+              example:
+                data:
+                  segment_id: 8c1d2e3f-4a5b-4c6d-8e9f-0a1b2c3d4e5f
+                  requested: 2
+                  added: 1
+        "400":
+          description: |
+            An empty or oversized `contact_ids`, or a dynamic segment.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error:
+                  code: bad_request
+                  message: Cannot add contacts to a dynamic segment; its membership comes from its filter
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+    delete:
+      operationId: removeSegmentContacts
+      tags: [Segments]
+      summary: Remove contacts from a segment
+      description: |
+        Removes contacts from a static segment. The contact ids go in the
+        request body, as they do when adding. `removed` counts the rows
+        actually deleted.
+
+        Requires the `contacts:write` scope.
+      x-required-scope: contacts:write
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SegmentContactsRequest"
+            example:
+              contact_ids:
+                - 7e2d9c01-55b4-4a3d-9c8e-0f1a2b3c4d5e
+      responses:
+        "200":
+          description: How many memberships were removed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      segment_id:
+                        type: string
+                        format: uuid
+                      requested:
+                        type: integer
+                      removed:
+                        type: integer
+              example:
+                data:
+                  segment_id: 8c1d2e3f-4a5b-4c6d-8e9f-0a1b2c3d4e5f
+                  requested: 1
+                  removed: 1
+        "400":
+          description: An empty `contact_ids`.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error:
+                  code: bad_request
+                  message: contact_ids is required
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+
+  /webhooks:
+    get:
+      operationId: listWebhooks
+      tags: [Webhooks]
+      summary: List webhook endpoints
+      description: |
+        Lists every webhook endpoint in the workspace, newest first, including
+        endpoints connected from the Zapier and n8n pages (`provider` says
+        which). The signing secret is never returned.
+
+        Requires the `webhooks:manage` scope.
+      x-required-scope: webhooks:manage
+      responses:
+        "200":
+          description: The workspace's endpoints. `meta.next_cursor` is always `null`.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/WebhookEndpoint"
+                  meta:
+                    $ref: "#/components/schemas/ListMeta"
+              example:
+                data:
+                  - id: 5b6c7d8e-9f01-4a2b-8c3d-4e5f6a7b8c9d
+                    url: https://example.com/hooks/watx
+                    events: [message.received, message.status_updated]
+                    is_active: true
+                    last_delivery_at: "2026-09-15T06:40:11.000Z"
+                    failure_count: 0
+                    created_at: "2026-09-01T10:00:00.000Z"
+                    provider: api
+                meta:
+                  next_cursor: null
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+    post:
+      operationId: createWebhook
+      tags: [Webhooks]
+      summary: Register a webhook endpoint
+      description: |
+        Registers an endpoint and subscribes it to one or more events. The `url`
+        must be `https://` and must resolve to a public address.
+
+        The response carries `secret` **once**. Store it: Watx keeps only an
+        encrypted copy and no read path returns it again. Use it to verify the
+        `X-Watx-Signature` header on every delivery.
+
+        Requires the `webhooks:manage` scope.
+      x-required-scope: webhooks:manage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateWebhookRequest"
+            example:
+              url: https://example.com/hooks/watx
+              events: [message.received, message.status_updated]
+      responses:
+        "201":
+          description: The endpoint, with its signing secret.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/WebhookEndpointWithSecret"
+              example:
+                data:
+                  id: 5b6c7d8e-9f01-4a2b-8c3d-4e5f6a7b8c9d
+                  url: https://example.com/hooks/watx
+                  events: [message.received, message.status_updated]
+                  is_active: true
+                  last_delivery_at: null
+                  failure_count: 0
+                  created_at: "2026-09-15T06:41:02.000Z"
+                  provider: api
+                  secret: whsec_Zm9vYmFyYmF6cXV4MTIzNDU2Nzg5MGFiY2RlZmdoaWo
+        "400":
+          description: |
+            A `url` that is not a valid `https://` URL, or an `events` array
+            that is empty or names an unknown event.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error:
+                  code: bad_request
+                  message: "'events' must be a non-empty array of known event names"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+
+  /webhooks/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: The webhook endpoint id.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: getWebhook
+      tags: [Webhooks]
+      summary: Get a webhook endpoint
+      description: |
+        Returns one endpoint. The secret is not included.
+
+        Requires the `webhooks:manage` scope.
+      x-required-scope: webhooks:manage
+      responses:
+        "200":
+          description: The endpoint.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/WebhookEndpoint"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+    patch:
+      operationId: updateWebhook
+      tags: [Webhooks]
+      summary: Update a webhook endpoint
+      description: |
+        Changes the `url`, the subscribed `events`, or whether the endpoint is
+        active. Setting `is_active` to `true` also resets the consecutive
+        failure counter, which is how you bring back an endpoint that was
+        disabled automatically.
+
+        A body with none of those three fields is a `400`.
+
+        Requires the `webhooks:manage` scope.
+      x-required-scope: webhooks:manage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateWebhookRequest"
+            example:
+              events: [message.received]
+              is_active: true
+      responses:
+        "200":
+          description: The updated endpoint.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/WebhookEndpoint"
+        "400":
+          description: An invalid url, an invalid event list, a non-boolean `is_active`, or nothing to update.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error:
+                  code: bad_request
+                  message: No updatable fields provided
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+    delete:
+      operationId: deleteWebhook
+      tags: [Webhooks]
+      summary: Delete a webhook endpoint
+      description: |
+        Removes the endpoint. Deliveries stop immediately. Deleting an endpoint
+        whose `provider` is `zapier` or `n8n` disconnects that integration.
+
+        Requires the `webhooks:manage` scope.
+      x-required-scope: webhooks:manage
+      responses:
+        "200":
+          description: The endpoint was deleted.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      deleted:
+                        type: boolean
+              example:
+                data:
+                  id: 5b6c7d8e-9f01-4a2b-8c3d-4e5f6a7b8c9d
+                  deleted: true
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+
+components:
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      description: |
+        Your workspace API key, created in **Settings → API keys**, sent as
+        `Authorization: Bearer <key>`. New keys start with `watx_live_`; keys
+        issued before the rename start with `converse360_live_` and still work.
+
+  parameters:
+    limit:
+      name: limit
+      in: query
+      description: Page size. Default 50, maximum 100. An unusable value falls back to 50.
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 50
+    cursor:
+      name: cursor
+      in: query
+      description: |
+        The `meta.next_cursor` from the previous page, passed back verbatim. An
+        unreadable cursor is ignored and the first page is returned.
+      schema:
+        type: string
+    contactId:
+      name: id
+      in: path
+      required: true
+      description: The contact id.
+      schema:
+        type: string
+        format: uuid
+    conversationId:
+      name: id
+      in: path
+      required: true
+      description: The conversation id.
+      schema:
+        type: string
+        format: uuid
+    segmentId:
+      name: id
+      in: path
+      required: true
+      description: The segment id.
+      schema:
+        type: string
+        format: uuid
+
+  responses:
+    BadRequest:
+      description: The request was malformed or a value was unusable.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error:
+              code: bad_request
+              message: "'to' must be a valid phone number in E.164 format (e.g. +14155550123)"
+    Unauthorized:
+      description: |
+        The key is missing, malformed, unknown, revoked or expired. All four
+        answer the same way.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error:
+              code: unauthorized
+              message: Missing or invalid API key
+    Forbidden:
+      description: The key is valid but was not granted the scope this operation requires.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error:
+              code: forbidden
+              message: "This API key is missing the 'messages:send' scope"
+    NotFound:
+      description: |
+        No such resource in this workspace. A resource belonging to another
+        workspace answers the same way.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error:
+              code: not_found
+              message: Contact not found
+    PaymentRequired:
+      description: |
+        The workspace has used up this plan limit for the month, or its
+        subscription has lapsed. Reads keep working; the things that spend do
+        not.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    RateLimited:
+      description: |
+        More than 120 requests in a minute for this key. `Retry-After` says how
+        many seconds to wait.
+      headers:
+        Retry-After:
+          description: Seconds until the window resets.
+          schema:
+            type: integer
+        X-RateLimit-Limit:
+          description: Requests allowed per window.
+          schema:
+            type: integer
+        X-RateLimit-Remaining:
+          description: Requests left in this window.
+          schema:
+            type: integer
+        X-RateLimit-Reset:
+          description: Unix time in seconds when the window resets.
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error:
+              code: rate_limited
+              message: Rate limit exceeded for this API key
+
+  schemas:
+    Error:
+      type: object
+      description: |
+        Every failure uses this shape. Branch on `error.code`, which is stable;
+        `error.message` is written for people and may be reworded.
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              description: |
+                One of `bad_request`, `invalid_request`, `unauthorized`,
+                `forbidden`, `not_found`, `rate_limited`, `internal`, or a
+                domain code such as `whatsapp_not_configured`, `meta_error`,
+                `template_malformed`, `plan_limit_reached`,
+                `subscription_lapsed`.
+              example: bad_request
+            message:
+              type: string
+              example: "'phone' is required"
+
+    ListMeta:
+      type: object
+      description: Pagination metadata on list responses.
+      properties:
+        next_cursor:
+          type: [string, "null"]
+          description: |
+            Pass back as `?cursor=` for the next page. `null` means this was the
+            last page.
+
+    Scope:
+      type: string
+      enum:
+        - messages:send
+        - messages:read
+        - contacts:read
+        - contacts:write
+        - conversations:read
+        - broadcasts:send
+        - webhooks:manage
+
+    Tag:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        color:
+          type: string
+          description: Hex colour, for example `#3b82f6`.
+
+    Contact:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        phone:
+          type: [string, "null"]
+          description: |
+            E.164 phone number. `null` for a contact who only exists on
+            Instagram — check `channels` before assuming a string.
+        instagram_username:
+          type: [string, "null"]
+          description: Public @handle. Display only; handles change.
+        channels:
+          type: array
+          description: The platforms this contact is reachable on.
+          items:
+            type: string
+            enum: [whatsapp, instagram]
+        name:
+          type: [string, "null"]
+        email:
+          type: [string, "null"]
+        company:
+          type: [string, "null"]
+        avatar_url:
+          type: [string, "null"]
+        tags:
+          type: array
+          items:
+            $ref: "#/components/schemas/Tag"
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    ConversationContact:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        phone:
+          type: [string, "null"]
+        instagram_username:
+          type: [string, "null"]
+        name:
+          type: [string, "null"]
+        email:
+          type: [string, "null"]
+        company:
+          type: [string, "null"]
+        tags:
+          type: array
+          items:
+            $ref: "#/components/schemas/Tag"
+
+    Conversation:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        channel:
+          type: string
+          enum: [whatsapp, instagram, web]
+        contact_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [open, pending, closed]
+        assigned_agent_id:
+          type: [string, "null"]
+          description: The member this conversation is assigned to, if any.
+        last_message_text:
+          type: [string, "null"]
+        last_message_at:
+          type: [string, "null"]
+          format: date-time
+        last_inbound_at:
+          type: [string, "null"]
+          format: date-time
+          description: |
+            The customer's last message. The messaging window is measured from
+            here.
+        unread_count:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        contact:
+          oneOf:
+            - $ref: "#/components/schemas/ConversationContact"
+            - type: "null"
+
+    Message:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        conversation_id:
+          type: string
+          format: uuid
+        direction:
+          type: string
+          enum: [inbound, outbound]
+        sender_type:
+          type: string
+          enum: [customer, agent, bot]
+        content_type:
+          type: string
+          enum:
+            - text
+            - image
+            - document
+            - audio
+            - video
+            - location
+            - template
+            - interactive
+            - sticker
+            - contacts
+            - order
+            - system
+            - unsupported
+        content_text:
+          type: [string, "null"]
+        media_url:
+          type: [string, "null"]
+        template_name:
+          type: [string, "null"]
+        whatsapp_message_id:
+          type: [string, "null"]
+          description: |
+            Kept for backwards compatibility and identical to `message_id`. On
+            an Instagram conversation it carries an Instagram `mid`. Prefer
+            `message_id` in new integrations.
+        message_id:
+          type: [string, "null"]
+          description: The platform's own message id.
+        status:
+          type: string
+          enum: [sending, sent, delivered, read, failed]
+          description: |
+            WhatsApp reports `sent`, `delivered`, `read`. Instagram has no
+            delivery receipt and goes from `sent` to `read`.
+        reply_to_message_id:
+          type: [string, "null"]
+          format: uuid
+        interactive_reply_id:
+          type: [string, "null"]
+          description: The payload of the button or list item the customer tapped.
+        deleted_at:
+          type: [string, "null"]
+          format: date-time
+          description: Set when the platform reported the message as deleted.
+        created_at:
+          type: string
+          format: date-time
+
+    TemplateLocation:
+      type: object
+      description: The map pin for a template with a location header.
+      required: [latitude, longitude]
+      properties:
+        latitude:
+          type: string
+        longitude:
+          type: string
+        name:
+          type: string
+        address:
+          type: string
+
+    TemplateCardParams:
+      type: object
+      description: |
+        Send-time values for one card of a carousel template, in card order.
+        Keep empty entries in place — position decides which card a value
+        belongs to.
+      properties:
+        headerMediaUrl:
+          type: string
+          description: Public URL of this card's image or video.
+        headerMediaId:
+          type: string
+          description: A media id already uploaded to WhatsApp.
+        body:
+          type: array
+          items:
+            type: string
+        bodyNamed:
+          type: object
+          additionalProperties:
+            type: string
+        buttonParams:
+          type: object
+          description: Values for this card's buttons, keyed by button index (`"0"`, `"1"`).
+          additionalProperties:
+            type: string
+
+    TemplateSendParams:
+      type: object
+      description: |
+        Structured send-time values, for a template that needs more than body
+        text. Anything the template does not have is ignored.
+      properties:
+        body:
+          type: array
+          description: Body values in placeholder order.
+          items:
+            type: string
+        bodyNamed:
+          type: object
+          description: |
+            Body values keyed by parameter name, for a template that uses named
+            parameters. Takes precedence over `body` for a name it carries.
+          additionalProperties:
+            type: string
+        headerText:
+          type: string
+          description: The value for a text header that carries a variable.
+        headerMediaUrl:
+          type: string
+          description: Public URL for an image, video or document header.
+        headerMediaId:
+          type: string
+          description: A media id already uploaded to WhatsApp, instead of a URL.
+        headerFilename:
+          type: string
+          description: |
+            The file name shown in the chat for a document header. Without it
+            WhatsApp shows the attachment as "Untitled".
+        headerLocation:
+          $ref: "#/components/schemas/TemplateLocation"
+        buttonParams:
+          type: object
+          description: |
+            Values for dynamic buttons, keyed by button index (`"0"`, `"1"`) —
+            the URL suffix for a dynamic URL button, the code for a copy-code
+            button.
+          additionalProperties:
+            type: string
+        cards:
+          type: array
+          description: One entry per card of a carousel template, in card order.
+          items:
+            $ref: "#/components/schemas/TemplateCardParams"
+
+    SendMessageRequest:
+      type: object
+      required: [to]
+      properties:
+        to:
+          type: string
+          description: |
+            The recipient's phone number in E.164 form, for example
+            `+919876543210`. A number without a country code is read using the
+            workspace's default country.
+          example: "+919876543210"
+        type:
+          type: string
+          enum: [text, template, image, video, document, audio]
+          default: text
+          description: What kind of message to send.
+        text:
+          type: string
+          description: |
+            The message body for `type: "text"`, or the caption for an image,
+            video or document. A caption is capped at 1024 characters.
+        media_url:
+          type: string
+          format: uri
+          description: |
+            Public URL of the file. Required for `image`, `video`, `document`
+            and `audio`.
+        filename:
+          type: string
+          description: The file name shown in the chat for a document.
+        name:
+          type: string
+          description: |
+            A name for the contact. Used when this number is new, and updates
+            the name if it differs from the one on file.
+        template:
+          type: object
+          description: 'Required for `type: "template"`.'
+          required: [name]
+          properties:
+            name:
+              type: string
+              description: The approved template's name.
+            language:
+              type: string
+              default: en_US
+              description: The template's language code.
+            params:
+              description: |
+                Either an array of strings — the body values, in placeholder
+                order — or an object for templates that also need a header,
+                buttons or carousel cards.
+              oneOf:
+                - type: array
+                  items:
+                    type: string
+                - $ref: "#/components/schemas/TemplateSendParams"
+        reply_to_message_id:
+          type: string
+          format: uuid
+          description: |
+            Quote an earlier message. It must belong to the same conversation.
+
+    SendMessageResult:
+      type: object
+      properties:
+        message_id:
+          type: string
+          format: uuid
+          description: The Watx message id.
+        whatsapp_message_id:
+          type: string
+          description: WhatsApp's own message id, which delivery events refer to.
+        conversation_id:
+          type: string
+          format: uuid
+        contact_id:
+          type: string
+          format: uuid
+        contact_created:
+          type: boolean
+          description: True when this call created the contact.
+
+    CreateContactRequest:
+      type: object
+      required: [phone]
+      properties:
+        phone:
+          type: string
+          description: |
+            The phone number in E.164 form. A number without a country code is
+            read using the workspace's default country.
+          example: "+919876543210"
+        name:
+          type: string
+          description: Defaults to the phone number when omitted.
+        email:
+          type: string
+        company:
+          type: string
+        tags:
+          type: array
+          description: Tag names. A name the workspace does not have yet is created.
+          items:
+            type: string
+
+    UpdateContactRequest:
+      type: object
+      description: Only the fields present are changed.
+      properties:
+        name:
+          type: [string, "null"]
+        email:
+          type: [string, "null"]
+        company:
+          type: [string, "null"]
+        tags:
+          type: array
+          description: Replaces the contact's tags with exactly this list.
+          items:
+            type: string
+
+    BroadcastRecipient:
+      type: object
+      required: [to]
+      properties:
+        to:
+          type: string
+          description: The recipient's phone number.
+          example: "+919876543210"
+        params:
+          type: array
+          description: This recipient's body values, in placeholder order.
+          items:
+            type: string
+
+    CreateBroadcastRequest:
+      type: object
+      required: [template_name, recipients]
+      properties:
+        name:
+          type: string
+          description: A name for the broadcast. Defaults to `API broadcast (<template>)`.
+        template_name:
+          type: string
+          description: The approved template to send.
+        template_language:
+          type: string
+          default: en_US
+        recipients:
+          type: array
+          minItems: 1
+          maxItems: 1000
+          items:
+            $ref: "#/components/schemas/BroadcastRecipient"
+
+    BroadcastAccepted:
+      type: object
+      properties:
+        broadcast_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [queued]
+        total_recipients:
+          type: integer
+          description: How many recipients were queued. Same as `accepted`.
+        accepted:
+          type: integer
+          description: Recipients written and handed to the send queue.
+        rejected:
+          type: integer
+          description: Recipients dropped because the number was unusable.
+
+    Broadcast:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: [string, "null"]
+        template_name:
+          type: [string, "null"]
+        template_language:
+          type: [string, "null"]
+        status:
+          type: string
+          enum: [draft, queued, scheduled, sending, sent, failed]
+        total_recipients:
+          type: [integer, "null"]
+        sent_count:
+          type: [integer, "null"]
+        delivered_count:
+          type: [integer, "null"]
+        read_count:
+          type: [integer, "null"]
+        replied_count:
+          type: [integer, "null"]
+        failed_count:
+          type: [integer, "null"]
+        created_at:
+          type: [string, "null"]
+          format: date-time
+        updated_at:
+          type: [string, "null"]
+          format: date-time
+
+    SegmentRule:
+      type: object
+      description: |
+        One condition of a dynamic segment. A rule that is missing a value the
+        operator needs is dropped before matching, and a filter with no usable
+        rules matches nobody.
+      required: [field, op]
+      properties:
+        field:
+          type: string
+          description: |
+            `tag`, `source`, `has_phone`, `name`, `email`, `company`,
+            `created_at`, or `custom:<custom_field_id>` for a custom field.
+          example: tag
+        op:
+          type: string
+          enum: [has, not_has, is, is_not, contains, is_set, is_not_set, before, after]
+        value:
+          type: string
+          description: Not needed by `is_set` and `is_not_set`.
+
+    SegmentFilter:
+      type: object
+      description: The rules of a dynamic segment.
+      properties:
+        match:
+          type: string
+          enum: [all, any]
+          description: '`all` = every rule must match; `any` = at least one.'
+        rules:
+          type: array
+          items:
+            $ref: "#/components/schemas/SegmentRule"
+
+    Segment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: [string, "null"]
+        color:
+          type: string
+          description: Hex colour. Defaults to `#6366f1`.
+        kind:
+          type: string
+          enum: [static, dynamic]
+        filter:
+          description: The rules of a dynamic segment. Always `null` for a static one.
+          oneOf:
+            - $ref: "#/components/schemas/SegmentFilter"
+            - type: "null"
+        member_count:
+          type: integer
+          description: Returned by `GET /segments/{id}` only.
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    CreateSegmentRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          maxLength: 80
+        description:
+          type: string
+        color:
+          type: string
+          default: "#6366f1"
+        kind:
+          type: string
+          enum: [static, dynamic]
+          default: static
+          description: Anything other than `dynamic` creates a static segment.
+        filter:
+          $ref: "#/components/schemas/SegmentFilter"
+
+    UpdateSegmentRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 80
+        description:
+          type: [string, "null"]
+        color:
+          type: string
+        filter:
+          description: Dynamic segments only.
+          $ref: "#/components/schemas/SegmentFilter"
+
+    SegmentContactsRequest:
+      type: object
+      required: [contact_ids]
+      properties:
+        contact_ids:
+          type: array
+          minItems: 1
+          maxItems: 1000
+          items:
+            type: string
+            format: uuid
+
+    WebhookEvent:
+      type: string
+      enum:
+        - message.received
+        - message.status_updated
+        - conversation.created
+        - contact.created
+
+    WebhookEndpoint:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        url:
+          type: string
+          format: uri
+        events:
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
+        is_active:
+          type: boolean
+          description: |
+            False once the endpoint has been disabled automatically after 15
+            consecutive failed events, or because you paused it.
+        last_delivery_at:
+          type: [string, "null"]
+          format: date-time
+          description: When a delivery was last accepted.
+        failure_count:
+          type: integer
+          description: Consecutive failed events. Reset by a success or by re-enabling.
+        created_at:
+          type: string
+          format: date-time
+        provider:
+          type: string
+          enum: [api, zapier, n8n]
+          description: |
+            Which surface registered the endpoint. Read-only, and it has no
+            effect on delivery — it decides which dashboard page manages the
+            endpoint.
+
+    WebhookEndpointWithSecret:
+      allOf:
+        - $ref: "#/components/schemas/WebhookEndpoint"
+        - type: object
+          properties:
+            secret:
+              type: string
+              description: |
+                The signing secret, returned only when the endpoint is created.
+                Starts with `whsec_`.
+
+    CreateWebhookRequest:
+      type: object
+      required: [url, events]
+      properties:
+        url:
+          type: string
+          format: uri
+          description: An `https://` URL that resolves to a public address.
+        events:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
+
+    UpdateWebhookRequest:
+      type: object
+      description: At least one of these three fields must be present.
+      properties:
+        url:
+          type: string
+          format: uri
+        events:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/WebhookEvent"
+        is_active:
+          type: boolean
+          description: Setting this to `true` also resets `failure_count`.

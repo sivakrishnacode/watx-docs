@@ -1,0 +1,135 @@
+---
+title: "Variables and expressions"
+description: "The token syntax an automation uses to read the contact, the message, a form answer or an earlier step's response — and the filters that shape it."
+sidebarTitle: "Variables"
+icon: "code"
+---
+
+Any text field in an automation can carry tokens. A token is a path in double braces:
+
+```text
+Hi {{ contact.name }}, your order {{ vars.order.number }} is on its way.
+```
+
+Every field with a token picker has an **insert data** button beside it. It lists only
+what this particular step can actually read — the trigger's own facts, the contact, any
+variables that get set, and the output of steps that run *before* this one. Where a
+recent run produced a value, the picker shows it next to the token.
+
+<Warning>
+  **An unknown token resolves to an empty string.** It is never shown to the customer
+  with its braces intact. That is deliberate — a visible `{{vars.name}}` in a chat reads
+  as a broken app — but it means a typo produces a gap rather than an error. The
+  [checks panel](/automations/diagnostics-and-logs) is what catches it.
+</Warning>
+
+## Namespaces
+
+| Namespace | What it reads |
+| --- | --- |
+| `contact.` | The contact: `name`, `phone`, `email`, `company`. |
+| `message.text` | What the contact wrote, when a message started the run. |
+| `conversation.id`, `conversation.channel` | The thread this run is about. |
+| `trigger.` | Facts about the event that started the run — see below. |
+| `vars.` | Anything a **Set variable** step wrote, anything saved with *Also save the result as*, and the pre-formatted values some triggers publish. |
+| `steps.` | What an earlier step produced: `{{ steps.<reference name>.<value> }}`. |
+| `form.` | A form answer, keyed by the field's key: `{{ form.email }}`. Only on the **Form submitted** trigger. |
+| `now.` | The clock — see below. |
+
+Anything else resolves to nothing.
+
+### Deep paths
+
+A path can go as deep as the data goes, including array positions:
+
+```text
+{{ steps.lookup.body.data.0.sku }}
+```
+
+Naming a key on an array (rather than a number) resolves to nothing rather than
+misbehaving. An object or array dropped into a text field is rendered as JSON, so you can
+see the payload rather than `[object Object]`.
+
+### The clock
+
+`{{ now }}` on its own is the current time as an ISO 8601 string. All of these are
+**UTC** — a run has no single local timezone to be right about.
+
+| Token | Example |
+| --- | --- |
+| `{{ now.iso }}` | `2026-09-15T09:30:00.000Z` |
+| `{{ now.date }}` | `2026-09-15` |
+| `{{ now.time }}` | `09:30:00` |
+| `{{ now.timestamp }}` | Unix seconds |
+| `{{ now.year }}`, `{{ now.month }}`, `{{ now.day }}` | Numbers |
+
+## What each trigger supplies
+
+`{{ trigger.channel }}` is available on every trigger that carries one. The rest depend
+on which trigger started the run.
+
+| Trigger | Tokens |
+| --- | --- |
+| **Form submitted** | `trigger.form_id`, `trigger.submission_id`, and every answer as `form.<field key>` |
+| **Appointment booked / cancelled / rescheduled** | `trigger.appointment_id`, `trigger.appointment_type_id` |
+| **Tag added** | `trigger.tag_id` |
+| **Conversation assigned** | `trigger.agent_id` |
+| **Instagram comment** | `trigger.ig_comment_id`, `trigger.ig_media_id`, `message.text` |
+| **Payment received / expired / cancelled** | `trigger.payment_link_id`, `trigger.payment_amount`, `trigger.payment_currency`, plus `vars.payment.short_url`, `vars.payment.description`, `vars.payment.amount_minor`, `vars.payment.status`, `vars.payment.razorpay_payment_id` |
+| **Cart abandoned** | `trigger.checkout_id`, `trigger.integration_id`, `trigger.cart_total`, plus `vars.cart.checkout_url`, `vars.cart.item_count`, `vars.cart.first_item`, `vars.cart.items`, `vars.cart.customer_name`, and `vars.store.name` / `vars.store.url` |
+| **Order placed / cancelled / shipped / refunded** | `trigger.order_id`, `trigger.integration_id`, `trigger.cart_total`, plus `vars.order.number`, `vars.order.status`, `vars.order.url`, `vars.order.items`, `vars.order.item_count`, `vars.order.customer_name`, `vars.order.payment_method`, `vars.order.refund_amount` (refunds), and `vars.store.name` / `vars.store.url` |
+| **On a schedule** | `trigger.channel` only — a scheduled run has no message, no conversation and no contact |
+
+Amounts and totals in `trigger.` and `vars.` arrive already formatted — `₹1,499.00` —
+so a message body never has to do the arithmetic.
+
+## Reading an earlier step
+
+Every step publishes its result under its reference name, **before** the next step runs.
+That ordering is the point: step two can build its request out of step one's response.
+
+```text
+{{ steps.lookup.status }}
+{{ steps.lookup.body.order.id }}
+{{ steps.payment.short_url }}
+```
+
+What each step publishes is listed in [Steps](/automations/steps), and in the settings
+panel under **What this step produces** — click a value there to copy its token.
+
+Two rules the picker enforces:
+
+- A step that runs **after** this one cannot be read. It could only ever be empty.
+- A step on the **other side of a branch** cannot be read either. A step in an earlier
+  branch that *might* have run is offered, marked *Only if that branch ran*.
+
+## Filters
+
+Add a filter with `|`. They chain left to right.
+
+| Filter | What it does |
+| --- | --- |
+| `default:"there"` | Replaces an empty value. `{{ contact.name \| default:"there" }}` avoids "Hi ,". |
+| `upper`, `lower` | Case. |
+| `trim` | Strips surrounding whitespace. |
+| `truncate:40` | Shortens and adds an ellipsis. |
+| `json` | JSON-encodes the value. Use it whenever a value goes inside a hand-written JSON body — a quote or a newline in the data would otherwise break it. |
+| `urlencode` | Escapes the value for a URL. |
+| `number` | Strips everything but digits, a dot and a minus, and returns a number. |
+| `digits` | Keeps only the digits — useful for phone numbers. |
+
+A filter argument can be quoted, and a quoted argument may contain a `|` or a dot. An
+unrecognised filter name passes the value through untouched rather than blanking it.
+
+## Types are kept for a single token
+
+If a field contains **exactly one token and nothing else**, the underlying value keeps
+its type. That is what lets a JSON body send `"qty": 3` rather than `"qty": "3"`, and
+pass a whole object through as an object. The moment there is any text around the token,
+the result is a string.
+
+## Where tokens do not apply
+
+A WhatsApp [template](/whatsapp/templates)'s own copy is fixed at approval — you fill in
+its variables, and those variable values are interpolated like any other field, but the
+sentence around them is not yours to change from an automation.

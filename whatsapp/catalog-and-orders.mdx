@@ -1,0 +1,85 @@
+---
+title: "Catalog and orders"
+description: "Keep a product catalogue in sync with Meta Commerce, send products as cards in a chat, and work the orders customers place from them."
+sidebarTitle: "Catalog and orders"
+icon: "bag-shopping"
+---
+
+**WhatsApp → Catalog** and **WhatsApp → Orders** are two tabs of the same **Commerce** page. The catalogue is the products you can send into a chat; orders are what customers send back.
+
+Members with the Agent role or above can add, edit and sync products and change an order's status.
+
+<Note>
+  This is Meta's own WhatsApp catalogue, not a connected shop. If you run Shopify or WooCommerce, that catalogue lives in the [store console](/integrations/store-console) and is a separate thing.
+</Note>
+
+## Catalogue
+
+### The Meta Catalog ID
+
+At the top of the tab is a single field: **Meta Catalog ID**. Find it in Meta Commerce Manager → your catalogue → Settings and paste the numeric id here.
+
+<Warning>
+  Without a catalog id, product messages are rejected by Meta. The tab says so until one is saved.
+</Warning>
+
+### Products
+
+**Add Product** asks for:
+
+| Field | Required | Notes |
+| --- | --- | --- |
+| **SKU / Retailer ID** | Yes | Your own product code. It is the identity Meta matches on, and it cannot be changed after the product is created |
+| **Product Name** | Yes | |
+| **Description** | No | |
+| **Price** | Yes | |
+| **Currency** | No | Defaults to `INR` |
+| **Image URL** | No | A public link to the product image |
+| **Active status on WhatsApp** | — | Whether the product is offered as available |
+
+The list has a grid and a table view, and a search box that matches SKU, name and description. Each row can be edited or deleted; deleting also removes the item from your Meta catalogue.
+
+<Warning>
+  Adding or editing a product here saves it in Watx. It reaches your Meta catalogue — and so becomes sendable — when you press **Sync to Meta Catalog**. Do that after a batch of changes.
+</Warning>
+
+### Syncing with Meta
+
+Two buttons, pulling in opposite directions:
+
+- **Import from Meta** — reads every item in your Meta catalogue and brings it into Watx, keyed by SKU. Items with no SKU cannot be sent and are skipped, with a count. Use this when the catalogue was built in Commerce Manager.
+- **Sync to Meta Catalog** — pushes every product here up to Meta. Use this when you build the catalogue in Watx.
+
+If Meta refuses, the error is translated into something actionable — the usual cause is the access token's system user not being assigned to the catalogue, or the `catalog_management` permission missing from your Meta app.
+
+### Sending a product
+
+Products are sent from the [inbox composer](/inbox/sending) as a single product card or a product list. A send needs the catalog id above, the SKU to exist in the Meta catalogue, and the [24-hour window](/whatsapp/messaging-window) to be open — a product card is a free-form message, not a template.
+
+## Orders
+
+When a customer builds a basket from your catalogue inside WhatsApp and sends it, the order arrives here automatically and the message itself stays in the conversation.
+
+| Column | What it shows |
+| --- | --- |
+| **Order Date** | When it arrived |
+| **Customer** and **Phone** | The contact who sent it |
+| **Total Amount** | Summed from the items, in the currency WhatsApp reported |
+| **Status** | Pending, Confirmed, Fulfilled or Cancelled |
+| **Items Count** | Total quantity across the items |
+
+Search matches the customer and phone; a filter narrows by status.
+
+Two actions per row: **View details** opens the order — items with quantities and unit prices, the total, any note the customer added, and a dropdown to change the status. **Open chat** jumps to that customer's conversation in the inbox.
+
+A new order starts as **Pending**. Status is yours to manage; nothing changes it automatically.
+
+<Note>
+  Item names come from your catalogue. If an order arrives for a SKU that is not in Watx, the line shows the SKU rather than a name — importing from Meta fixes that.
+</Note>
+
+## Related
+
+- [Analytics](/whatsapp/analytics) — orders, revenue and top products over a date range.
+- [AI agents](/ai-agents/skills) — an agent can look up a customer's own orders, scoped to that customer.
+- [Store console](/integrations/store-console) — for Shopify and WooCommerce catalogues, carts and cash on delivery.

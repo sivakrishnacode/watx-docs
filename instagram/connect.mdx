@@ -1,0 +1,81 @@
+---
+title: "Connect Instagram"
+description: "What your Instagram account needs before you start, how the Business Login connection works, and what to do when access expires."
+icon: "plug"
+---
+
+Instagram connects through Meta's Business Login. You approve the connection on
+instagram.com and come back to Watx — there is nothing to paste and no Facebook Page
+required.
+
+## Before you connect
+
+<Warning>
+Both of these are on the Instagram side, and getting either wrong produces no error
+anywhere — messages simply never arrive.
+</Warning>
+
+- The account must be a **Professional** account — Business or Creator. A personal
+  account cannot use Instagram's messaging API at all.
+- In the Instagram app, turn on **Settings → Messages and story replies → Allow access to
+  messages**. With it off, nothing reaches Watx and nothing reports a problem.
+
+Both requirements are repeated on the connect screen, under **Before you connect**.
+
+## Connect the account
+
+<Steps>
+  <Step title="Open the channel">
+    Go to **Channels → Instagram → Channel Settings**.
+  </Step>
+  <Step title="Press Connect Instagram">
+    The whole page navigates to Instagram's consent screen. This is deliberate — Instagram
+    blocks its consent dialog from being shown in a popup or a frame.
+  </Step>
+  <Step title="Approve on instagram.com">
+    Log in as the professional account and approve the permissions. Watx asks for the
+    access it needs to read and send direct messages and to read, reply to, hide and
+    delete comments.
+  </Step>
+  <Step title="You land back on Channel Settings">
+    A confirmation names the handle that was connected. The account card then shows the
+    profile picture, `@handle`, the account id and the date you connected.
+  </Step>
+  <Step title="Pull in what already exists">
+    Instagram only notifies Watx about activity **after** you connect. Go to
+    **Channels → Instagram → Posts** and press **Sync posts**, then **Sync comments**, to
+    bring in your existing posts and the comments made before today. See
+    [Posts and automation](/instagram/posts).
+  </Step>
+</Steps>
+
+## Keeping access alive
+
+Instagram access expires after a fixed period and Meta does not renew it silently. Watx
+renews it for you well before the deadline, and the account card shows how long is left:
+**Access renews automatically · 42 days left**. You do not need to do anything while that
+line is showing.
+
+If renewal cannot happen — the account revoked access, or the password changed — the page
+shows **Access expired** and a **Reconnect** button. Reconnecting is the same flow as
+connecting: nothing in the workspace is lost, and messages start arriving again as soon as
+it completes.
+
+<Note>
+Conversations, contacts and comments already in Watx are kept whatever happens to the
+connection. Only new activity stops.
+</Note>
+
+## If events are missing
+
+Connecting also subscribes Watx to Instagram's event notifications. If any of them did not
+subscribe, **Channel Settings** shows **Some events are not subscribed**, names which ones,
+and offers **Re-subscribe**. This is worth acting on immediately: a connection missing a
+subscription looks perfectly healthy and simply never receives those events. The full list
+is on [Settings and analytics](/instagram/settings-and-analytics).
+
+## Disconnecting
+
+**Channel Settings → Disconnect** stops everything new: no DMs, no comments, and every
+comment automation halts. Existing conversations and comments are kept. You are asked to
+confirm first, and you can reconnect at any time.

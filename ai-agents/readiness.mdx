@@ -1,0 +1,91 @@
+---
+title: "Why is my agent silent?"
+sidebarTitle: "Agent readiness"
+description: "The readiness checklist in the studio, and every reason an agent can decline to answer a message — in the order they are checked."
+icon: "circle-question"
+---
+
+An agent that says nothing looks the same from the inbox whatever the cause. This page is the list of causes, and where each one is fixed.
+
+## The readiness checklist
+
+A panel sits above the studio tabs whenever something is outstanding, listing what is unfinished. Each line is a button that takes you to the tab that fixes it. When nothing blocks the agent and nothing is worth flagging, the panel disappears — a checklist that stays on screen after it is finished is furniture.
+
+Two severities. A **blocker** stops the agent answering anybody, and turns the panel amber. A **warning** is worth fixing but the agent still works.
+
+| Check | Severity | What it means | Fix on |
+| --- | --- | --- | --- |
+| The workspace can reach a model | Blocker | The workspace is set to use its own provider key and none is stored, so no agent can answer | Provider & credits |
+| It is switched on | Blocker | Nothing is drafted or answered while the agent is off | Routing |
+| It knows what the business does | Warning | With no description it answers from the customer's question alone, which is how an agent invents things | Persona |
+| It has something to answer from | Warning | No documents are selected for this agent, so every answer comes from the persona alone | Knowledge |
+| Its Google skills can reach Google | Warning | A Google skill is on but Google is not connected, so those tools are withheld and the agent answers without them | Skills |
+| Its selling skill can reach a store | Warning | **Sell from the chat** is on but no store is connected, so the agent will talk about products it cannot sell | Skills |
+
+**Drafts only** and **Test mode** are deliberately not on this list. Both are legitimate ways to run an agent, and a checklist that nags about a choice you made on purpose is one people learn to ignore.
+
+## Every reason a message goes unanswered
+
+These are checked in this order. Any one of them ends the reply, and most of them leave no trace in the inbox beyond the absence of a message.
+
+<Steps>
+  <Step title="Something else already handled the message">
+    On WhatsApp, a running [flow](/flows/overview) that consumed the message stops the agent being asked. On every channel, a tap on an interactive button or list reply is answered by whatever sent it, and a message with no text at all — a photo on its own — never reaches the agent.
+  </Step>
+  <Step title="No agent covers this channel">
+    No **switched-on** agent's channels include this conversation's channel. There is no fallback to "the only agent you have". Fix in [Routing](/ai-agents/routing).
+  </Step>
+  <Step title="The agent does not answer automatically">
+    **Answer inbound messages automatically** is off — the agent drafts on request only. Fix on Behaviour.
+  </Step>
+  <Step title="The workspace is out of credits">
+    On built-in AI with an empty wallet and no provider key of your own, the conversation is left for a person rather than the customer being told a business is out of AI credits. Fix by [topping up](/ai-agents/credits-and-byok).
+  </Step>
+  <Step title="A teammate owns the thread">
+    A conversation assigned to a member is that member's. Clear the owner in the thread header to let the agent reply.
+  </Step>
+  <Step title="AI replies are paused on this conversation">
+    Set automatically by a handoff, and by the bot button in the thread header. The same button resumes it.
+  </Step>
+  <Step title="The conversation's reply budget is used up">
+    **Max replies per conversation** — three by default — counted over a rolling 24-hour window that opens with the first reply after a quiet period. A customer who comes back the next day gets a full budget; a runaway loop inside one window is stopped at the cap.
+  </Step>
+  <Step title="Test mode excludes this customer">
+    With test mode on, only the listed phone numbers are answered — and Instagram and website conversations have no phone number, so they are never answered while it is on. See [Test mode](/ai-agents/testing).
+  </Step>
+  <Step title="An automation already answers this message">
+    An active automation on a message trigger, scoped to this channel, whose keywords match this text, owns the reply. One message gets one reply, and the automation wins. Check [Automations](/automations/triggers).
+  </Step>
+  <Step title="A handoff phrase matched">
+    One of the **Phrases that always hand off** appeared in the message. The agent stands down without asking the model, and your handoff message is sent if you set one.
+  </Step>
+  <Step title="The model handed off, or came back empty">
+    The agent decided it could not help safely. AI replies are paused on that conversation and it waits for your team.
+  </Step>
+  <Step title="The provider call failed">
+    A bad key, a rate limit or a timeout. Your **Fallback message** is sent if you wrote one; with the field blank the agent stays silent rather than apologising in a voice you did not choose.
+  </Step>
+</Steps>
+
+## When it replies but seems to have forgotten a skill
+
+The reply arrives, and reads as though the agent never knew it could book a meeting, log a row or send a basket link. That is a **withheld tool**: the agent was never shown it, so it could not mention it.
+
+| Symptom | Cause |
+| --- | --- |
+| Never checks the calendar or books | [Google](/integrations/google) is not connected, or the reply is a draft |
+| Never sends a basket link | No store is [connected](/integrations/store-console) |
+| Never sends a payment link | [Razorpay](/integrations/razorpay) is not connected, the reply is a draft, or **Most it may ever ask for** is unset |
+| Never uses one of your approved templates | The conversation is not WhatsApp, the reply is a draft, no template is listed in the skill, or every listed template is currently unsendable |
+| Never calls one of your API actions | The action is switched off, or this agent's action selection excludes it |
+
+The Skills tab lists the tools each enabled skill can call, and the readiness panel names the two connection gaps it can see.
+
+## When the answer is wrong rather than missing
+
+Open the [test drawer](/ai-agents/testing) and ask the same question. The evidence line under the reply names the documents the answer was built from and every tool that ran.
+
+- **The right document was not retrieved** — split a long document into one topic per document, or check its status is **Ready** rather than **Keyword only** or **Failed**.
+- **The document was retrieved and ignored** — a ground rule or an instruction is contradicting it. Ground rules outrank everything below them, including your documents.
+- **It invented something** — fill in **What the business does**, and add the fact as a document. The agent is told not to guess, but with nothing to go on it has only the customer's question.
+- **It sounds wrong rather than being wrong** — tone, reply length and **Extra voice notes** on [Persona](/ai-agents/persona-and-behaviour).

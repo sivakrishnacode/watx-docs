@@ -1,0 +1,172 @@
+---
+title: "Comment funnels"
+description: "Somebody comments on a post and gets the link in their DMs — the six-step editor, the ready-made templates, and the results each funnel produced."
+icon: "gift"
+---
+
+A comment funnel is the classic Instagram mechanic: post a Reel, say "comment LINK and
+I'll send it", and the DM goes out on its own — optionally after asking the commenter to
+follow you first.
+
+It exists because the people this is for have **never messaged you**. A comment is not a
+conversation, so [automations](/automations/overview) cannot reach them; a private reply
+can, and that is what a funnel spends.
+
+**Channels → Instagram → Comment funnels** is the list and the results.
+**Channels → Instagram → Posts** opens the same editor from a post. There is one editor and
+one underlying record — the Posts page calls it "an automation" because that is what you
+are thinking about while looking at a post.
+
+## Two switches, always
+
+Nothing goes out unless both agree:
+
+1. **Comment funnels** — the workspace-wide switch at the top of this page (and of the
+   Posts page). Off means no funnel runs, whatever its own setting says.
+2. The funnel's own switch, in the list and on the last step of the editor.
+
+A funnel that is on while the master switch is off shows as **Blocked** rather than Live,
+with the reason in its tooltip.
+
+## Starting one
+
+**New funnel** opens a gallery of ready-made wordings.
+
+| Template | What it does |
+| --- | --- |
+| **Send my link** | Someone comments a word and gets whatever you are pointing at in their DMs |
+| **Free guide or freebie** | Trades a download for a follow. The follow ask is on |
+| **Discount code** | Drops a code and a shop link in the DM |
+| **Waitlist or early access** | Captures interest for a launch that has not happened yet |
+| **Start from scratch** | An empty funnel with sensible defaults |
+
+Each tile also shows the caption line it is designed to pair with — *"Comment LINK and
+I'll send it over"* — because the caption is the other half of the setup, and a funnel
+whose post never tells anyone what to comment gets zero runs and no error.
+
+<Warning>
+**No template is ever armed.** Every one of them, and every funnel you duplicate, is saved
+switched off. You turn it on at the last step once the wording reads the way you want —
+the first DM is not something you can take back.
+</Warning>
+
+## The editor
+
+The editor is a step rail, not a form, because a funnel is a sequence the commenter
+experiences in order. The rail is on the left, the step you are editing in the middle, and
+a phone preview on the right showing that step ringed inside the whole exchange. Below `lg`
+the rail becomes a stepper and the preview moves behind a **Preview** button.
+
+| Step | What you set |
+| --- | --- |
+| **Trigger** | Which comments start it |
+| **Public reply** | What everyone else scrolling the comments sees. Optional |
+| **Opening DM** | The first message and its button. Required |
+| **Follow ask** | An optional nudge before the link |
+| **The link** | The message they came for, and up to 3 link buttons |
+| **Name & go live** | The name you will recognise, and the switch |
+
+Each step carries its own state in the rail: done, still to do, needs attention, or
+deliberately **off**. Off is not a gap — the public reply and the follow ask are genuinely
+skippable and the rail does not nag about them.
+
+### Trigger
+
+Choose **Specific words** or **Any comment**. Words are matched anywhere in the comment and
+case-insensitively, so "LINK please" matches `link`. Put the same word in your caption.
+
+On the Comment funnels page you can also choose the **post**: one post, or **All posts —
+every post, present and future**. A funnel for one post beats the all-posts funnel, so both
+can run at once with the all-posts one as the fallback. Opening the editor from a post does
+not offer the picker — "automate this post" already carries the answer.
+
+### Public reply
+
+A reply posted publicly under the comment, so everyone else reading knows commenting works.
+Add several wordings and they are rotated one at a time.
+
+<Tip>
+Add at least two. Hundreds of identical replies under one post is exactly what Instagram's
+spam filters look for, and the editor flags a single wording as needing attention.
+</Tip>
+
+### Opening DM
+
+The first message and the button under it. **This step cannot be skipped.** Instagram will
+not tell anyone whether a commenter follows you until that person has messaged you — a
+comment does not count — so this message and its button exist to produce that first tap.
+Everything after it depends on it.
+
+**Wait before answering** sets a delay before the DM goes out: **Immediate**, **10 sec**,
+**30 sec** or **1 min**. Answering within a second is the tell that a robot did it.
+
+Messages are capped at 1,000 characters and button labels at 20 — Meta's limits.
+
+### Follow ask
+
+Optional, and shown only to people who do not already follow you. **It is a nudge, not a
+gate**: the link is sent either way when they tap, so a follow status that is slow to
+update never costs you the lead.
+
+### The link
+
+The message they came for, plus up to **3** link buttons — Instagram will not render more.
+Each button needs a label and a URL starting with `http://` or `https://`. Leave the buttons
+empty to send the message on its own.
+
+### Name & go live
+
+The name is only ever seen by you; it is how you will find this funnel in a list in six
+weeks. The switch below it arms the funnel.
+
+## The readiness panel
+
+Under the rail is a list that answers "why isn't this running?" without reading a log. It
+mirrors the checks the runtime makes, in the order it makes them:
+
+1. **Instagram connected** — nothing runs without it.
+2. **Comment automations switched on** — the master switch.
+3. **This automation is on** — its own switch.
+4. **A comment can match it** — trigger words exist, or it matches any comment.
+5. **The opening DM is written** — message and button.
+6. **The link message is written** — there is something to deliver.
+7. **Link buttons are valid** — every button has a label and a real URL.
+8. **The follow ask is written** — if the ask is on.
+9. **More than one public wording** — a warning, not a blocker.
+
+A red item means nothing will be sent. An amber one means something will be sent that we
+would not have written that way. Each links to the step that fixes it.
+
+## Results
+
+Each funnel in the list shows how many comments it **matched** and how many people **got
+the link**. Expanding **Results** shows the journey and the most recent 50 runs.
+
+| Stage | What it means |
+| --- | --- |
+| **Comments matched** | Everyone the funnel answered |
+| **Tapped in the DM** | They pressed the button in the opening DM |
+| **Got the link** | The final message was delivered |
+
+A row also says whether the person was following you when the link went out, and links to
+the DM thread in the Inbox once one exists.
+
+| Row state | Meaning |
+| --- | --- |
+| **DM sent** | The opening DM went out and they have not tapped yet. Shown as *Hasn't opened the DM yet* — there is no contact record until the tap |
+| **At the follow ask** | They tapped and are sitting on the follow nudge. They still get the link the moment they tap again |
+| **Got the link** | Delivered |
+| **Failed** | Something was refused. The reason is quoted verbatim |
+
+Failures are shown, not summarised. This runs unattended against Instagram, and a failure
+count with the message underneath is the only way to learn that your private replies have
+started being refused.
+
+## Duplicating and deleting
+
+**Duplicate** copies the wording as a new, unsaved funnel with no post chosen — the only
+reason to duplicate is to point the same wording at a different post, and two funnels on
+one post would give that post a row the server never picks.
+
+**Delete** stops the funnel immediately and takes the record of everyone it has already
+delivered to with it. You are asked to confirm.

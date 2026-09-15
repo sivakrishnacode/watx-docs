@@ -1,0 +1,197 @@
+---
+title: "Instagram"
+description: "Why Instagram DMs or comments are not arriving, why a private reply is refused, what happens to comments deleted in the app, and why a funnel produced nothing."
+sidebarTitle: "Instagram"
+icon: "instagram"
+---
+
+Symptoms first. Each entry says what is happening, how to confirm it, and what to change — with a link to the page that holds the full rule.
+
+Most Instagram problems are one of three things: a requirement on the Instagram side that reports no error, a limit Meta imposes on private replies, or a rule from WhatsApp that does not exist here — there are **no templates and no broadcasts** on this channel.
+
+## Nothing is arriving
+
+<AccordionGroup>
+  <Accordion title="No DMs or comments reach Watx at all">
+    Two requirements live on the Instagram side, and getting either wrong produces no error anywhere — messages simply never arrive.
+
+    **Check.** The account must be a **Professional** account (Business or Creator); a personal account cannot use Instagram's messaging API. And in the Instagram app, **Settings → Messages and story replies → Allow access to messages** must be on.
+
+    **What to do.** Fix both in the Instagram app, then reconnect from **Channels → Instagram → Channel Settings**. Both requirements are repeated on the connect screen under **Before you connect**.
+
+    [Connect Instagram](/instagram/connect)
+  </Accordion>
+
+  <Accordion title="Some things arrive and others never do">
+    Connecting also subscribes Watx to Instagram's event notifications. If one of them did not subscribe, everything else works and that one kind of event silently never arrives — there is no other symptom.
+
+    **Check.** **Channel Settings → Subscribed events** shows a dot per event: direct messages, button and ice-breaker taps, read receipts, reactions, `ig.me` link attribution, comments, live comments and mentions. A banner names any that are missing.
+
+    **What to do.** Press **Re-subscribe**, or **Refresh subscription** at any time. Act on it immediately — an incomplete subscription looks perfectly healthy.
+
+    [Settings and analytics](/instagram/settings-and-analytics)
+  </Accordion>
+
+  <Accordion title="The page says Access expired">
+    Instagram access lasts a fixed period and Meta does not renew it silently. Watx renews it for you well ahead of the deadline, and the account card shows how long is left. Renewal can still fail — the account revoked access, or the password changed.
+
+    **What to do.** Press **Reconnect** and approve on instagram.com. Nothing in the workspace is lost: conversations, contacts and comments already in Watx are kept whatever happens to the connection. Only new activity stops.
+
+    [Connect Instagram](/instagram/connect)
+  </Accordion>
+
+  <Accordion title="My existing posts and comments are not here">
+    Instagram only notifies Watx about activity **after** you connect. Nothing before that arrives by itself, so the posts grid starts empty and older comments are missing.
+
+    **What to do.** **Channels → Instagram → Posts** → **Sync posts**, then **Sync comments**. New activity arrives on its own afterwards; sync again only to backfill or refresh counts.
+
+    [Posts and automation](/instagram/posts)
+  </Accordion>
+</AccordionGroup>
+
+## Comments
+
+<AccordionGroup>
+  <Accordion title="Every action on a comment says it no longer exists">
+    Somebody deleted their own comment in the Instagram app. Instagram sends no notification when that happens, so the row sits in **Needs reply** and every action on it fails.
+
+    **What to do.** Run **Sync comments** (or **Sync backlog** from the Comments page). A sync is the only moment Watx can learn a comment is gone; the toast says how many were found deleted, and those rows are cleared out.
+
+    [Comments](/instagram/comments)
+  </Accordion>
+
+  <Accordion title="Send a DM is greyed out on a comment">
+    A **private reply** is the only way to open a DM with somebody who has never messaged you, and Meta allows exactly **one per comment, within 7 days** of it being posted. The button is disabled with the reason written underneath rather than letting you write a message that will be refused.
+
+    **The three reasons.** A private reply has already been sent; a [comment funnel](/instagram/comment-funnels) used that one private reply, and it names the funnel; or the comment is more than 7 days old.
+
+    **What to do.** All three are permanent for that comment. Reply publicly instead, and use the **DM window closing** smart filter to work comments before their deadline — it shows the ones with less than 24 hours left whose reply has not been spent.
+
+    [Comments](/instagram/comments)
+  </Accordion>
+
+  <Accordion title="Ticking several smart filters returns fewer rows, not more">
+    It returns more. The four chips combine with **or**, not and — intersecting them would return nothing almost always.
+
+    **Check.** They also filter the comments **already loaded**, not the whole queue. The count line says so: *12 of 80 loaded match*. Load more rows, or narrow with the post picker first.
+
+    [Comments](/instagram/comments)
+  </Accordion>
+
+  <Accordion title="Marking comments replied did not change anything on Instagram">
+    **Mark replied** is local. It clears rows out of **Needs reply** so the queue reflects work you did elsewhere; nothing is sent to Instagram.
+
+    **What to do.** Use it for comments you answered in the Instagram app or that need no answer. To act on Instagram, use **Reply publicly**, **Hide** or **Delete** — and note that deleting removes the comment for everyone and cannot be undone, while hiding is reversible.
+
+    [Comments](/instagram/comments)
+  </Accordion>
+</AccordionGroup>
+
+## Comment funnels
+
+<AccordionGroup>
+  <Accordion title="The funnel is switched on but gets no runs">
+    Nothing goes out unless **both** switches agree: the workspace-wide **Comment funnels** switch at the top of the Posts and Comment funnels pages, and the funnel's own switch. A funnel that is on while the master switch is off shows as **Blocked**, not Live.
+
+    **Check.** The readiness panel under the editor's step rail mirrors the checks the runtime makes, in the order it makes them: Instagram connected, comment automations on, this automation on, a comment can match it, the opening DM is written, the link message is written, link buttons are valid.
+
+    **The cause nothing can detect.** The post's caption has to tell people what to comment. A funnel on a post whose caption never says *"comment LINK"* gets zero runs and no error — each template tile shows the caption line it is designed to pair with for exactly this reason.
+
+    [Comment funnels](/instagram/comment-funnels)
+  </Accordion>
+
+  <Accordion title="Comments matched, but nobody got the link">
+    The **Tapped in the DM** stage is where runs stop. Instagram will not tell anyone whether a commenter follows you until that person has messaged you — a comment does not count — so the opening DM and its button exist to produce that first tap. Everything after it depends on it.
+
+    **Check.** Expand **Results** on the funnel. A row reading *Hasn't opened the DM yet* means the DM went out and they have not tapped; there is no contact record until they do. **Failed** rows quote Instagram's own reason verbatim.
+
+    **What to do.** Make the opening DM's button obviously worth pressing. If failures are appearing, read the quoted reason — that is the only way to learn your private replies have started being refused.
+
+    [Comment funnels](/instagram/comment-funnels)
+  </Accordion>
+
+  <Accordion title="An automation with the Instagram comment trigger never fires">
+    The automations engine works on a **contact**. A comment from somebody who has never messaged you produces no contact, so an automation cannot reach the exact audience the "comment a keyword, get a DM" pattern is aimed at.
+
+    **What to do.** Use a [comment funnel](/instagram/comment-funnels), which opens the DM with a private reply. Keep the **Instagram comment** trigger for things you want to do when a **known contact** comments.
+
+    When a funnel claims a comment, the Instagram comment trigger does not also fire on it, so a commenter who happens to be a contact gets one DM rather than two.
+
+    [Intents](/instagram/intents)
+  </Accordion>
+
+  <Accordion title="Bulk automate skipped some posts">
+    Posts that already have their own automation are **skipped, not overwritten**, and the dialog says how many before you press the button. There is no undo and no version history, so wording somebody tuned cannot be recovered.
+
+    **What to do.** Edit those posts individually. On a post covered only by the catch-all, **Customise** gives it its own settings instead of editing the catch-all, so the rest of your posts are untouched.
+
+    [Posts and automation](/instagram/posts)
+  </Accordion>
+</AccordionGroup>
+
+## DMs and what Instagram does not have
+
+<AccordionGroup>
+  <Accordion title="I cannot reply to a DM — the thread is closed">
+    Instagram has a reply window too, and unlike WhatsApp there is **no template** to re-open a closed thread. Once it closes you can only wait for the person to write again. Watx refuses the send before it reaches Meta and says why.
+
+    **Check.** The window is 24 hours by default. Some workspaces are on a deployment holding Meta's Human Agent permission, which extends it to 7 days — **Channel Settings → Messaging rules** states which applies to yours.
+
+    [Instagram](/instagram/overview) · [Settings and analytics](/instagram/settings-and-analytics)
+  </Accordion>
+
+  <Accordion title="I want to send a broadcast, or use a template, on Instagram">
+    Neither exists. Instagram has **no approved-template mechanism at all**, so there is no compliant way to send bulk DMs, and there is nothing to pre-approve.
+
+    **What this means in practice.** Instagram-only contacts carry no phone number, so they are excluded from broadcast audiences automatically — that is correct, not a filter bug. A shared automation containing a template or a catalogue step still runs on Instagram; that step is skipped with a logged reason rather than sending something unintended.
+
+    [Instagram](/instagram/overview) · [Channels and the window](/automations/channels-and-window)
+  </Accordion>
+
+  <Accordion title="My Instagram messages never show two ticks">
+    Instagram reports when a message is **read** but never when it is **delivered**. A sent message stays on one tick until the customer opens it and then jumps to read.
+
+    That is the honest state, not a bug. It also means the `message.status_updated` webhook event reports WhatsApp delivery only.
+
+    [Sending messages](/inbox/sending) · [Webhooks](/api/webhooks)
+  </Accordion>
+
+  <Accordion title="A list message does not appear on Instagram">
+    Instagram has no list message. A **Send list** step is skipped there.
+
+    **What to do.** Use **Send buttons** instead — Instagram allows up to 13 quick replies. If one automation needs to behave differently per channel, add a **Condition** on the **Channel** subject rather than duplicating the automation.
+
+    [Channels and the window](/automations/channels-and-window) · [Conditions and branching](/automations/conditions)
+  </Accordion>
+
+  <Accordion title="The AI agent does not reply to Instagram DMs">
+    Four causes, in the order to check them.
+
+    - **The agent does not cover Instagram.** An agent scoped to WhatsApp will not answer an Instagram thread just because it is the only one you have. There is no fallback. Fix on the agent's **Routing** tab.
+    - **Test mode is on.** Test mode is a phone-number allowlist, and Instagram conversations have no phone number to match — so it silences the agent on Instagram entirely. It is not a way to trial an Instagram agent.
+    - **The window is closed.** Nothing can reply outside it, and there is no template to fall back on.
+    - **Flows are WhatsApp-only.** If you built the reply as a flow, it will never run here. Automations are the channel-agnostic engine.
+
+    [DM agents](/instagram/dm-agents) · [Why is my agent silent?](/ai-agents/readiness)
+  </Accordion>
+
+  <Accordion title="Replies I typed in the Instagram app did not trigger anything">
+    They appear in the Inbox so the history is complete, but they deliberately do not start automations or an AI agent — otherwise the workspace would answer its own messages.
+
+    [Instagram](/instagram/overview)
+  </Accordion>
+
+  <Accordion title="The same person is two contacts">
+    An Instagram identity carries no phone number, so there is no reliable way to tell that `@someone` is the number already in your contact list. The same human on both channels is two contacts.
+
+    **What to do.** Nothing automatic. If they give you their number, you can record it on the Instagram contact; Watx resolves the handle and display name so the Inbox shows a person rather than a numeric id.
+
+    [Instagram](/instagram/overview) · [Contacts](/contacts/overview)
+  </Accordion>
+</AccordionGroup>
+
+## Still stuck
+
+- The connection and its events: [Connect Instagram](/instagram/connect) and [Settings and analytics](/instagram/settings-and-analytics).
+- An agent or automation that should have replied: [Automations and agents](/troubleshooting/automations-and-agents).
+- Anything else: [support@watx.in](mailto:support@watx.in).

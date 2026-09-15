@@ -1,0 +1,85 @@
+---
+title: "Sessions and analytics"
+description: "Where your website chats came from — the sessions list with its sources and landing pages, and the analytics overview for the channel."
+icon: "chart-simple"
+---
+
+Two reports sit under **Channels → Web → Analytics**: **Sessions**, which answers "which
+page or campaign produced this conversation", and **Overview**, which is how the channel is
+doing.
+
+## Sessions
+
+**Channels → Web → Sessions** covers the **Last 7 days**, **Last 30 days** or **Last 90
+days**.
+
+A session is written on the first widget load, and most loads never become a chat. The
+funnel is therefore sessions → chats → identified, never "visitors", because counting every
+load as a visitor would make the widget look far busier than it is.
+
+| Figure | What it counts |
+| --- | --- |
+| **Sessions** | Widget loads |
+| **Chats started** | Sessions that produced a conversation, with the share of sessions |
+| **Identified** | Sessions where the visitor gave you contact details, with the share of sessions |
+
+Two breakdowns sit under them:
+
+- **Top sources** — where visitors came from, shown as the host rather than the full URL.
+  A visitor with no referrer is **Direct**.
+- **Top landing pages** — the page the widget was opened on.
+
+### Recent sessions
+
+| Column | What it shows |
+| --- | --- |
+| **Started** | How long ago |
+| **Visitor** | The contact, linked to their record — or **Anonymous** |
+| **Landing page** | The page, linked so you can open it |
+| **Source** | The referring site, or **Direct** |
+| **Pages** | How many pages they viewed |
+| **Chat** | **Open** links to the conversation in the Inbox. **No messages** means the widget loaded but nothing was said |
+
+<Note>
+Visitor IP addresses are not stored. The approximate country shown in analytics is derived
+without keeping the address itself.
+</Note>
+
+## Analytics overview
+
+**Channels → Web → Analytics → Overview** covers widget sessions, chat volume, where
+visitors come from, and the leads they become. Choose **Last 7 days**, **Last 30 days**,
+**Last 90 days** or a custom range; every headline figure is compared with the previous
+period of the same length. **Refresh** re-reads it and **Export** downloads it as CSV.
+
+### The headline figures
+
+| Figure | What it counts |
+| --- | --- |
+| **Widget sessions** | Widget loads, with total page views |
+| **Started a chat** | Sessions that became a conversation, as a share of sessions |
+| **Messages received** | Incoming messages from visitors |
+| **Messages sent** | Outgoing messages |
+| **New conversations** | Threads opened in the period |
+| **Avg first response** | How long a visitor waits for the first reply |
+| **Replies by AI** | Split between AI and human replies |
+| **Identified visitors** | Sessions that gave contact details, as a share of sessions |
+
+### The panels
+
+- **Sessions and chats** — daily widget sessions and how many became conversations.
+- **Visitor funnel** — widget sessions → started a chat → left contact details.
+- **Chat volume** — daily incoming and outgoing messages.
+- **Busiest hours** — visitor messages by day and hour.
+- **Top pages** — where the widget was opened.
+- **Top referrers** — what sent them to the page.
+- **Top countries** — approximate location.
+- **Contacts and deals from the web widget** — new contacts, deals created and deals won,
+  with deals attributed through the conversation they came from.
+- **Most active visitors** — by total messages exchanged.
+
+## If the numbers are all zero
+
+A channel that has never been seen loading reports nothing. Check
+[Install the widget](/website/install): a domain must be allowed, the snippet must be on the
+page, and the channel only goes live once Watx sees a real load from an allowed domain.

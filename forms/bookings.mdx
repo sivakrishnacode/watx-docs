@@ -1,0 +1,117 @@
+---
+title: "Booking forms"
+description: "Turn a form into a booking page: availability, slot length, buffers, notice, group capacity, and the link a customer uses to move or cancel."
+sidebarTitle: "Booking forms"
+icon: "calendar-days"
+---
+
+A booking form is an ordinary form with one extra field in it. The visitor answers your questions, picks a time you are genuinely free, and the slot is held for them.
+
+## Making a form take bookings
+
+Add the **Appointment slot** field from the palette's **Date & time** group. That is the whole switch — there is no separate booking product and no appointment types to set up. Two tabs appear as soon as you add it: **Availability** and **Appointments**.
+
+A booking form is reachable at both of its addresses: `app.watx.in/book/<name>` and `app.watx.in/f/<name>`. Both show the same page with the time picker on it.
+
+## Availability
+
+Open the **Availability** tab and press **Turn on** under **Accept bookings**. With it off, the time picker shows nothing and nobody can book.
+
+### Slot shape
+
+| Setting | What it decides |
+| --- | --- |
+| **Timezone** | The zone your hours are written in, such as `Asia/Kolkata`. Visitors see times in this zone, labelled, so nobody quotes a different time to you |
+| **Appointment length (minutes)** | How long one slot is, from 5 minutes to 8 hours |
+| **Gap between appointments** | Dead time reserved either side of a booking, so back-to-back slots are not offered. Up to 4 hours |
+| **Minimum notice (minutes)** | How soon from now a slot may be taken. Stops someone booking ten minutes from now |
+| **How far ahead people can book (days)** | How much of the future the picker offers, up to a year |
+| **Places per slot** | 1 for one-to-one. Above 1 makes it a group session, and the picker shows how many places are left |
+
+<Warning>
+The database guarantee that two people cannot take the same slot applies at **Places per slot = 1**. Above 1 the slot is meant to be shared, so seats are counted instead.
+</Warning>
+
+### When you are available
+
+Add a row per stretch of the week: a day, a start time and an end time, read in the timezone above. Two rows on the same day models a lunch break. A row whose end is not after its start is dropped when you save — an end before the start is a typo, not an overnight window.
+
+With no rows at all the panel says so, and no times are offered.
+
+### Closed dates
+
+A comma-separated list of `YYYY-MM-DD` dates — holidays and one-off closures. No times are offered on those days, whatever the weekly pattern says.
+
+Press **Save availability**. This tab saves separately from the Build tab's **Save**.
+
+<Note>
+Availability is worked out from the bookings made through Watx and nothing else. There is no calendar sync, so a meeting in your own calendar does not remove a slot here. Block the time with a closed date, or narrow your hours.
+</Note>
+
+## What the visitor sees
+
+The picker loads the real, currently-free times every time it is opened — a cached list is a list of times that may already be gone.
+
+- Dates run across the top as a strip of the days that actually have something, each showing how many times are free. Days with nothing are left out, rather than shown greyed.
+- Times are listed in **your** timezone, with the zone named above the grid.
+- Arrows page a fortnight at a time. An empty period says *"No times available in this period"* and offers **Look further ahead**.
+
+When the form is submitted, the chosen time is checked again before it is held, because the list the visitor was looking at may be minutes old. If it has just gone they are told exactly that — *"Someone just took that time. Please pick another."* — and their answers are kept on screen.
+
+A successful booking replaces the form with a confirmation: **You're booked**, the time, the timezone, and the link to change it. The address bar moves to that link at the same moment, so a refresh lands on the booking rather than on a form that has already been sent.
+
+Coming back to the same booking form later in the same browser shows a quiet banner — *"You already have a booking"* — above the form, with a link to it. The form stays usable underneath: booking a second appointment is a normal thing to want.
+
+## The manage link
+
+Every booking gets its own link, `app.watx.in/book/manage/<token>`, and that link is the only thing needed to open it. The customer has no Watx login and never will — asking them to sign in to move an appointment is how a booking product loses to a phone call.
+
+On that page they can:
+
+- **Reschedule** — the same picker, with the same hours, buffers and notice. Their own current slot does not block them, so nudging a 3:00 to 3:30 works.
+- **Cancel** — confirmed first, and safe to click twice. A cancelled slot becomes bookable again.
+
+<Warning>
+Treat the manage link as a password for that one appointment. It is deliberately kept out of search engines, it is never shown on the Appointments tab, and it opens exactly one booking with no route to any other. Anyone you forward it to can move or cancel that booking.
+</Warning>
+
+A booking that has been cancelled cannot be moved; the page says so rather than offering times.
+
+## The Appointments tab
+
+Everything booked through this form, split into **Upcoming** and **Past and cancelled**, because "what is coming up" and "what happened" are different questions.
+
+Each row shows the time, the contact, and a status: **Confirmed**, **Completed**, **No show** or **Cancelled**. Use the actions on a row to mark what happened, or to open the contact. **Refresh** re-reads the list — it is loaded when you open the tab.
+
+Marking a booking **Cancelled** here frees the slot and tells the customer's automations about it. Marking it completed or a no-show is a record for you and sends nothing.
+
+Changing an appointment's status needs the Agent role or above.
+
+## Automations
+
+Three triggers fire on their own, with no channel attached — they work whether or not the person has ever messaged you:
+
+| Trigger | Fires when |
+| --- | --- |
+| **Appointment booked** | Someone books a slot |
+| **Appointment rescheduled** | Someone moves a booking to a new time |
+| **Appointment cancelled** | Someone cancels, or you cancel from the Appointments tab |
+
+Inside those automations you can quote the booking:
+
+| Token | Value |
+| --- | --- |
+| `{{ vars.booking.starts_at }}` | When it starts |
+| `{{ vars.booking.ends_at }}` | When it ends |
+| `{{ vars.booking.timezone }}` | The zone it was agreed in |
+| `{{ vars.booking.manage_url }}` | The customer's own reschedule and cancel link |
+| `{{ trigger.form_id }}` | Which form it came from |
+| `{{ trigger.appointment_id }}` | The booking itself |
+
+That is how a confirmation gets sent, a reminder gets scheduled and the team gets told — there is no separate reminder system to configure. See [Triggers](/automations/triggers) and [Variables and expressions](/automations/expressions).
+
+Because a booking is also a submission, the **Form submitted** trigger fires as well, carrying the answers to everything else the form asked. If you send a confirmation from both, the customer gets two messages — pick one.
+
+## Retiring a booking form
+
+**Archive** it rather than deleting it. Archiving takes the form off its public link and leaves existing appointments intact, so nobody turns up to something that was quietly cancelled. Turning **Accept bookings** off has the same effect on new bookings without hiding the form.

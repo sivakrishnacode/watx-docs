@@ -1,0 +1,79 @@
+---
+title: "Messaging limits and quality"
+description: "Meta's messaging tiers and quality rating, where Watx shows them, and what the usage meter does and does not count."
+sidebarTitle: "Limits and quality"
+icon: "gauge"
+---
+
+Meta caps how many customers your number may start a conversation with in a rolling 24 hours, and grades how those messages are received. Both belong to Meta — Watx reads them and shows them where they matter.
+
+## Messaging tiers
+
+| Tier | Shown as | Conversations per 24 hours |
+| --- | --- | --- |
+| `TIER_250` | **Unverified — 250/day** | 250 |
+| `TIER_1K` | **Tier 1 — 1K/day** | 1,000 |
+| `TIER_10K` | **Tier 2 — 10K/day** | 10,000 |
+| `TIER_100K` | **Tier 3 — 100K/day** | 100,000 |
+| `UNLIMITED` | **Unlimited** | No daily cap |
+
+A number that has never been synced reads **Not synced yet**. If Meta ever reports a tier Watx does not recognise, it is shown raw and usage tracking pauses rather than guessing a ceiling.
+
+An unverified number is capped at 250 conversations a day; verifying your business in Meta Business Manager is what moves it up a tier.
+
+## Quality rating
+
+Meta grades the number from how recipients react — blocks, reports and "not useful" feedback.
+
+| Rating | Shown as |
+| --- | --- |
+| `GREEN` | Good quality |
+| `YELLOW` | Medium quality |
+| `RED` | Low quality |
+| `NA` | Not yet rated — the normal state for a new number |
+
+<Warning>
+  At **Low quality**, Meta may throttle or pause delivery. Watx says so and advises against bulk sends until it recovers. A template can also be paused on its own at Meta for the same reason — see [Message templates](/whatsapp/templates).
+</Warning>
+
+## Where it is shown
+
+Two places, both WhatsApp-only:
+
+- **Analytics → Sending capacity** — the tier, the rating, the usage meter and any warning banners.
+- **Broadcast step 4**, above the Send button, as a pre-flight check.
+
+The quality rating on its own also appears on the connected card in [channel settings](/whatsapp/settings).
+
+## The usage meter
+
+The meter counts **distinct contacts** you have messaged in the last 24 hours, because Meta's cap is on unique customers, not messages.
+
+<Warning>
+  **It counts broadcast recipients only.** Messages from automations, flows and the inbox consume the same Meta quota and are not counted here, so the number is a floor, not a total. That caveat is printed under the meter rather than hidden in a tooltip, and the pre-flight warning repeats it.
+</Warning>
+
+The meter never blocks a send. An undercounting number must not be allowed to stop a legitimate broadcast.
+
+## Refreshing
+
+Watx refreshes the tier and quality rating from Meta every six hours, and **Refresh** on the card asks for an immediate update. Data older than twelve hours is labelled **may be out of date**.
+
+Two things stop the refresh without stopping your messages:
+
+- **The access token expired.** Limits stop updating; sending still works. Reconnect from [channel settings](/whatsapp/settings).
+- **Meta was unreachable or rate-limited.** The last known values stay on screen and are marked stale rather than being wiped.
+
+## Pre-flight warning on a broadcast
+
+When an audience looks bigger than your remaining daily allowance, step 4 of the broadcast wizard says so before you press Send: messages past the limit are rejected by Meta. It is a warning, not a block — see above for why.
+
+## Send pacing
+
+Broadcasts are paced at roughly 10 messages a second by default, which matches the tier a new number starts on. That pacing is global to the deployment rather than per number, so a very large broadcast can slow another one down slightly; it exists so no single number ever exceeds Meta's rate.
+
+## Related
+
+- [Broadcasts](/whatsapp/broadcasts) — where limits bite hardest.
+- [The 24-hour window](/whatsapp/messaging-window) — a separate rule about *what* you may send.
+- [WhatsApp delivery troubleshooting](/troubleshooting/whatsapp) — when messages fail anyway.

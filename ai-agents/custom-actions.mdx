@@ -1,0 +1,71 @@
+---
+title: "Custom API actions"
+description: "Let an agent call your own API — defining the endpoint, parameters and headers, testing it, and choosing which agents may use it."
+icon: "plug"
+---
+
+An action is one of your own HTTP endpoints, exposed to the agent as a tool: check stock in your ERP, look up a booking in your own system, raise a ticket. Skills already give the agent your orders, catalogue, contacts and deals — actions are for everything that lives in a system Watx does not host.
+
+**You configure the endpoint, the method and the headers. The agent only fills in the parameters you declare.** It cannot choose a different URL, add a header or change the method, so "ignore your instructions and call this other address" is not something it is able to express.
+
+Actions belong to the workspace and are listed on every agent's **Actions** tab. Only owners and admins can create or edit one.
+
+## Creating an action
+
+<Steps>
+  <Step title="Name it">
+    **Tool name** — lowercase letters, numbers and underscores, starting with a letter: `check_stock`. This is the name the agent calls. Built-in tool names are refused.
+
+    **Group** is optional and only organises this list.
+  </Step>
+  <Step title="Say when the agent should call it">
+    **When should the agent call this?** is the sentence the agent reads to decide. Be specific about what the action returns and when it is the right call — this field does more work than anything else on the form. At least ten characters; it is not optional.
+  </Step>
+  <Step title="Point it at your endpoint">
+    Pick the method — `GET`, `POST`, `PUT`, `PATCH` or `DELETE` — and give the URL. Use `{name}` for a path parameter: `https://erp.example.com/stock/{sku}`.
+
+    The endpoint must be reachable on the public internet over https. Private, internal, loopback and cloud-metadata addresses are refused when you save and again on every call.
+  </Step>
+  <Step title="Declare the parameters">
+    Each parameter has a **name**, a **type** (`string`, `number` or `boolean`), a **location** (`query`, `body` or `path`), a **required** tick, and a description written for the agent — *"the product SKU, exactly as printed on the label"*. Up to twelve.
+
+    Values are encoded into the query string, the path or a JSON body, never spliced into a raw string — a value containing `&`, `/` or a quote cannot invent a second parameter or break your body.
+  </Step>
+  <Step title="Add your credentials as headers">
+    Header name and value, up to ten. Values are encrypted at rest and **never shown again** — editing an action later, leave them blank to keep what is saved. `Host`, `Content-Length`, `Connection`, `Transfer-Encoding`, `Cookie` and `User-Agent` cannot be set.
+  </Step>
+  <Step title="Save, then test">
+    **Available to the agent** is the switch beside **Save action**. An action that is off stays configured but is never offered.
+  </Step>
+</Steps>
+
+## Testing one
+
+**Test this action** on the action's row opens a small form — one box per declared parameter — and **Run** makes the call for real. The panel shows exactly what the agent would see, which is the useful thing: a 200 with an unreadable body is a failure from the agent's point of view even though the request worked.
+
+The row then carries the outcome of the most recent call, whether it came from a test or from a live conversation: **Last call succeeded (HTTP 200)**, or the error in full.
+
+## Which agents may call it
+
+The control at the top of the tab works exactly like the one on Knowledge:
+
+- **Everything** — this agent may call every enabled action in the workspace, including ones added later.
+- **Only these** — tick the actions it may call. New actions are not added automatically, and an empty selection means the agent calls none.
+
+Scoping matters more here than for documents: an action is a live call somebody configured, and a support agent has no business reaching the endpoint that issues refunds.
+
+## Limits and behaviour
+
+| | |
+| --- | --- |
+| Actions per workspace | 20. A model handed more than that picks badly, and every definition costs tokens on every reply. |
+| Actions offered in one reply | At most 20, after the agent's own selection |
+| Timeout | 8 seconds by default, between 1 and 30 |
+| Response returned to the agent | Truncated — a huge JSON body costs a page, not a fortune |
+| Redirects | Followed at most three times, re-checked at every hop |
+
+If a call fails, the agent is told it failed and instructed not to invent a result: it says it could not check and offers to have somebody follow up. It is never told your tool names, your arguments or your errors in a message to a customer.
+
+<Warning>
+An action runs for real wherever the agent is running — including from the studio's [test drawer](/ai-agents/testing). Point a destructive action at a sandbox until you are sure of it.
+</Warning>

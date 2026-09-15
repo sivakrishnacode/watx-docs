@@ -1,0 +1,103 @@
+---
+title: "Contacts"
+description: "The list, search and filters, bulk actions, CSV import, where contacts come from, and the contact drawer."
+icon: "users"
+---
+
+Everyone who has ever messaged you — on WhatsApp, Instagram or the website widget — is a contact, along with anyone you added by hand, imported, or who filled in a form. One person is one contact even if they reach you on several channels.
+
+## The list
+
+The table shows **Name**, **Phone**, **Email**, **Company**, **Tags**, **Source** and **Created**, narrowing to the first few columns on a small screen. Click any row to open the contact drawer. Twenty-five contacts load at a time, with the total and a pager at the foot of the table.
+
+### Search
+
+The search box matches on name, phone number and email. With a tag or segment filter also active, the search widens to cover the company and the Instagram handle as well.
+
+### Filters
+
+**Tags** and **Segments** each open a checklist. Within one filter the logic is "any of these"; the two filters then intersect, so picking two tags and one segment means *(either tag) and (that segment)*. Each active filter shows as a removable chip, with **Clear all** beside them.
+
+Filtering by a segment resolves it properly — including a filter segment, whose membership is worked out on the spot rather than stored. See [Segments](/contacts/segments).
+
+## Bulk actions
+
+Tick the checkbox on any row and a bar appears above the table saying how many are selected, with:
+
+- **Add to segment** — files all of them into a list segment. With a mixed selection, only segments every selected contact already belongs to show as ticked, so clicking one adds rather than silently removing the members.
+- **Delete selected**
+- **Clear** — drop the selection.
+
+Selection covers the rows currently on screen. Changing page, the search or a filter clears it, so the bar can never act on rows you can no longer see.
+
+## Adding a contact
+
+**Add contact** opens a short form. **Phone** is the only required field; name, email, company and tags are optional.
+
+Numbers are stored in international format so the same person looks the same however they reached you. The hint under the box shows exactly what will be saved — a number typed without a country code picks up the workspace's default country, and seeing that guess before you save is the point. Set the default under **Settings → Fields & tags**.
+
+If the number already belongs to somebody, the form says so before you save and offers to open the existing contact. A very similar number gets a softer warning.
+
+## Importing a CSV
+
+**Import** takes a CSV with a required `phone` column. `name`, `email`, `company` and `tags` are optional; a `tags` cell holds one or more tag names separated by commas or semicolons (quote the cell if it has commas in it).
+
+<Steps>
+  <Step title="Choose the file">
+    Watx parses it and shows how many rows are ready, plus a preview of the first few with their tags.
+  </Step>
+  <Step title="Optionally pick a segment">
+    **Add everyone to a segment** files the whole file into a list segment — including numbers you already have. A contact skipped as a duplicate is still on the list you imported.
+  </Step>
+  <Step title="Import">
+    The result names what happened: imported, tags assigned, added to segment, skipped and failed.
+  </Step>
+</Steps>
+
+**Skipped** means you already had that number — either already in the workspace, or twice in the same file. **Failed** means the value was not a usable phone number at all. Imported contacts are marked with the source **Imported**.
+
+Tag names in the file are matched to your existing tags. Creating a tag that does not exist yet needs an admin; for anyone else, unknown tag names are left off rather than inventing tags.
+
+## Where a contact came from
+
+Every contact records its origin, shown as a quiet pill in the list and the drawer.
+
+| Source | Means |
+| --- | --- |
+| Added manually | Typed into the contact form by someone on your team |
+| Imported | Came in through a CSV import |
+| WhatsApp | Messaged your WhatsApp number first, including from a click-to-WhatsApp ad |
+| Instagram | Sent your account an Instagram DM |
+| Website chat | Started a conversation in the chat widget on your site |
+| Form | Submitted one of your forms, or booked a slot |
+| Facebook lead | Filled in a Facebook lead-generation form |
+| API | Created through the public API, directly or by being messaged |
+| Broadcast audience | A number pasted into a broadcast audience that was not yet a contact |
+| Unknown | The contact predates origin tracking |
+
+Origin cannot be recovered after the fact, so it is left blank rather than guessed.
+
+## The contact drawer
+
+Clicking a contact opens a panel with the whole record. The header carries the avatar, name, source, company and any identifiers — phone, `@handle`, email — each click-to-copy, plus **Send template** and **Open chat**. Under that are three dates: when the contact was **Added**, last **Updated**, and their **Last message**.
+
+Six tabs:
+
+| Tab | What is on it |
+| --- | --- |
+| **Overview** | Name, phone, email and company, the address, identity and origin, and marketing consent. Click a field to edit it; changes save on their own. |
+| **Activity** | Everything that has happened to this contact, newest first — see [Activity timeline](/contacts/activity-timeline) |
+| **Labels** | Tags and segments, as chips you toggle |
+| **Notes** | Internal notes. Only your team sees them |
+| **Fields** | The workspace's custom fields and this contact's values |
+| **Deals** | Deals raised for this contact, with stage, value and outcome — see [Pipelines and deals](/contacts/pipelines-and-deals) |
+
+### Marketing consent
+
+The Overview tab's **Marketing** block says whether the contact is **Receiving marketing** or **Opted out**, with an **Opt out** / **Resubscribe** button and, for someone who opted out, when and how.
+
+Opting out suppresses **broadcasts and campaigns only**. Your team can still reply to them in the Inbox, and an opted-out contact is shown with a badge next to their name so nobody has to check.
+
+## Deleting
+
+Delete one contact from its row menu, or several from the bulk bar. This removes the contact record. Deleting a conversation is a separate action in the Inbox and does not delete the contact.

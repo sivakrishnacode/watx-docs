@@ -1,0 +1,60 @@
+---
+title: "Team performance"
+description: "How much each teammate is handling — replies, conversations, resolutions and first-response time."
+sidebarTitle: "Team performance"
+icon: "chart-simple"
+---
+
+The team performance report answers one question: how much are my people handling, and how quickly are they answering.
+
+Find it at the bottom of **Settings → Users & Roles**, under the member list it describes. Every member of the workspace can read it.
+
+<Note>
+**Human replies only.** The AI's answers are excluded throughout, so a workspace running an agent on most conversations will see small numbers here. That is the honest answer to the question — folding the bot in would make every teammate look busy and the report useless for the decision it exists to support.
+</Note>
+
+## The date range
+
+A dropdown beside the heading offers **Last 7 days**, **Last 30 days** and **Last 90 days**, defaulting to 30. There is no custom range. Days are counted in your own time zone, and today's partial data is included.
+
+## The four figures
+
+| Tile | What it means |
+| --- | --- |
+| **Replies sent** | Every message a person sent in the window. Bot replies are not counted |
+| **Conversations resolved** | Conversations that were closed during the window. A resolution is credited to whoever the conversation was assigned to |
+| **Team median reply** | The team's first-response time, weighted by how many replies each person made — so somebody who answered twice does not move the number as much as somebody who answered two hundred times |
+| **Active teammates** | How many people replied at least once |
+
+## By teammate
+
+The table lists everyone with the Owner, Admin or Agent role, ordered by replies sent. Members with the Viewer role never appear, since they cannot reply. **A teammate who answered nothing still appears, with zeros** — that is a fact the report exists to show.
+
+| Column | What it counts |
+| --- | --- |
+| **Teammate** | Their name, with their email underneath |
+| **Replies** | Messages this person sent in the window |
+| **Conversations** | Distinct conversations they replied in. Not conversations assigned to them |
+| **Resolved** | Conversations assigned to them that were closed in the window |
+| **Median reply** | Their middle first-response time. Hover it to see how many responses it is based on |
+| **Average reply** | Their mean first-response time |
+
+Times are shown as `<1 min`, `12 min`, `3.4 h` or `1.2 d`. A dash means they answered nothing in the window — which is deliberately not shown as zero, since zero would read as "instant".
+
+## How first response is measured
+
+A response is a customer message immediately followed, in the same conversation, by a message from a person. Both have to fall inside the window. AI replies never count as a response.
+
+<Warning>
+Latency is measured from the **last** message of an inbound burst, not the first. A customer who sends three messages and is answered a minute after the third scores one minute, not the time since their first message.
+</Warning>
+
+## What counts as resolved
+
+A conversation counts as resolved when its status moves to **Closed**, at the moment it happens. Reopening it takes the resolution back — a reopened conversation is not resolved. Re-saving an already-closed conversation does not move the timestamp.
+
+Conversations closed before this report existed have no closing time recorded, so they are not counted. That history is genuinely unknown, and guessing it would make every number built on it a guess too.
+
+## When the numbers look empty
+
+If the table has rows but every figure is zero, the report says so: either the AI handled everything in that window, or the replies were sent before message authorship was recorded, in which case they carry no author and cannot be attributed to anybody.

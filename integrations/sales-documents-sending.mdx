@@ -1,0 +1,166 @@
+---
+title: "Creating and sending a document"
+description: "The four-step create dialog, the counter-first customer picker, the real-PDF preview, and how the document reaches WhatsApp as a template with the PDF attached."
+sidebarTitle: "Creating and sending"
+icon: "paper-plane"
+---
+
+Documents are created on the **Documents** tab of **Integrations → Sales documents**, from
+an [automation step](/automations/steps), or from a connected store's **Send an invoice**
+recipe. All three produce the same document; only this page's dialog is by hand.
+
+## New document — the four steps
+
+**New document** on the Documents tab opens a fixed-size, four-step dialog. The rail across the top carries a one-line
+summary of each step you have passed — "Tax invoice · Asha Rao", "3 items · ₹4,150" — so the
+whole document can be checked without stepping back.
+
+<Steps>
+  <Step title="Document & customer">
+    **Pick the customer first.** The picker is built for a bill counter: type the phone
+    number and the list narrows as you go, an exact match is listed first and Enter takes
+    it, and if nobody matches it offers to **add them right there** — a name and the number
+    you already typed. Contacts without a phone number are not offered, because both this
+    flow and payment requests send on WhatsApp.
+
+    The last row is **Walk-in customer**: no contact at all. The document can be downloaded
+    and printed, but not sent on WhatsApp.
+
+    Then choose the **document type** — it decides the title, the columns and the number
+    series. **Details on the document** opens the block that prints on the page: the name
+    and phone for a walk-in, the customer's GSTIN for a B2B invoice, the address as it will
+    print (pre-filled from the contact), and in GST mode the **place of supply**, which
+    decides CGST/SGST against IGST.
+  </Step>
+  <Step title="Items">
+    One row per line: description, HSN/SAC, quantity, unit, rate, an absolute discount, and
+    the GST rate for that line. The running total beside the rows splits CGST and SGST or
+    charges IGST from the states you chose.
+
+    That total is labelled an **estimate** — the final arithmetic is done on the server when
+    the document is created.
+  </Step>
+  <Step title="Payment">
+    **Paid in full** (the counter sale), **Part paid** (with the amount received) or
+    **Not paid yet**. Anything not paid in full asks when it is due — on receipt, in 7, 15
+    or 30 days, or a date you pick. Paid and part-paid ask how the money was received: Cash,
+    UPI, Bank transfer, Card, Cheque, Razorpay or Other.
+
+    A **payment receipt** asks only how the money came in — it is settled by definition. A
+    quotation, delivery challan or credit note carries no balance, so this step asks nothing.
+
+    **Notes** and **Terms** print under the totals; blank uses your workspace defaults.
+  </Step>
+  <Step title="Preview & send">
+    The panel is the **real PDF of this draft**, rendered by the same code that renders the
+    finished document. It prints **DRAFT** where the number goes, because the number is only
+    assigned when the document is created — showing a guess would show a number another sale
+    may take first.
+
+    Beside it: a summary and **Send on WhatsApp now**, which needs a contact. **Create** is
+    enabled once the preview has rendered.
+  </Step>
+</Steps>
+
+<Warning>
+  Once created, the document is numbered and cannot be edited — only paid, cancelled or
+  sent. Go back a step to change anything.
+</Warning>
+
+## Sending it on WhatsApp
+
+Once a workspace has nominated an **invoice template**, **every WhatsApp send uses it** —
+inside [the 24-hour window](/whatsapp/messaging-window) as well as outside. You chose approved copy with the PDF in its
+header, and a customer who wrote in an hour ago should get the same message as one who never
+has.
+
+| Situation | What is sent |
+| --- | --- |
+| A template is nominated | That template, with the PDF on its document header |
+| No template, chat open | The PDF on its own, with a short caption |
+| No template, chat closed | Refused, and the message says to choose one |
+| Instagram or website chat | The PDF directly — those channels have no template mechanism |
+| Contact has no phone number | Refused, and the message says so |
+
+A customer created at the counter seconds before their first bill has no WhatsApp thread
+yet. Watx opens one, and because a fresh thread is outside the window the document rides the
+approved template — which is the only way Meta lets a business write first.
+
+### Choosing the template
+
+**Settings → Invoice template**, in the console. Only templates with a **document header**
+are listed: that header is what carries the PDF, and a template without one would deliver a
+sentence about an invoice with no invoice attached.
+
+The PDF is sent **with its file name**, so the customer's chat shows the document's number
+rather than "Untitled". See [Message templates](/whatsapp/templates) for how to create one,
+and [the library](/whatsapp/template-library) for ready-made payment and receipt starters.
+
+### The thirteen values a template can carry
+
+Map each placeholder to one of these. Every value is read off the document itself — none
+needs a store, a gateway or any integration.
+
+| Value | Example |
+| --- | --- |
+| Customer's name | `Asha Rao` |
+| Invoice number | `INV/2026-27/0042` |
+| Document type | `payment receipt`, `invoice`, `quotation` |
+| Total amount | `₹4,150.00` |
+| Amount paid | `₹1,000.00` |
+| Balance due | `₹3,150.00` |
+| Payment method | `Cash`, `UPI`, … |
+| Date issued | `14/09/2026` |
+| Due date | `29/09/2026` |
+| Date paid | `14/09/2026` |
+| Items | first two, then a count |
+| Your business name | as frozen onto the document |
+| Link to the online copy | the web page, not the PDF |
+
+Dates print as DD/MM/YYYY in the document's own time zone, and amounts group in lakhs
+(`₹1,10,465.60`) — on the PDF too.
+
+<Note>
+  The mapping is **reset when you change the template**. Saying `{{2}}` is the amount means
+  nothing on a template whose `{{2}}` is the date.
+</Note>
+
+## The public link
+
+Every issued document has its own page at `https://api.watx.in/i/<token>`, with the PDF at
+`https://api.watx.in/i/<token>.pdf`. The customer needs no login, the page is not indexed by
+search engines, and a draft is not public.
+
+That address is what Meta fetches when it sends the PDF, and what the **Link to the online
+copy** value points at.
+
+## After it is issued
+
+Each row on the **Documents** tab carries a menu:
+
+| Action | Notes |
+| --- | --- |
+| **View** | Opens the public page |
+| **Download PDF** | The rendered document |
+| **Mark paid (cash)** | On an unpaid or part-paid document |
+| **Send on WhatsApp** | Sends, or re-sends, to the customer |
+| **Cancel** | On an unpaid or part-paid document |
+
+The list filters by **All**, **Unpaid**, **Paid** and **Cancelled**, and the delivery column
+says how it went out — `template`, `PDF`, or **not sent**. A failed send never undoes the
+document: it exists the moment it is created, and the failure is recorded against it.
+
+## Raising one automatically
+
+The `send_invoice` [automation step](/automations/steps) takes its lines two ways:
+
+- **One line**, built from tokens — the default, and what a business with no store needs.
+- **From the order in context**, when the automation was started by a store order.
+
+An amount that resolves to nothing is treated as an error rather than sent as a zero-value
+document. The step publishes the invoice id, number, page URL, PDF URL, total, currency,
+status and whether it was sent, so a later step can use them.
+
+For a connected store, the **Send an invoice** recipe on the
+[store console](/integrations/store-console) does the same in one click. Shopify sends no
+HSN code, so set a **default HSN/SAC code** in Settings before you rely on it.

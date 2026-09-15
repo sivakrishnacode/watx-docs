@@ -1,0 +1,93 @@
+---
+title: "Credits and your own key"
+description: "Run agents on built-in AI credits or on your own OpenAI, Anthropic or Gemini key — how each bills, what a credit costs and how top-ups work."
+icon: "coins"
+---
+
+Every workspace chooses one of two ways to power its agents. The choice is workspace-wide: all your agents, the inbox draft button, the test drawer and knowledge indexing run on whichever you pick.
+
+Open it with **Provider & credits** at the top of **AI Agents & Bots**. Only owners and admins can change it.
+
+| | Built-in AI | Your own provider key |
+| --- | --- | --- |
+| Runs on | Our Google Gemini key | Your OpenAI, Anthropic or Google key |
+| Billing | AI credits, metered from real token usage | Your provider bills you directly |
+| Setup | None | Paste a key |
+| Quota | The credit balance | None — we meter nothing and cap nothing |
+| Model choice | Chosen for you | Per workspace, and per agent |
+
+Built-in AI is the default, and **every new workspace starts with 250 free credits**.
+
+## What a credit buys
+
+A credit is charged from the tokens a reply actually used, not per message — a one-line answer costs a fraction of a long researched one.
+
+| | |
+| --- | --- |
+| Weighted tokens | `input + (output × 4)` — generated text costs several times what prompt text does on every provider worth using |
+| One credit | 4,000 weighted tokens |
+| Minimum per reply | 1 credit |
+| Tool rounds | Each round is its own billable call, so a three-round reply costs three or four credits |
+| Indexing a document | 1 credit per 25,000 tokens, minimum 1 |
+
+A typical grounded reply — around 2,000 tokens of prompt and 300 of answer — works out at one credit.
+
+**What spends credits:** the auto-reply agent, the inbox draft button, the studio test drawer, indexing knowledge documents, and the AI builders for [automations](/automations/templates-and-ai) and [flows](/flows/testing-and-ai). Each of those is recorded against the wallet separately, so the spend stays attributable per feature.
+
+## The balance
+
+A badge in the dashboard header shows the credits left, and opens the top-up sheet. It hides itself entirely on a workspace running its own key — a number that never moves reads as a bug.
+
+- Below **50 credits** the badge turns amber and the sheet warns you.
+- **At zero**, the inbox draft button refuses with a message offering a top-up, and the auto-reply agent leaves conversations for a person. Nothing is lost; the conversation simply waits.
+
+Credits never expire. If you switch to your own key they stay in the wallet for when you switch back.
+
+## Topping up
+
+**Top up** in the Provider & credits drawer, or the header badge, lists the available packs with the credits and the price of each. Payment is by card through Razorpay.
+
+The price comes from the server, never from your browser, and the payment is verified with Razorpay's own signature before anything is granted. If the confirmation does not come back to your browser — you closed the tab, the network dropped — Razorpay's webhook grants the credits anyway. Only owners and admins can buy.
+
+## Using your own key
+
+<Steps>
+  <Step title="Save the key">
+    In **Provider & credits**, open the key form. Pick the provider — OpenAI, Anthropic or Google Gemini — choose a model, and paste the key. **Test key** makes one real call and reports what the provider said.
+
+    Keys are encrypted at rest and never shown again after saving.
+  </Step>
+  <Step title="Switch the mode">
+    Choose **Your own provider key** on the **How the AI is powered** card. The option is refused until a key is stored — switching first would turn every agent off on the next message, silently.
+  </Step>
+  <Step title="Optionally set a model per agent">
+    Each agent's **Routing** tab now has a **Model** field. Blank follows the workspace default. The provider is not per-agent: there is one key, and it belongs to one provider.
+  </Step>
+</Steps>
+
+The model lists in the form are a starting point rather than a whitelist — the API accepts any model id your provider does, and a model you have already saved stays in the dropdown.
+
+### Knowledge-base search on your own key
+
+On built-in AI, meaning-based search over your knowledge base works with no extra setup. On your own key it needs an **embeddings key** — an OpenAI or Google key saved under **Knowledge-base search** in the same form. Without one, the knowledge base falls back to keyword search; documents still answer questions, just less forgivingly. See [Knowledge](/ai-agents/knowledge).
+
+<Warning>
+Changing the embeddings provider makes existing documents **Needs reindex**: vectors from a different model are not comparable, so they stop being found by meaning until you press **Reindex all**.
+</Warning>
+
+## Falling back
+
+Fallback happens only when the source you chose genuinely cannot serve a call, and only in one direction:
+
+| Situation | What happens |
+| --- | --- |
+| Built-in AI, credits exhausted, and you have your own key saved | Your key is used, so the agent keeps answering |
+| Built-in AI, credits exhausted, no key of your own | The agent stops drafting and conversations are left for a person |
+| Your own key chosen, no key stored | Built-in AI credits are used |
+| Your own key working normally | Credits are **never** spent |
+
+It never falls back the other way. Quietly spending our credits because your key had a bad minute would bill you for something you did not choose.
+
+## Removing the key
+
+**Remove** deletes the stored provider configuration. The agent stops replying, but your knowledge base, skills and actions are kept. If built-in AI is available you can switch back to credits at any time.

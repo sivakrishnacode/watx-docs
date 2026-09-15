@@ -1,0 +1,167 @@
+---
+title: "The store console"
+description: "One page per connected store: health and webhooks, orders, carts and their recovery rules, the catalogue, the messages you send, and cash on delivery."
+sidebarTitle: "Store console"
+icon: "gauge"
+---
+
+Every connected store has its own console at **Integrations → Shopify or WooCommerce →
+Open console**. Six tabs: **Overview**, **Orders**, **Carts**, **Catalogue**,
+**Messaging** and **Cash on delivery**. The tab is in the address, so each one can be
+linked to and the back button works.
+
+The header carries the shop name, a status pill, a link to your store admin, a **Sync**
+button, and a **More actions** menu (**Re-register webhooks**, **Reinstall the app** or
+**Reauthenticate**, **Disconnect store**).
+
+| Pill | Meaning |
+| --- | --- |
+| **Connected** | Syncing and receiving events |
+| **Events not arriving** | The last webhook registration reported a problem |
+| **Sync error** | The last catalogue sync failed; the reason is on Overview |
+| **Not synced yet** | Connected, first sync has not finished |
+
+## Overview — is this store actually talking to us?
+
+Four tiles: **Products synced**, **Orders · 24h** (with the 7-day count and revenue),
+**Carts recovered · 7d** (with the value recovered and how many were abandoned) and
+**COD awaiting reply**.
+
+Below them:
+
+- **What this token can do** — the scopes read live from the store, split into Read and
+  Write. If cash on delivery is on and the token has no `write_orders`, it says so here.
+- **Webhook topics** — one row per topic with **Registered**, **Last received** and a
+  24-hour count. Registered-but-never-received is how a wrong signing secret shows itself.
+  The delivery URL is printed underneath; for WooCommerce it is the URL you paste into
+  WordPress.
+- **Recent deliveries** — every webhook the store sent, verified or refused, and what Watx
+  did with it.
+
+## Orders
+
+Every order the store has sent, newest first, searchable by order number, name, phone or
+email. Columns: order (linking to the order in your store admin), customer, items, total,
+payment (**COD**, **Prepaid** or **Unknown**), status (**Cancelled**, **Refunded**,
+**Shipped**, **Paid** or the store's own status) and when it was placed.
+
+An order creates the contact and an empty WhatsApp thread, so the customer is reachable
+even if they have never written to you. The customer's checkout address is written onto
+the contact — see [Fields and tags](/contacts/fields-and-tags).
+
+## Carts
+
+Checkouts that were started, filtered by **All**, **Open**, **Abandoned** or
+**Recovered**. A checkout appears the moment a shopper starts one and moves to
+**Abandoned** once it goes quiet for the period set beside the list.
+
+The rules card is on the same tab, because the list is the evidence for the rules:
+
+| Setting | Default | Bounds | What it does |
+| --- | --- | --- | --- |
+| **Quiet for** | 60 minutes | 15 minutes – 7 days | Minutes without the shopper touching the cart before it counts as abandoned |
+| **Give up after** | 24 hours | 1 hour – 30 days | A cart older than this is a nuisance message, not a recovery |
+| **Minimum cart value** | 0 | 0 and up | Carts under this are not worth a message. 0 means every cart |
+| **Only shoppers who accepted marketing** | Off | — | Shopify's checkbox at checkout. Most shoppers leave it unticked, so on, most stores send nothing |
+
+A value outside the bounds is a typo, not a preference, and is clamped when saved. The
+sweep runs every 15 minutes and fires the **Cart abandoned**
+[trigger](/automations/triggers) once per cart that meets all of the rules — the message
+itself is set up on the Messaging tab.
+
+<Note>
+  A shopper who completes their order stops being abandoned the moment the order arrives,
+  but a reminder already scheduled still sends. Keep reminder ladders short.
+</Note>
+
+## Catalogue
+
+The products synced from the store, searchable, with the price in the store's currency and
+stock (`Out of stock`, `N in stock`, or `Stock not tracked`). **Sync now** re-imports
+everything; product changes at the store arrive on their own between syncs.
+
+Shopify variants are synced as well, which is what lets an AI agent quote the right size
+and build a cart link around it — see [Skills](/ai-agents/skills).
+
+## Messaging — the store's messages
+
+Each message a store sends is an ordinary [automation](/automations/overview), created
+here at one click and refined in the canvas afterwards. They send **templates**, because most
+customers have never messaged you first and so are outside
+[the 24-hour window](/whatsapp/messaging-window).
+
+| Recipe | Fires on | What it sends |
+| --- | --- | --- |
+| **Send an invoice** | Order placed | Raises an invoice from the order's own lines and sends the PDF. No template to pick here — see [Sales documents](/integrations/sales-documents) |
+| **Order received** | Order placed | Thanks the customer the moment an order lands |
+| **Order shipped** | Order fulfilled | Tells them when the store marks the order fulfilled |
+| **Order cancelled** | Order cancelled | Lets them know an order was cancelled at the store |
+| **Refund issued** | Order refunded | Reassures them that a refund is on its way |
+| **Cart recovery** | Cart abandoned | Up to three reminders, each with its own template and delay |
+
+Setting one up asks for an approved [template](/whatsapp/templates) and what fills each
+placeholder. The values on offer come from the order or the cart:
+
+- **Orders** — customer name, order number, order total, items, number of items, order
+  status link, store name (and refund amount on the refund recipe).
+- **Carts** — customer name, resume-checkout link, cart total, items, first item, number
+  of items, store name.
+
+<Warning>
+  Map every placeholder **and** every button. Meta rejects the whole message if a single
+  value is missing, so the dialog will not let you save an incomplete mapping — a template
+  with a "Track order" button needs something mapped to that button, usually the order
+  status link.
+</Warning>
+
+**Order received** offers **Skip cash-on-delivery orders**, ticked when the COD
+confirmation is on: two messages about one order in the same minute reads as a fault.
+
+Once live, a recipe's card shows runs in the last 7 days, failures and the last error, with
+**Open in editor**, **Pause**/**Resume** and **Change template**. The **Delivery log** at
+the bottom of the tab lists every run of every store automation, and a failed row names the
+step that failed.
+
+### If you have no templates yet
+
+Any empty template picker offers **the store bundle** — all eight templates the console
+needs, submitted to Meta in one go:
+
+| Template | Used by |
+| --- | --- |
+| `store_order_received` | Messaging → Order received |
+| `store_order_shipped` | Messaging → Order shipped |
+| `store_order_cancelled` | Messaging → Order cancelled |
+| `store_order_refunded` | Messaging → Refund issued |
+| `store_cart_reminder` | Messaging → Cart recovery, first reminder |
+| `store_cart_reminder_final` | Messaging → Cart recovery, later reminder |
+| `store_cod_confirm` | Cash on delivery → confirmation template |
+| `store_admin_new_order` | Messaging → Admin alerts |
+
+Each one arrives with its placeholders already mapped when you pick it, so you are not
+re-deciding what `{{2}}` means. They can also be submitted from
+**WhatsApp → Templates → New → Use a template → E-commerce**. See
+[Template library and packs](/whatsapp/template-library).
+
+### Admin alerts
+
+Separate from customer messages, further down the Messaging tab:
+
+- **Admin numbers** — up to ten, in international form (`+919876543210`). Each becomes a
+  contact and a WhatsApp thread the first time it is messaged.
+- **Alert on every new order** — one message per order, to every number.
+- **Alert template** — admins almost never message the business's own number, so their
+  24-hour window is shut and a plain text would be dropped. The alert goes out as a
+  template. The same template is used for cash-on-delivery orders the guardrail could not
+  cancel.
+
+## Cash on delivery
+
+Its own page: [Cash on delivery confirmation](/integrations/cash-on-delivery).
+
+## Disconnecting
+
+**More actions → Disconnect store** removes the store, its synced catalogue, orders and
+carts, the webhook subscriptions held at the store, **and the message automations built
+for it**. It cannot be undone, and it takes a few seconds — the subscriptions are removed
+one at a time.

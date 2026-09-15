@@ -1,0 +1,114 @@
+---
+title: "Conditions and branching"
+description: "Split an automation on one or more rules, run an A/B test, and pause a run until a duration or a moment."
+sidebarTitle: "Conditions"
+icon: "code-branch"
+---
+
+Two steps branch: **Condition** and **Random split**. Both own a **Yes** sequence and a
+**No** sequence, and both rejoin the parent sequence afterwards — that is the dashed
+*continues after* arrow on the canvas.
+
+## Condition
+
+A condition is a list of **rules** plus a **Match** setting.
+
+- **Match: all** — every rule must be true to take the Yes branch.
+- **Match: any** — one true rule is enough.
+
+**Match** only appears once there is more than one rule.
+
+### Rule subjects
+
+| Subject | What it looks at | Second field |
+| --- | --- | --- |
+| **Has tag** | Whether the contact carries a tag. | Tag |
+| **Contact field** | One field on the contact, built-in or custom. | Field |
+| **Message text** | What the contact wrote. | — |
+| **Data from an earlier step** | Anything the run has produced — a variable, a response body, a status code. | Token path, e.g. `steps.lookup.status` |
+| **In segment** | Whether the contact is in a [segment](/contacts/segments). Works for both static and filter segments. | Segment |
+| **Channel** | Which channel the run came from. | — |
+| **Time of day** | Whether the current time falls in a window. Ranges that cross midnight work. | Window, as `HH:mm-HH:mm` |
+| **Day of week** | Whether today is one of these days. | Days, as `mon,tue,…` |
+
+### Operators
+
+| Operator | Notes |
+| --- | --- |
+| **is** / **is not** | Exact comparison. |
+| **contains** / **does not contain** | Case-insensitive. |
+| **starts with** / **ends with** | Case-insensitive. |
+| **is greater than** / **is less than** | Numeric. If either side is not a number the rule is false — not an error. |
+| **matches regex** | An invalid pattern makes the rule false rather than failing the run. |
+| **is empty** / **is not empty** | No comparison value. |
+
+The value you compare against is itself interpolated, so a rule can compare a contact
+field against an earlier step's output rather than only a literal. See
+[Variables and expressions](/automations/expressions).
+
+<Note>
+  **A rule that cannot be answered is false.** A deleted tag, a missing field, a segment
+  that no longer exists — all of them make the rule false, and the run takes the No
+  branch. They do not fail the run: the branch you wrote for "no" is a branch you thought
+  about.
+</Note>
+
+## Random split
+
+**Random split** sends a percentage of runs down the Yes branch and the rest down No.
+The slider is the percentage taking the first path. Use it for an A/B test: two versions
+of a follow-up message, one in each branch.
+
+Both branching steps publish which way they went, as `{{ steps.<name>.branch }}`, so a
+later step can say something different to each half.
+
+## Branches on the canvas
+
+- The **Yes** and **No** ports sit in a two-column footer on the branching card.
+- Dragging from one of them moves the target step to the top of that branch.
+- A branch with nothing in it does nothing at all. If both are empty the checks panel
+  warns; if one is empty it says so as information, because that is often deliberate.
+- The parent sequence resumes after whichever branch ran. That is what the dashed edge
+  shows.
+
+Branches may nest: a condition inside a branch is ordinary.
+
+## Wait
+
+**Wait** pauses for a duration — minutes, hours or days — and then carries on. It does
+not hold anything open: the run is **parked**, along with everything it has collected so
+far, and resumes later. A step after a three-day wait can still read what a step before
+it fetched.
+
+While a run is parked, its log row reads **partial**, with the step recorded as
+*resuming in …*. It becomes success or failure when the rest of the run finishes.
+
+<Warning>
+  A wait longer than 24 hours pushes any plain message after it outside
+  [WhatsApp's messaging window](/whatsapp/messaging-window), where only an approved
+  template will send. The checks panel adds up the waits along each path and warns on the
+  sending step itself. A wait of more than 30 days gets its own warning: the run resumes
+  even if the contact has since replied or unsubscribed.
+</Warning>
+
+## Wait until
+
+**Wait until** waits for a *moment* rather than a duration, and has two modes.
+
+**A time of day.** Set **Wait until** (`HH:mm`, 24-hour), a **Timezone** (UTC if you
+leave it), and optionally **Only on these days**. The run resumes at the next matching
+time — "reply at 9am on a weekday" rather than "reply in 12 hours", which from 10pm is
+not the same thing.
+
+**A moment carried by the run.** Set **Moment** to a token such as
+`{{ vars.booking.starts_at }}` and an **Offset (minutes)**, where a negative number is
+*before*: `-30` is half an hour before the appointment starts. This has to be a token —
+a fixed date would be the same moment for every run, and would silently stop working the
+day after it passed. A value that cannot be read as a date/time fails the step visibly
+rather than firing at a random time; a moment that has already passed fires immediately.
+
+<Note>
+  A held run can outlive what it is about. A reminder waiting on an appointment is
+  dropped if that booking is cancelled, deleted or moved — a reschedule fires its own
+  trigger, so the new reminder is scheduled from that.
+</Note>

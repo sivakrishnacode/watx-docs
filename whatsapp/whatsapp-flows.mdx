@@ -1,0 +1,66 @@
+---
+title: "WhatsApp Flows"
+description: "Meta's native in-app forms — booking, surveys, lead capture — created, validated, previewed and published from Watx."
+sidebarTitle: "WhatsApp Flows"
+icon: "table-cells"
+---
+
+A **WhatsApp Flow** is Meta's own product: a small form that opens inside WhatsApp, with real inputs — text fields, dropdowns, date pickers — instead of a back-and-forth conversation. Appointment booking, a survey, a lead form.
+
+<Warning>
+  Do not confuse this with **[Flows](/flows/overview)**, the Watx chatbot builder, which also appears in the WhatsApp panel. That one is a graph of nodes that sends ordinary WhatsApp messages. This page is about Meta's native form screens, and they are managed under your WhatsApp Business Account.
+</Warning>
+
+**WhatsApp → WhatsApp Flows** lists the flows in your account. It needs WhatsApp [connected](/whatsapp/connect) with a WhatsApp Business Account id; without one the page says so and links to settings.
+
+## Creating one
+
+**New flow** asks for a name and a starting point:
+
+| Template | What it contains |
+| --- | --- |
+| **Appointment booking** | Name, phone, preferred date and a service dropdown |
+| **Customer survey** | Satisfaction, a recommendation question and free-text comments |
+| **Feedback** | A star rating plus a free-text message |
+| **Lead generation** | Name, email, company and interest |
+| **Contact us** | A topic picker with a message field |
+| **Blank** | A minimal single screen to build on |
+
+Each one is a complete, self-contained Flow JSON that Meta will accept, so you get something working rather than an empty editor.
+
+## Editing
+
+Opening a flow gives you two halves.
+
+**Details** — the name and the categories Meta lists the flow under: `SIGN_UP`, `SIGN_IN`, `APPOINTMENT_BOOKING`, `LEAD_GENERATION`, `CONTACT_US`, `CUSTOMER_SUPPORT`, `SURVEY`, `OTHER`. **Save details** writes them back to Meta.
+
+**Flow JSON** — Meta's own format, edited as text. **Save JSON** sends it to Meta, which validates it and returns any problems; the errors are listed underneath with the line and column they point at. Saving with no errors says so.
+
+**Preview** — Meta's own renderer, refreshable, so you can see the screens as a customer would.
+
+## Status
+
+| Status | What it means |
+| --- | --- |
+| **DRAFT** | Yours to edit, preview and delete |
+| **PUBLISHED** | Live. The JSON becomes read-only |
+| **DEPRECATED** | Withdrawn — it can no longer be opened |
+
+The card in the list also shows whether the flow currently has validation errors.
+
+## Publishing, deprecating, deleting
+
+- **Publish** is irreversible. Watx asks for confirmation first, because a published flow cannot be edited or deleted afterwards.
+- **Deprecate** withdraws a published flow, after a confirmation. It can no longer be sent or opened.
+- **Delete** is offered on drafts only.
+
+Meta can refuse any of these. When it does, its own message is shown rather than a generic failure, because the fix is usually something to change in your Meta account.
+
+## What Watx does not do yet
+
+Watx creates, edits, validates, previews, publishes and deprecates WhatsApp Flows. **Sending one to a customer from Watx is not supported** — there is no flow message in the composer, in a template button, in an automation step or in a flow node.
+
+If what you need is to collect structured answers from a customer today, two things in Watx already do that:
+
+- [Forms and bookings](/forms/overview) — hosted pages you share as a link, with conditional logic, availability and slots.
+- [Flows](/flows/overview) — an in-chat question-and-answer sequence that stores what the customer replies.

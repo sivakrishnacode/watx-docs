@@ -1,0 +1,99 @@
+---
+title: "Submissions"
+description: "Reading and exporting what a form has collected, how an answer reaches the contact record, and how a submission starts an automation."
+sidebarTitle: "Submissions"
+icon: "inbox"
+---
+
+Every accepted answer is stored against the form. You can read it in the editor, export it as a spreadsheet, and act on it automatically.
+
+## Where to read them
+
+The editor's **Submissions** tab shows the table without leaving the form you are building — "did anyone fill it in?" is a question that gets asked while editing. The same table is at its own address from the forms list: the actions menu on a card has **Submissions**, and that page carries an **Edit form** button back.
+
+The count beside the tab is what the table actually holds, not a stale total.
+
+| Column | What it shows |
+| --- | --- |
+| **Date** | When it arrived. Newest first |
+| **Source** | Where it came from — `hosted` for the public page, `embed` for the iframe, `widget` for the chat widget |
+| **Status** | How it was filed. Everything accepted is recorded as new; spam is refused before it is stored rather than filed away |
+| The answers | Up to five answer columns. Headings, paragraphs and page breaks never take a column |
+| **Contact** | **View** opens the matched contact, or a dash when the submission identified nobody |
+
+The table shows the most recent 200 submissions. **Refresh** re-reads it; it is loaded when you open the tab.
+
+## Exporting
+
+**Export CSV** downloads every submission in the table with **every** answerable field as a column — not just the five the table has room for — plus the date, the source and the status. The file is named after the form.
+
+<Note>
+The columns are built from each field's key, which is generated once from its first label and never regenerated. Reword a question and the exports still line up; the header simply shows the new wording.
+</Note>
+
+## What is stored, and what is not
+
+- Only the answers that were **visible**. A field a rule hid is not recorded, so somebody who typed a reason and then changed their mind does not have it filed against them.
+- Only the fields that were **answered**. An untouched optional field takes no key at all, rather than an empty one.
+- A hidden field's default value, applied on the server, plus anything supplied through `?key=` in the link.
+- Nothing from a field the form no longer has. A stale page submitting a removed question still gets its enquiry recorded.
+
+## How a submission becomes a contact
+
+Only fields with **Save to contact** set are used to identify anyone. The order is fixed:
+
+<Steps>
+  <Step title="Phone">
+    The strongest identifier, because it is what reaches somebody on WhatsApp. The number is converted to international format first, using the workspace's country.
+  </Step>
+  <Step title="Email">
+    Matched case-insensitively when no phone matched.
+  </Step>
+  <Step title="The chat visitor">
+    A submission made inside the website widget attaches to the visitor's own contact.
+  </Step>
+  <Step title="A new contact">
+    Created with the source **form** when nothing matched.
+  </Step>
+</Steps>
+
+Matching a contact **fills in blanks only**. A name or number your team corrected in the CRM is never overwritten by a later form still carrying the old one. Custom fields mapped on the form are written at the same time.
+
+Two established contacts are never merged. If a submission matches someone who already exists, it attaches to them and leaves both records alone. An anonymous website visitor who types their own phone number *is* folded into the contact it belongs to — they have told you who they are.
+
+A submission with no identifying answer at all — a feedback form that only asks for a rating — is stored with no contact against it. That is a complete submission, not a failed one.
+
+The submission then appears on that contact's [activity timeline](/contacts/activity-timeline).
+
+## Acting on a submission
+
+The **Form submitted** trigger starts an automation every time a form is sent. Leave its **Form** setting on *Any form*, or point it at one form.
+
+It carries no channel, so **do not scope the automation to a channel** — see [Channels and the 24-hour window](/automations/channels-and-window).
+
+Inside the automation:
+
+| Token | Value |
+| --- | --- |
+| `{{ form.<field key> }}` | One answer, by its key — `{{ form.full_name }}` |
+| `{{ trigger.form_id }}` | Which form was submitted |
+| `{{ trigger.submission_id }}` | The submission itself |
+
+So a "new enquiry" automation can tag the contact, create a deal, notify the team and reply quoting what the person actually asked for. See [Triggers](/automations/triggers), [Steps](/automations/steps) and [Variables and expressions](/automations/expressions).
+
+<Warning>
+A person who filled in a form has usually never messaged you, so there is no conversation to reply in. Message steps in that automation are skipped and the run is marked partial — the tag, the deal and the webhook still run. On WhatsApp, reaching somebody who has not written to you first needs an approved template.
+</Warning>
+
+## Spam
+
+Two checks run before a submission is accepted, and neither shows a visitor a puzzle:
+
+- **Honeypot** — a field hidden in the page that people never see and bots fill in. Switched on by default, on the Settings tab.
+- **Too quick** — a form returned in under a second was not read by a human.
+
+A refused submission is not stored and does not reach your contacts or your automations.
+
+## Booking forms
+
+A booking makes a submission like any other, carrying the answers to everything else the form asked, plus a held slot. The slot itself is on the [Appointments tab](/forms/bookings).

@@ -1,0 +1,60 @@
+---
+title: "Canned replies"
+description: "Save the answers your team types most and drop them into a chat with a slash shortcut."
+icon: "bolt"
+---
+
+A canned reply is a saved piece of text with a shortcut. Type `/` in the Inbox composer and the list appears; pick one and it fills the box, ready to edit before you send.
+
+Canned replies are shared by the whole workspace. There are no private libraries — the point is that everybody answers the same question the same way.
+
+## Using one
+
+<Steps>
+  <Step title="Type a slash">
+    In the composer, type `/`. The list opens above the box. Keep typing to narrow it — `/ref` finds `refund-policy`.
+  </Step>
+  <Step title="Pick one">
+    Arrow up and down to move, <kbd>Enter</kbd> to insert, <kbd>Esc</kbd> to clear. A mouse click works too, and does not take focus out of the composer.
+  </Step>
+  <Step title="Edit and send">
+    The reply replaces what was in the box, with the cursor at the end. Change anything you want before sending.
+  </Step>
+</Steps>
+
+The menu shows up to six matches at a time, ranked by shortcut first, then title, then the body text. Replies you use most float to the top.
+
+The `/` menu only opens while the box contains nothing but the shortcut. Deleting the slash closes it, and an ordinary message that happens to start with `/` still sends normally.
+
+If the workspace has no canned replies yet, the menu says so and points at where to add them.
+
+## Managing them
+
+Go to **Settings → Canned replies**. Any member who can send messages can add, edit and delete them.
+
+<Steps>
+  <Step title="New reply">
+    Click **New reply**.
+  </Step>
+  <Step title="Name it">
+    The **Name** is what the team sees in the list — "Refund policy". Up to 80 characters.
+  </Step>
+  <Step title="Check the shortcut">
+    The **Shortcut** fills itself in from the name ("Refund policy" becomes `refund-policy`) until you type your own. Lower-case letters, numbers, `-` and `_`, up to 32 characters. It has to be unique in the workspace; a clash is refused by name.
+  </Step>
+  <Step title="Write the message">
+    The **Message** is the text that lands in the composer. Up to 4096 characters, and the counter under the box tracks it.
+  </Step>
+</Steps>
+
+The list shows each reply's name, its `/shortcut`, how many times it has been used, and the first couple of lines of the body, with edit and delete buttons on each row.
+
+<Note>
+Deleting a reply only stops it being offered. Messages already sent with it are unaffected.
+</Note>
+
+## What they are not
+
+A canned reply is plain text — it has no variables, no media and no buttons, and it is not a WhatsApp template. It is inserted into the composer, so like any typed message it only sends inside the reply window.
+
+For approved copy that can reach a customer outside the 24-hour window, or that carries an image header or buttons, use a [message template](/whatsapp/templates). For a reply that goes out without anybody typing, use an [automation](/automations/overview).

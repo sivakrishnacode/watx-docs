@@ -1,0 +1,75 @@
+---
+title: "Appearance"
+description: "Colour scheme, accent, header style and corners for a hosted form — set in the builder's Design panel and previewed on the canvas."
+sidebarTitle: "Appearance"
+icon: "palette"
+---
+
+A hosted form is your page, not part of the Watx dashboard, so how it looks is your decision. Open the Build tab and switch the inspector on the right from **Field** to **Design**.
+
+Everything here applies to the whole form — the hosted page at `/f/<name>`, the booking page at `/book/<name>`, and the form when it is embedded in a page of your own.
+
+## Colour scheme
+
+| Choice | What a visitor gets |
+| --- | --- |
+| **Light** | Always light |
+| **Dark** | Always dark |
+| **Match visitor** | Follows the device the form is opened on |
+
+The default is **Light**. A hosted form is the business's page rather than the visitor's app, so it does not inherit the dark mode your dashboard might be in — and **Match visitor** is something you opt into rather than something that happens to you.
+
+## Accent colour
+
+Twelve presets — Violet, Indigo, Blue, Cyan, Teal, Green, Lime, Amber, Orange, Red, Pink and Slate — plus a colour picker and a box you can type a hex value into. The value must be a full six-digit hex such as `#0d9488`; a half-typed one is simply not applied yet.
+
+The accent drives the header banner, the submit and Next buttons, the selected state on radio and checkbox rows, the progress bar and every focus ring.
+
+<Note>
+The text on an accent-coloured button is set to black or white automatically, whichever reads better against the colour you picked. A pale yellow accent gets dark text rather than white-on-yellow.
+</Note>
+
+## Header
+
+| Style | What it looks like |
+| --- | --- |
+| **Gradient** | A colour wash banner built from your accent |
+| **Solid** | A flat accent banner |
+| **Accent bar** | A thin accent rule above a plain card — for a form that has to sit inside somebody else's brand |
+| **None** | No banner at all |
+
+The form's name and description are shown in the banner. With **None** they sit at the top of the card instead, so the page always says what it is.
+
+The description comes from the **Settings** tab. A booking form also carries a **Book a time** line above the title.
+
+## Corners
+
+**Sharp**, **Soft** or **Pill** — the rounding on inputs, buttons and the card itself. Soft is the default.
+
+## Branding
+
+**Hide "Powered by"** removes the *Powered by Watx* line under the form card.
+
+## Previewing
+
+There is no separate preview to open: the canvas in the middle of the Build tab **is** the form on its real page background, banner and branding included. Changing the accent repaints it as you click.
+
+Turn on **Try it** above the canvas to type into the fields and walk through the steps as a visitor would. Submitting stays disabled in the builder.
+
+<Steps>
+  <Step title="Set the design">
+    Pick the scheme, accent, header and corners in the Design panel.
+  </Step>
+  <Step title="Check it on the canvas">
+    The header banner and the buttons update immediately.
+  </Step>
+  <Step title="Save">
+    The **Save** button in the header writes the design and the fields together — there is one Save for the Build tab, not two.
+  </Step>
+</Steps>
+
+**Reset to defaults** at the bottom of the panel puts everything back to light, violet, gradient header, soft corners, branding shown.
+
+## What appearance cannot change
+
+The design options change how the page looks, never what it says or asks. Field labels, help text, the submit button's label, the success message and the redirect all live on the [Settings tab](/forms/builder); the questions themselves are the fields.

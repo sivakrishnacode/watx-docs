@@ -1,0 +1,49 @@
+---
+title: "Click-to-WhatsApp"
+description: "Record the ads that open a WhatsApp chat, and track clicks and conversations against each one."
+sidebarTitle: "Click-to-WhatsApp"
+icon: "bullhorn"
+---
+
+A Click-to-WhatsApp ad sends someone from Facebook or Instagram straight into a WhatsApp conversation with your business. **WhatsApp → Click-to-WhatsApp** is where you keep one row per ad so clicks and conversations can be counted against it.
+
+Members with the Admin role or above can create and delete campaigns.
+
+## Creating a campaign
+
+**New campaign** asks for:
+
+| Field | Required | What it is |
+| --- | --- | --- |
+| **Name** | Yes | How you recognise the ad, e.g. "Summer sale 2024" |
+| **Meta ad ID** | No | The ad's numeric id in Meta Ads Manager |
+| **Meta campaign ID** | No | The campaign's numeric id |
+| **Pre-filled message** | No | What the customer's first message says when they tap the ad |
+| **Deep link URL** | No | Where the ad points, if it is not straight into the chat |
+
+One campaign per ad. The row menu offers **Copy tracking link** and **Delete**.
+
+## The list
+
+| Column | What it shows |
+| --- | --- |
+| **Name** | The campaign |
+| **Meta ad ID** | The id you recorded, or a dash |
+| **Clicks** | Clicks recorded against this campaign |
+| **Conversations** | Clicks that were marked as converted into a conversation |
+| **Status** | Active, paused or archived |
+| **Created** | When the row was added |
+
+A status filter narrows the list.
+
+## What a click does — and does not do
+
+<Warning>
+  Meta does not report ad clicks to Watx. **Clicks** and **Conversations** only move when a click is recorded against the campaign through the Watx API, so a campaign you have only created here will sit at zero.
+</Warning>
+
+What does happen automatically is the conversation itself: somebody who taps a Click-to-WhatsApp ad arrives as an ordinary WhatsApp message in your [inbox](/inbox/overview), and a contact is created for them with the source **whatsapp** like any other first-time customer. The ad is what brought them; the conversation is a normal one.
+
+## Where the numbers appear
+
+The [WhatsApp analytics](/whatsapp/analytics) page has a **Click-to-WhatsApp** panel listing each campaign with its clicks, conversations and conversions for the selected date range, plus a click-to-conversation funnel across every campaign. It reads the same rows as this page, so the caveat above applies there too.

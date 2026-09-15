@@ -1,0 +1,145 @@
+---
+title: "Triggers"
+description: "Every event that can start an automation, what it carries, and which ones ignore channel scoping."
+icon: "bolt"
+---
+
+An automation has exactly one trigger. It decides when the automation runs, what data
+the steps can read, and — for some of them — which channel the run belongs to.
+
+Triggers are grouped in the picker by **source**, because that is how you look for one:
+what happens in my inbox, on my Instagram, in my shop.
+
+## Messages
+
+| Trigger | Fires when |
+| --- | --- |
+| **New message received** | Any incoming message from a contact. |
+| **First message from a contact** | The first time this contact ever messages you, including contacts you added by hand. |
+| **Keyword match** | The message contains one of your keywords. |
+
+## Instagram
+
+Both are locked to Instagram; the channel picker shows the lock rather than a choice.
+
+| Trigger | Fires when |
+| --- | --- |
+| **Instagram comment** | Someone comments on one of your posts. |
+| **Instagram story reply** | Someone replies to a story. |
+
+## Website chat
+
+| Trigger | Fires when |
+| --- | --- |
+| **Web chat started** | A website visitor opens the widget and writes. Locked to the Website channel. |
+
+It is deliberately not the same as **First message from a contact**, which fires on all
+three channels — a rule meant to greet website visitors would otherwise greet every new
+WhatsApp contact too.
+
+## Contacts
+
+| Trigger | Fires when |
+| --- | --- |
+| **New contact created** | A contact is created from an incoming message. |
+| **Tag added** | A tag lands on a contact. Pick which tag. |
+
+## Inbox
+
+| Trigger | Fires when |
+| --- | --- |
+| **Conversation assigned** | A thread is handed to a member. |
+
+## Forms and bookings
+
+| Trigger | Fires when |
+| --- | --- |
+| **Form submitted** | One of your [forms](/forms/overview) is submitted. Choose one form, or leave it on **Any form**. |
+| **Appointment booked** | Someone books a slot. |
+| **Appointment cancelled** | Someone cancels a booking. |
+| **Appointment rescheduled** | Someone moves a booking to a new time. |
+
+The three appointment triggers take an optional **Appointment type** filter; leave it
+blank for any type.
+
+## Payments
+
+These fire on [Razorpay payment links](/integrations/razorpay) you created.
+
+| Trigger | Fires when |
+| --- | --- |
+| **Payment received** | A payment link you sent was paid. |
+| **Payment link expired** | A link ran out of time unpaid — the cue for a follow-up. |
+| **Payment cancelled** | A link was cancelled before it was paid. |
+
+## Online store
+
+These fire on a connected [Shopify](/integrations/shopify) or
+[WooCommerce](/integrations/woocommerce) store.
+
+| Trigger | Fires when |
+| --- | --- |
+| **Cart abandoned** | A shopper started a checkout and went quiet. Raised by a sweep once the checkout has been silent long enough, not by the checkout itself. |
+| **Order placed** | An order came in. |
+| **Order cancelled** | An order was cancelled at the store. |
+| **Order shipped** | The store marked an order fulfilled. |
+| **Order refunded** | A refund was issued. |
+
+An automation created from the [store console](/integrations/store-console) is tied to
+the store it was built for and only fires for that store's events. One you build by hand
+on a store trigger is not tied to any store, and fires for every connected store.
+
+## Schedule
+
+| Trigger | Fires when |
+| --- | --- |
+| **On a schedule** | Recurring, by cron expression or `HH:mm` for a daily run. |
+
+<Warning>
+  A scheduled automation runs for the **workspace**, not for one person. There is no
+  contact and no conversation, so every step that messages or tags somebody has nobody to
+  act on. The editor marks those steps as unable to run.
+</Warning>
+
+## Channel scoping
+
+Most triggers carry the channel the event arrived on, and the automation's **Channels**
+setting narrows which of them it answers. Selecting none means every channel.
+
+Twelve triggers carry **no channel at all** — a form submission, a booking, a payment on
+Razorpay's page, a shopper on your store website. For those the channel picker is
+hidden, any scope left over from a previous trigger is cleared, and the engine ignores
+channel scoping entirely:
+
+`Form submitted` · `Appointment booked` · `Appointment cancelled` ·
+`Appointment rescheduled` · `Payment received` · `Payment link expired` ·
+`Payment cancelled` · `Cart abandoned` · `Order placed` · `Order cancelled` ·
+`Order shipped` · `Order refunded`
+
+Full detail in [Channels and the 24-hour window](/automations/channels-and-window).
+
+## Keyword matching
+
+**Keyword match**, **Instagram comment** and **Instagram story reply** share the same
+keyword settings.
+
+- **Keywords** is a comma-separated list. Press <kbd>Enter</kbd> or click away to commit
+  the list.
+- **Match** is either **Contains the keyword** (the default) or **Is exactly the
+  keyword**.
+- Matching is case-insensitive.
+
+At run time, an empty keyword list means different things: **Keyword match** with no
+keywords can never match anything, while the two Instagram triggers treat keywords as an
+optional filter and fire on every comment or story reply. The checks panel flags an empty
+list on all three, and activation is refused for **Keyword match**.
+
+If another automation or a [flow](/flows/overview) already listens for one of your words,
+the trigger panel says so. Both will fire on the same message.
+
+## What a trigger supplies
+
+Each trigger puts different facts into the run, readable as tokens — the order number,
+the payment amount, the form answers, the Instagram post id. The **insert data** button
+beside every text field lists only the tokens that particular trigger can supply. See
+[Variables and expressions](/automations/expressions).

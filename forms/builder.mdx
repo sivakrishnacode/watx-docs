@@ -1,0 +1,100 @@
+---
+title: "The form builder"
+description: "Add fields, set what each one does, and publish — the editor's tabs and the canvas that shows exactly what a visitor will see."
+sidebarTitle: "The builder"
+icon: "pen-ruler"
+---
+
+Opening a form takes over the whole screen. The back arrow at the top left returns you to the forms list; everything else on the bar belongs to the form you are editing.
+
+## The header
+
+The form's name sits next to a **Draft** or **Published** pill, and an **Unsaved changes** pill appears the moment you touch anything on the Build tab.
+
+| Control | What it does |
+| --- | --- |
+| **Open** | Opens the live page in a new tab. Only shown once the form is published |
+| **Save** | Writes the fields and the design. Disabled when there is nothing to save |
+| **Publish** / **Unpublish** | Puts the form on its public link, or takes it off. Unsaved changes are saved first |
+
+## The tabs
+
+| Tab | What it is for |
+| --- | --- |
+| **Build** | The fields, the design and a working preview |
+| **Settings** | Name, description, submit button, what happens after a submission, spam protection |
+| **Availability** | When a booking form offers times. Only shown when the form has an **Appointment slot** field |
+| **Share** | The link, a QR code and an embed snippet |
+| **Appointments** | Times booked through this form. Booking forms only |
+| **Submissions** | Everything the form has collected, with a CSV export |
+
+Availability and Appointments appear as soon as you add an **Appointment slot** field, before you save — see [Booking forms](/forms/bookings).
+
+## Build: palette, canvas, inspector
+
+The Build tab is three columns.
+
+<Steps>
+  <Step title="The palette, on the left">
+    Every field type, grouped as **Input**, **Choice**, **Date & time**, **Special** and **Layout**, with a search box above them. Drag a type onto the form to insert it where you drop it, or click it to add it at the end.
+  </Step>
+  <Step title="The canvas, in the middle">
+    Your form on its real page background — the header banner, the accent colour and the branding line included. Click a field to select it, drag it by the grip handle to reorder, and use the copy and bin icons on the selected field to duplicate or remove it.
+  </Step>
+  <Step title="The inspector, on the right">
+    Two halves: **Field** for whatever is selected, and **Design** for the whole page. The inspector column is shown on wide screens.
+  </Step>
+</Steps>
+
+The canvas draws each field with the same component the published page uses, so a half-width pair lines up here exactly as it will for a visitor. The **Try it** switch at the top of the canvas makes the inputs accept typing so you can walk through the form, including its steps and its conditional rules; submitting stays disabled.
+
+<Note>
+Deleting a field also removes any visibility rule that pointed at it, so the form still saves. See [Conditional logic](/forms/conditional-logic).
+</Note>
+
+## The field inspector
+
+What the inspector offers depends on the field type; a type is never shown a setting it would ignore.
+
+- **Basics** — the label (or the text, for a paragraph), a placeholder where the type takes one, and help text shown under the field.
+- **Saved as `field_key`** — the key this answer is stored under. It is shown, and deliberately not editable.
+- **Behaviour** — **Required**, a prefilled value, length bounds, an accepted format, numeric bounds, the number of stars, or the accepted file types, according to the type.
+- **Options** — for dropdowns, radio buttons and checkbox lists. Drag to reorder; editing a label leaves the stored value alone.
+- **Layout** — **Full** or **Half** width. Two half-width fields sit side by side on a wide screen and stack on a phone.
+- **Save to contact** — where the answer lands on the contact record.
+- **Conditional logic** — show this field only when an earlier answer matches.
+
+All of these are covered field by field in [Field types](/forms/field-types).
+
+<Warning>
+The field key is generated once, from the field's first label, and is never regenerated. That is what lets you reword a question without losing the column it belongs to — every submission already collected, and every CSV export, is keyed on it.
+</Warning>
+
+## Design
+
+The **Design** half of the inspector sets the colour scheme, accent, header style, corner rounding and the "Powered by" line for the hosted page. It is saved by the same **Save** button as the fields. See [Appearance](/forms/appearance).
+
+## Settings
+
+| Card | What it holds |
+| --- | --- |
+| **Basics** | The form name — internal — plus a description shown to visitors above the first question, and the submit button's label |
+| **After submission** | **Show a message** with wording of your own, or **Redirect** to a URL of yours as soon as the submission is accepted |
+| **Spam protection** | The **Honeypot field** switch: a hidden field bots fill in and people never see |
+
+Settings has its own **Save settings** button and says **Unsaved changes** while it is holding any.
+
+Besides the honeypot, Watx refuses a submission that arrives impossibly fast — nobody reads and fills a form in under a second. Neither check shows a visitor a puzzle.
+
+## Publishing, duplicating, archiving
+
+Press **Publish** when the form is ready. A form with nothing but headings, paragraphs and page breaks is refused, with a message saying so.
+
+From the forms list, the actions menu on a card offers **Edit**, **Submissions**, **Publish** / **Unpublish**, **Duplicate** and **Archive**.
+
+- **Duplicate** copies the fields and settings into a new form whose name has `(copy)` on the end. It is always a draft, and it gets its own public address, so a copy can never start collecting real submissions before you have edited it.
+- **Archive** removes the form from the list and takes it off its public link. Its submissions stay readable, and a booking form's appointments are untouched.
+
+<Note>
+The public address is made from the form's name when the form is created, and renaming the form afterwards does not change it. Pick the name you want in the link before you share it — see [Sharing a form](/forms/sharing).
+</Note>

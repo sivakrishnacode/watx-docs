@@ -1,0 +1,174 @@
+---
+title: "Requests and responses"
+description: "The JSON envelope, the error codes, cursor pagination, rate limits and what is safe to retry."
+icon: "code"
+---
+
+Everything the API accepts and returns is JSON, and every response uses one of
+two shapes. This page is the contract the individual endpoint pages assume.
+
+## Making a request
+
+- Base URL `https://api.watx.in/v1`.
+- Send `Authorization: Bearer <key>` on every request. See
+  [Authentication](/api/authentication).
+- Send `Content-Type: application/json` on any request with a body.
+- Fields the endpoint does not know about are ignored.
+- A request body is capped at 32 MB.
+
+## The success envelope
+
+A single resource comes back under `data`:
+
+```json
+{
+  "data": {
+    "id": "7e2d9c01-55b4-4a3d-9c8e-0f1a2b3c4d5e",
+    "phone": "+919876543210",
+    "name": "Priya Nair"
+  }
+}
+```
+
+A list comes back as an array under `data`, with a `meta` block carrying the
+cursor for the next page:
+
+```json
+{
+  "data": [{ "id": "7e2d9c01-…" }, { "id": "1a2b3c4d-…" }],
+  "meta": { "next_cursor": "MjAyNi0wOS0wMVQwOToxMjo0NC4wMDBafDdlMmQ5YzAx" }
+}
+```
+
+Status codes follow the action: `200` for a read or an update, `201` for
+something created, `202` for a broadcast that has been queued. `POST /contacts`
+answers `200` when the phone number already belonged to a contact and `201` when
+it created one, so the status tells you which happened.
+
+## The error envelope
+
+```json
+{
+  "error": {
+    "code": "forbidden",
+    "message": "This API key is missing the 'messages:send' scope"
+  }
+}
+```
+
+Branch on `error.code` — it is stable. `error.message` is written for a person
+reading a log and may be reworded.
+
+| Status | `code` | Meaning |
+| --- | --- | --- |
+| 400 | `bad_request` | A required field is missing, or a value is unusable. |
+| 400 | `invalid_request` | A query parameter names something that does not exist, such as an unknown `channel`. |
+| 400 | `whatsapp_not_configured` | The workspace has no WhatsApp number connected, so nothing can be sent. |
+| 401 | `unauthorized` | The key is missing, malformed, unknown, revoked or expired. |
+| 402 | plan codes | The plan's monthly allowance is used up, or the subscription has lapsed. `POST /broadcasts` answers `plan_limit_reached` or `subscription_lapsed`. Reads are never blocked this way. |
+| 403 | `forbidden` | The key is valid but lacks the scope this endpoint requires. |
+| 404 | `not_found` | No such resource in this workspace. A resource in another workspace answers the same way. |
+| 429 | `rate_limited` | Too many requests for this key. |
+| 500 | `internal`, `db_error` | Something failed on our side. |
+| 502 | `meta_error` | The request reached WhatsApp and WhatsApp rejected it. The message quotes what it said. |
+| 500 | `template_malformed` | The local copy of the template is unusable. Re-sync templates from the dashboard. |
+
+<Tip>
+`404` rather than an empty list is deliberate on the single-resource endpoints:
+asking for something that belongs to another workspace and getting an empty
+result would read as "nothing happened here" instead of "this is not yours".
+</Tip>
+
+## Pagination
+
+`GET /contacts`, `GET /conversations` and `GET /conversations/{id}/messages`
+page the same way. Results are newest first.
+
+<ParamField query="limit" type="integer" default="50">
+  How many rows to return. Maximum 100. A missing or unusable value falls back
+  to 50, and anything above 100 is capped at 100.
+</ParamField>
+
+<ParamField query="cursor" type="string">
+  The `meta.next_cursor` from the previous response, passed back unchanged.
+  Cursors are opaque — do not parse or construct one. A cursor that cannot be
+  read is ignored and you get the first page again.
+</ParamField>
+
+<ResponseField name="meta.next_cursor" type="string | null">
+  The cursor for the next page, or `null` when this was the last page.
+</ResponseField>
+
+```bash
+curl "https://api.watx.in/v1/contacts?limit=50" -H "Authorization: Bearer $WATX_KEY"
+# → { "data": [ … ], "meta": { "next_cursor": "MjAyNi0wOS0wMVQ…" } }
+
+curl "https://api.watx.in/v1/contacts?limit=50&cursor=MjAyNi0wOS0wMVQ…" -H "Authorization: Bearer $WATX_KEY"
+# → { "data": [ … ], "meta": { "next_cursor": null } }      last page
+```
+
+Cursors are keyset-based: they point at a position in the list rather than
+counting pages, so rows created while you are paging do not shift the ones you
+have not read yet, and nothing is skipped or repeated.
+
+Three list endpoints work differently, and each says so on its own page:
+`GET /segments` returns every segment with no paging at all; `GET /webhooks`
+returns every endpoint and always reports `next_cursor: null`; and
+`GET /segments/{id}/contacts` honours `limit` but has no cursor.
+
+## Rate limits
+
+**120 requests per minute, per key.** The window starts at the first request
+and covers the next 60 seconds, after which the count resets. Keys are counted
+independently, so one busy integration cannot spend another's allowance.
+
+Over the limit, the request is refused with `429` before it does any work:
+
+```json
+{ "error": { "code": "rate_limited", "message": "Rate limit exceeded for this API key" } }
+```
+
+A `429` carries four headers:
+
+| Header | Meaning |
+| --- | --- |
+| `Retry-After` | Seconds to wait before trying again. |
+| `X-RateLimit-Limit` | Requests allowed per window (120). |
+| `X-RateLimit-Remaining` | Requests left in this window. |
+| `X-RateLimit-Reset` | Unix time, in seconds, when the window resets. |
+
+<Note>
+These headers appear on the `429` only. A successful response carries no
+rate-limit headers, so track your own send rate rather than reading a counter
+off every response.
+</Note>
+
+If you are pushing a list of people, prefer the endpoint built for it:
+`POST /broadcasts` takes up to 1000 recipients in one request and sends them in
+the background, which is both faster and kinder to the limit than 1000 calls to
+`POST /messages`.
+
+## What to retry
+
+| Situation | Retry? |
+| --- | --- |
+| `429` | Yes — wait for `Retry-After`, then retry. |
+| `500`, `502`, `503`, or a connection timeout | Yes, with exponential backoff. |
+| `400`, `401`, `403`, `404` | No. The request will be just as wrong next time. Fix it. |
+| `402` | No. The workspace has to pay or wait for the next month. |
+
+There are no idempotency keys, so a retried `POST /messages` sends a second
+message. If a send times out, read the conversation with
+`GET /conversations/{id}/messages` before sending again.
+
+Two endpoints are naturally safe to repeat: `POST /contacts` finds or creates by
+phone number, so calling it twice leaves one contact, and
+`POST /segments/{id}/contacts` skips anyone already in the segment and tells you
+how many rows it actually added.
+
+## Timestamps and ids
+
+Every timestamp is ISO 8601 in UTC (`2026-09-14T10:15:00.000Z`). Every id is a
+UUID. A nullable field is really null — `phone` is `null` for a contact who only
+exists on Instagram, `last_inbound_at` is `null` for someone who has never
+written to you.

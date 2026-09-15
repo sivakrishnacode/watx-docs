@@ -1,0 +1,80 @@
+---
+title: "WhatsApp"
+description: "What the WhatsApp channel gives you, what Meta requires before you can use it, and where each part of it lives in Watx."
+icon: "whatsapp"
+---
+
+Watx connects your business's own WhatsApp number through the official **Meta WhatsApp Cloud API**. Messages arrive in the shared [inbox](/inbox/overview), contacts and conversations are shared with every other channel, and everything below — templates, broadcasts, the catalogue, analytics — runs on that one connection.
+
+## What you get
+
+<CardGroup cols={2}>
+  <Card title="Connect your number" icon="plug" href="/whatsapp/connect">
+    Meta's Embedded Signup wizard, run from inside Watx, on your own business number.
+  </Card>
+  <Card title="Message templates" icon="file-lines" href="/whatsapp/templates">
+    Build, submit and track the pre-approved messages you need to start a conversation.
+  </Card>
+  <Card title="Broadcasts" icon="tower-broadcast" href="/whatsapp/broadcasts">
+    Send an approved template to a tag, a segment or an uploaded list, one message per person.
+  </Card>
+  <Card title="Catalog and orders" icon="bag-shopping" href="/whatsapp/catalog-and-orders">
+    A product catalogue you can send as cards, and the orders customers place from it.
+  </Card>
+  <Card title="WhatsApp Flows" icon="table-cells" href="/whatsapp/whatsapp-flows">
+    Meta's native in-app forms — booking, surveys, lead capture — managed under your account.
+  </Card>
+  <Card title="Analytics" icon="chart-line" href="/whatsapp/analytics">
+    Volume, delivery, read rates, broadcast and template performance, orders and ad clicks.
+  </Card>
+</CardGroup>
+
+## The two rules that shape everything
+
+Every WhatsApp feature in Watx is built around the same pair of Meta rules. Read them once and the rest of this section makes sense.
+
+<Card title="The 24-hour messaging window" icon="clock" href="/whatsapp/messaging-window">
+  You can send anything you like for 24 hours after a customer's last message. Outside that window, only an approved template will send.
+</Card>
+
+<Card title="Message templates" icon="stamp" href="/whatsapp/templates">
+  A template is copy Meta has reviewed and approved. It is the only way to open a conversation the customer did not start — and it can be rejected or paused by Meta at any time.
+</Card>
+
+## Where things live in the sidebar
+
+Open **WhatsApp** in the channel rail and the panel has three groups.
+
+| Group | Row | What it is |
+| --- | --- | --- |
+| Analytics | **Overview** | [Channel analytics](/whatsapp/analytics) — the channel's default page |
+| Analytics | **Click-to-WhatsApp** | [Ad campaigns and their clicks](/whatsapp/click-to-whatsapp) |
+| Analytics | **Orders** | [Orders placed from your catalogue](/whatsapp/catalog-and-orders) |
+| Action | **Channel Settings** | [Connection and credentials](/whatsapp/settings) |
+| Action | **Flows** | The Watx chatbot builder — see [Flows](/flows/overview) |
+| Action | **Broadcasts** | [Send a template to many contacts](/whatsapp/broadcasts) |
+| Action | **Campaigns** | [Campaign schedules](/whatsapp/campaigns) |
+| Assets | **Templates** | [Your template library](/whatsapp/templates) |
+| Assets | **WhatsApp Flows** | [Meta's native forms](/whatsapp/whatsapp-flows) |
+| Assets | **Catalog** | [Products](/whatsapp/catalog-and-orders) |
+
+<Warning>
+  **Flows** and **WhatsApp Flows** are two different things and they sit in the same panel. **Flows** (Action) is the Watx chatbot builder — a graph of nodes that sends ordinary WhatsApp messages. **WhatsApp Flows** (Assets) is Meta's own product: form screens that open inside WhatsApp. This documentation always spells out "WhatsApp Flow" for Meta's version.
+</Warning>
+
+## What you need before connecting
+
+- A Facebook account that administers your business.
+- A business phone number customers will message. You can bring a new number, or connect the number already running on your WhatsApp Business app and keep its chat history.
+- A payment method on your WhatsApp Business Account, added in Meta Business Settings. Meta bills you for conversations directly — Watx never sits between you and that bill. Until it is set up you can receive messages, but messages your business starts will fail.
+
+Full walkthrough: [Connect your number](/whatsapp/connect).
+
+## What else uses the connection
+
+- The [inbox composer](/inbox/sending) — text, media, voice notes, reactions, quoted replies, templates, product cards.
+- [Automations](/automations/overview) and [flows](/flows/overview), which send through the same number and obey the same window.
+- [Payment links](/integrations/razorpay) and [sales documents](/integrations/sales-documents-sending), which fall back to a template when the window is closed.
+- [AI agents](/ai-agents/overview), which reply on WhatsApp like any other channel.
+
+If messages are not arriving or not sending, start with [WhatsApp delivery troubleshooting](/troubleshooting/whatsapp).

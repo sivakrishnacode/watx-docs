@@ -1,0 +1,63 @@
+---
+title: "Analytics"
+description: "Volume, delivery and read rates, response times, broadcast and template performance, orders and ad clicks — over a date range you choose."
+icon: "chart-line"
+---
+
+**WhatsApp → Overview** is the channel's analytics page and its default landing screen: opening WhatsApp should answer "how is this doing" before it offers anything to configure. If the channel is not connected yet, the page offers the connect screen instead.
+
+## The header
+
+- **Range** — **7**, **30** or **90** days, or **Custom** with two dates. 30 days is the default, and every figure on the page compares against the matching previous period.
+- **Refresh** — re-runs every query. The time of the last load is shown beside it.
+- **Export** — downloads the whole page as one CSV, with a section each for daily volume, broadcasts, templates, orders and Click-to-WhatsApp.
+- **Quick actions** — New broadcast, Templates, Campaigns, Build a flow, Inbox.
+- **Alerts** — a strip appears when something needs attention: messages that failed to send, unread conversations, threads the AI agent handed over, templates rejected by Meta, a WhatsApp access token expiring within 14 days, or a quality rating worth looking at. Each carries a link to the screen that fixes it.
+
+### Cross-filters
+
+Clicking a tile or a row filters **the whole page** — by direction, by status, by template, by broadcast, or by whether a reply came from the AI agent or a human. Active filters show as chips in the header and can be removed one at a time or cleared together. The filters live in the URL, so a filtered view is a link you can paste to a colleague.
+
+## Key figures
+
+| Tile | What it counts |
+| --- | --- |
+| **Messages sent** | Outgoing messages in the range |
+| **Messages received** | Incoming messages in the range |
+| **Delivery rate** | Delivered as a share of sent |
+| **Read rate** | Read as a share of delivered |
+| **Failed sends** | Messages Meta refused or could not deliver |
+| **New conversations** | Threads that started in the range |
+| **Avg first response** | How long a customer waits for the first reply |
+| **Replies by AI** | The AI agent's share, with the human count beside it |
+
+## Sections
+
+**Sending capacity** — your Meta messaging tier, quality rating and approximate 24-hour usage. See [Messaging limits and quality](/whatsapp/limits-and-quality).
+
+**Volume and delivery**
+
+- *Message volume* — incoming and outgoing per day.
+- *Delivery funnel* — sent, delivered, read and failed across every outgoing message in the period.
+- *Busiest hours* — incoming messages by day and hour, in your own timezone.
+- *Most active contacts* — by total messages exchanged, with the last time each wrote.
+
+**Broadcasts and templates**
+
+- *Broadcast performance* — a table of every [broadcast](/whatsapp/broadcasts) in the period with recipients, sent, delivered, read, replied and failed. Clicking a row filters the page to that broadcast.
+- *Template usage* — counted from messages actually sent, not from your library, so a template you never use does not appear. Each row carries its Meta status; one that was sent but is no longer in the library reads **not in library**.
+- *Broadcast funnel* — the same ladder across every broadcast in the period.
+
+**Commerce and Click-to-WhatsApp**
+
+- *Orders and revenue* per day, with the period's totals.
+- *Top products* by revenue.
+- *Click-to-WhatsApp campaigns* and a click-to-conversation funnel — see the [caveat about how clicks are recorded](/whatsapp/click-to-whatsapp).
+
+**Leads and pipeline** — new contacts, deals created and deals won per day. Deals are attributed through the conversation they came from.
+
+## Notes on the numbers
+
+- Every figure is scoped to the workspace you are in, and to the range in the header.
+- A panel with nothing in it says so rather than drawing an empty chart.
+- Response time and read rate depend on what Meta reports back; a number whose quality rating has dropped may see delivery slow down before it sees anything else.

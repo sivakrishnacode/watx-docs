@@ -1,0 +1,84 @@
+---
+title: "Test mode and the playground"
+description: "Try an agent in the studio drawer, limit it to your own numbers, or use it to draft replies a human sends."
+icon: "flask"
+---
+
+Three ways to see what an agent does before it talks to everybody: the test drawer in the studio, test mode on your own number, and the draft button in the inbox.
+
+## The test drawer
+
+**Test agent** in the studio header opens a chat panel. It is reachable from every tab, so you can change a ground rule and try it in the same breath.
+
+It runs the **same assembly the live agent runs** — the same instructions, the same knowledge retrieval, the same tools. A test surface that differed from production would teach you to trust behaviour you will not get.
+
+Under each reply, a collapsed line shows what the answer was built from:
+
+- **sources** — the knowledge excerpts retrieved, with the document title and the passage
+- **tool calls** — each tool the agent ran, its arguments, whether it succeeded, how long it took, and the result it was given
+
+If the agent decided to escalate, the bubble says **Would hand off to a human here**.
+
+Two things differ from a live conversation, and both are deliberate:
+
+- **No customer is attached.** Tools that read one customer's data — order lookup, and the payment link tool — say so instead of reading somebody's real orders.
+- **Nothing is sent to anyone.** No message goes out and no conversation is touched.
+
+<Warning>
+Tools that write still write. A Google booking, a spreadsheet row or one of your [custom actions](/ai-agents/custom-actions) called from the test drawer does the real thing. Only sending a message is suppressed.
+</Warning>
+
+The drawer is metered exactly like production — an unmetered test surface running on our key would be an open AI endpoint with a login page in front of it. On built-in AI, testing spends credits; on your own provider key nothing is metered and your provider bills the calls.
+
+## Test mode
+
+On the **Behaviour** tab, **Try it on your own number first**:
+
+<Steps>
+  <Step title="Add your test numbers">
+    Up to three, with the country code — `+91 98765 43210`. These are matched exactly against the contact's phone number.
+  </Step>
+  <Step title="Switch Test mode on">
+    The switch is disabled until at least one number is listed; with none, the agent would answer nobody. Clearing the last number turns test mode off again.
+  </Step>
+  <Step title="Message the business from that number">
+    The agent replies to you normally. Every other customer is left for your team, exactly as if the agent were off for them.
+  </Step>
+</Steps>
+
+Test mode is a phone-number allowlist, so it silences the agent on **Instagram DMs and the website chat too** — those conversations have no phone number to match. That is the correct reading of "only reply to my test numbers", but it does mean test mode is not a way to trial an Instagram agent.
+
+The agent's row and the studio header both show a **Test mode** pill while it is on, so it cannot be left on by accident.
+
+<Note>
+On built-in AI credits there is no separate message quota for test mode — the wallet is the cap. On your own provider key nothing is capped at all: your provider bills you directly, and a limit we invented would be theatre.
+</Note>
+
+## Drafting in the inbox
+
+The sparkle button in the inbox composer writes a suggested reply into the box for a human to read, edit and send. Nothing is sent by pressing it.
+
+- It drafts as the agent that owns the thread, falling back to whichever agent covers the channel.
+- It works even while the agent is **switched off** — a human is pressing a button and reading the result, which is exactly what a half-built agent is for.
+- Out of the [24-hour window](/whatsapp/messaging-window) the button is disabled: a reply that cannot be sent is not worth generating. The tooltip says *Reply window closed — nothing to draft until this person messages again*.
+- Every writing tool is withheld while drafting. Pressing the button three times cannot book three meetings or send three payment requests.
+- If the workspace is out of credits, the error offers a top-up directly.
+
+See [Sending messages](/inbox/sending).
+
+## A sensible order to trial one
+
+<Steps>
+  <Step title="Test drawer">
+    Ask it the ten questions your customers actually ask. Check the sources under each reply — a wrong answer is usually a missing document, not a wrong instruction.
+  </Step>
+  <Step title="Drafts only">
+    Leave **Answer inbound messages automatically** off and let your team use the draft button for a few days. You see its wording against real messages, with a person between it and the customer.
+  </Step>
+  <Step title="Test mode">
+    Switch automatic replies on with test mode and your own number listed. This is the first time it composes and sends by itself.
+  </Step>
+  <Step title="Live">
+    Turn test mode off. Watch the reply and handoff counts on the agent's row, which cover the last 30 days.
+  </Step>
+</Steps>

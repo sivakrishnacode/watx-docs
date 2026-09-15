@@ -1,0 +1,114 @@
+---
+title: "Signing in"
+description: "Create an account with email and password or Google, confirm your email, reset a forgotten password, and accept an invitation."
+sidebarTitle: "Signing in"
+icon: "right-to-bracket"
+---
+
+Watx is at [app.watx.in](https://app.watx.in). There are two ways to sign in and
+both create the same kind of account.
+
+## Create an account
+
+<Tabs>
+  <Tab title="Email and password">
+    On **Create account**, fill in:
+
+    - **Full name**
+    - **Email**
+    - **Password** — at least 6 characters — and **Confirm password**
+
+    Watx sends a confirmation link to that address and shows **Check your
+    email**. Click the link to verify the account and finish setting up; it
+    brings you back into Watx signed in.
+
+    Until you click it, the account is not usable.
+  </Tab>
+  <Tab title="Google">
+    Press **Continue with Google** on either the sign-in or the create-account
+    screen and choose your Google account.
+
+    Google has already verified the address, so there is no confirmation email —
+    you land straight in the setup wizard or, if you already have workspaces, in
+    the app.
+  </Tab>
+</Tabs>
+
+New accounts go to the welcome wizard: name the workspace, then choose a plan.
+See [Quickstart](/getting-started/quickstart).
+
+## Sign in
+
+Enter your email and password on **Welcome back**, or press **Continue with
+Google**. Use the same method you signed up with.
+
+After sign-in:
+
+- if you belong to **one workspace**, or none, you go straight into the app;
+- if you belong to **several**, Watx asks **Choose a workspace** first. See
+  [Workspaces](/getting-started/workspaces).
+
+## Forgotten password
+
+<Steps>
+  <Step title="Ask for a link">
+    On the sign-in screen press **Forgot password?**, enter your email and press
+    **Send reset link**.
+  </Step>
+  <Step title="Open the email">
+    Click the link in the message. It signs you in and takes you to **Choose a
+    new password**.
+  </Step>
+  <Step title="Set the new password">
+    Enter a new password of at least 6 characters, confirm it and press **Update
+    password**. You land in the dashboard already signed in.
+  </Step>
+</Steps>
+
+<Warning>
+  A reset link works **once, and only in the browser that opened it**. Open it
+  in a different browser — or after it has been used — and Watx says the link
+  has expired and offers a fresh one. Request a new link rather than retrying
+  the old one.
+</Warning>
+
+To change a password you still know, use **Settings → Login & security**
+instead; that form asks for your current password first. See [Security and
+privacy](/account/security-and-privacy).
+
+## Accepting an invitation
+
+An invite arrives as a link of the form `https://app.watx.in/join/<token>`.
+Opening it verifies the invitation and shows the workspace you are being invited
+to, the role attached and when the link expires.
+
+- **Already signed in** — press **Accept**. The membership is added and you land
+  in that workspace.
+- **Not signed in** — the page offers **Sign up** and **Sign in**. Both carry
+  the invitation with them, so after the email round-trip you come back to the
+  same page to accept.
+
+<Note>
+  Signing up **through** an invite does not create a personal workspace for you.
+  You join the one that invited you, and that is the only workspace you are in.
+</Note>
+
+If the link does not work, the page says which of these it is:
+
+| Message | What happened |
+| --- | --- |
+| **Invite not found** | The URL does not match a valid invitation. |
+| **Invite already used** | Someone has already accepted it. |
+| **Invite expired** | Past the validity the inviter chose. |
+| **Something went wrong** | A temporary failure — press **Try again**. |
+
+For the first three, ask the person who invited you to generate a new link; they
+take a few seconds.
+
+Accepting an invitation for a workspace you are already in is not an error —
+Watx says you are already a member and takes you to the dashboard.
+
+## Signing out
+
+Use the user card at the bottom of the sidebar. To sign out of **every** device
+at once, see [Security and privacy](/account/security-and-privacy).

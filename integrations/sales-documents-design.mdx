@@ -1,0 +1,98 @@
+---
+title: "Document design"
+description: "Choose how your invoices look — a predefined template, or the layout, accent colour, density, paper size and optional blocks one by one, beside a live PDF preview."
+sidebarTitle: "Document design"
+icon: "palette"
+---
+
+The **Design** tab of **Integrations → Sales documents** decides how your documents look.
+Start from a predefined template, or set each control yourself. Everything is shown against
+a live preview of the real PDF.
+
+## Start from a template
+
+One click sets the layout, colour, spacing and which blocks print. Adjust anything
+afterwards.
+
+| Template | What it looks like |
+| --- | --- |
+| **Classic** | The default. Your name top-left, a boxed bill-to, a grey table header |
+| **Bold header** | A colour band across the top carries your name and the title |
+| **Quiet** | No fills, hairline rules and plenty of air. For studios, consultants and clinics |
+| **Ledger** | A fully ruled grid that stays legible with forty lines. For shops and wholesalers |
+| **Letterhead** | Your name centred at the top like printed stationery, with the bill under a rule |
+| **Warm** | The colour band in amber, comfortable spacing, and no view-online line |
+| **Fresh** | Minimal with an emerald title, for a service business that wants a little colour |
+
+## The controls
+
+### Layout
+
+| Layout | Description |
+| --- | --- |
+| **Classic** | Name top-left, boxed bill-to, grey table header |
+| **Colour band** | A band carries the name and title; the table header and Total row wear it too |
+| **Minimal** | No fills, hairline rules, the title in your accent colour |
+| **Ledger** | Every cell ruled, boxed totals — built for long documents |
+| **Letterhead** | Name and address centred over a rule |
+
+### Accent colour
+
+Eight presets — Ink, Indigo, Navy, Emerald, Teal, Crimson, Amber, Plum — or any colour you
+enter as a six-digit hex value. It colours the title, the band on a colour-band layout, the
+table header and the Total row. Text sitting on it flips to black or white automatically so
+it stays readable.
+
+### Spacing
+
+**Compact**, **Comfortable** (the default) or **Spacious**. Type size, cell padding, gaps
+and margins all move together.
+
+### Paper
+
+**A4** or **US Letter**.
+
+### On the document
+
+Courtesy blocks you may switch off. All are on by default.
+
+| Block | Notes |
+| --- | --- |
+| **Logo** | Your workspace logo, when one is uploaded |
+| **Amount in words** | "Rupees five hundred only" under the totals |
+| **Bank details** | Only ever printed while something is still owed |
+| **Notes** | The notes block, when a document has notes |
+| **Terms** | The terms block, when a document has terms |
+| **Footer line** | The footer sentence from Settings. Page numbers always print |
+| **PAID stamp** | On a settled invoice. Never on a receipt — its title already says so |
+| **View-online link** | The small link to the web copy at the bottom |
+
+<Warning>
+  Design changes how a document **looks**, never what it **says**. No option renames the
+  title, drops the HSN column on a GST invoice, hides the note that says a document is not a
+  tax invoice, or removes the page numbers.
+</Warning>
+
+## The preview
+
+The panel on the right is the **real PDF**, rendered by the same code that renders a real
+document — a sample invoice built on your own business name, GSTIN, bank details, footer and
+logo. It re-renders as you change things and consumes no invoice number. Use **Preview as**
+to see a different [document type](/integrations/sales-documents). On a phone that will not
+show a PDF inline, an **Open** button does it instead.
+
+## Design is frozen when a document is issued
+
+<Warning>
+  The appearance is copied onto each document as it is issued, exactly as the company
+  details are. Changing your accent colour tomorrow redraws nothing you sent today —
+  re-opening an old document always reproduces what the customer holds.
+</Warning>
+
+Documents issued before the Design tab existed carry no appearance and render exactly as
+they always did.
+
+## The logo
+
+The logo is your workspace logo, uploaded in [Settings](/settings/overview). It must be a
+PNG or JPEG. If it cannot be fetched the document is still produced, without it.

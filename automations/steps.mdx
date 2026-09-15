@@ -1,0 +1,139 @@
+---
+title: "Steps"
+description: "Every automation step by category, with its settings and the values it hands to later steps."
+icon: "list-check"
+---
+
+Steps run in order. Each one can read what the steps before it produced, using
+`{{ steps.<reference name>.<value> }}` — see
+[Variables and expressions](/automations/expressions).
+
+Every step also has the same three advanced options, whatever its type: **If this step
+fails** (stop the run, or carry on), **Also save the result as** (a short alias under
+`vars.`), and an internal **Note for your team**. A step can be paused with the switch in
+its settings header; it stays on the canvas and is recorded as skipped.
+
+## Messaging
+
+These put something in front of the contact. All of them need a conversation to send on,
+and are skipped when there is not one — a form submission or a store order from somebody
+who has never messaged you.
+
+| Step | What it does | Settings | Produces |
+| --- | --- | --- | --- |
+| **Send message** | Plain text on whichever channel the contact wrote from. | Message | `message_id` |
+| **Send template** | An approved WhatsApp [template](/whatsapp/templates), with its variables filled in. | Template, language, and whatever that template needs — body variables, a header value or media, button values, carousel cards | — |
+| **Send media** | Image, video, document or audio by URL. | Type, Media URL, Caption, File name (documents) | `message_id` |
+| **Send buttons** | Up to 3 quick replies the contact can tap. | Message, Buttons (id and title each), Footer | `message_id`, `button_ids` |
+| **Send list** | A menu of up to 10 options across sections. Not available on Instagram. | Message, Button label, Sections and rows | `message_id` |
+| **Send form** | Sends a link to one of your published [forms](/forms/overview), with a short line above it. | Form, Message sent with the link | — |
+| **Send booking link** | Sends a link to pick an appointment slot. | Appointment type, Message sent with the link | — |
+| **Request a payment** | Creates a [Razorpay payment link](/integrations/razorpay) and sends it. | Amount, Currency, What the payment is for, Message sent with the link, Template for closed chats, Link expires after (hours), and a *Create it, but don't send it* switch | `payment_link_id`, `short_url`, `amount`, `amount_minor`, `currency`, `status`, `sent` |
+| **Send an invoice** | Raises an invoice or GST bill and sends the PDF. See [Sales documents](/integrations/sales-documents). | What to bill (*a single line I describe here* or *the items on the order*), Description, Amount, Quantity, HSN/SAC, GST rate, Due in, Notes, Sending | `invoice_id`, `invoice_number`, `invoice_url`, `pdf_url`, `total_minor`, `currency`, `status`, `sent` |
+
+<Warning>
+  **Request a payment** and **Send an invoice** fail the step when the amount resolves to
+  nothing. Everywhere else an unknown token is a cosmetic gap; here it would be a payment
+  request for zero, or a tax document with no value that has already consumed an invoice
+  number.
+</Warning>
+
+**Send form** and **Send booking link** fail the step if the form is not published, or
+the appointment type is not bookable. A message containing a dead link is worse than no
+message.
+
+**Send an invoice** is the one sending step that does not need a conversation. An invoice
+has value the moment it exists — it is your own record — so the run creates it and
+reports that it could not deliver it, rather than skipping.
+
+A payment link's **Message sent with the link** applies **inside the 24-hour window
+only**. Outside it, the approved template supplies the wording, because a template's copy
+is fixed at approval. Put `{link}` where the URL should go, or it is appended.
+
+## Contact
+
+| Step | What it does | Settings |
+| --- | --- | --- |
+| **Add tag** | Labels the contact. | Tag |
+| **Remove tag** | Takes a label off the contact. | Tag |
+| **Add to segment** | Files them into a named audience. Static [segments](/contacts/segments) only. | Segment |
+| **Remove from segment** | Takes them out of a named audience. | Segment |
+| **Update contact field** | Writes a built-in or custom field. | Field — Name, Email, Company, or one of your [custom fields](/contacts/fields-and-tags) — and New value |
+| **Add note** | Internal note on their timeline. The contact never sees it. | Note |
+
+Pointing **Add to segment** at a filter (dynamic) segment fails every time it runs — a
+dynamic segment works out its own members — and the checks panel says so before it goes
+live.
+
+## Deals and team
+
+| Step | What it does | Settings | Produces |
+| --- | --- | --- | --- |
+| **Create deal** | Opens a deal in a [pipeline](/contacts/pipelines-and-deals) stage. | Pipeline, Stage, Deal title, Value | `deal_id`, `title` |
+| **Update deal** | Moves a stage, marks won or lost, or changes the value. | Which deal (this contact's most recent, or a specific deal id), Stage, Mark as, Value | `deal_id` |
+| **Notify team** | In-app [notification](/inbox/notifications) for a teammate or everyone. | Notify — everyone in the workspace, whoever the conversation is assigned to, or one specific person — plus Title and Details | `notified` |
+
+**Update deal** needs at least one thing to change — a stage, a status, a value or a
+title — or activation is refused.
+
+## Conversation
+
+| Step | What it does | Settings |
+| --- | --- | --- |
+| **Assign conversation** | Hands the thread to a member. | Assign to (round-robin or a specific member) |
+| **Set status** | Open, pending or closed. | Set the conversation to |
+| **Close conversation** | Marks the thread closed. Superseded by **Set status**. | — |
+
+## Logic and timing
+
+| Step | What it does | Settings | Produces |
+| --- | --- | --- | --- |
+| **Condition** | Splits the path on one or more rules. Owns a **Yes** and a **No** branch. | Match (all / any), and the rules | `branch` |
+| **Random split** | Sends a percentage down each path — for A/B tests. | The percentage taking the first path | `branch` |
+| **Wait** | Pauses for a duration, then carries on. | Wait for, Unit (minutes, hours, days) | — |
+| **Wait until** | Pauses until a wall-clock time, or until a moment carried by the run. | Either a time, timezone and allowed days; or a **Moment** token plus an **Offset** in minutes | — |
+
+Both waits **park** the run rather than holding anything open. Everything the run has
+collected so far is kept, and it continues later. Detail in
+[Conditions and branching](/automations/conditions).
+
+## Data
+
+| Step | What it does | Settings | Produces |
+| --- | --- | --- | --- |
+| **HTTP request** | Calls an API and keeps the response for later steps. | Method, URL, Query parameters, Authentication, Headers, Body (JSON fields, form fields or raw), Timeout, and how to treat non-2xx responses | `status`, `ok`, `body`, `headers`, `duration_ms` |
+| **Set variable** | Stores a value for later steps to reuse as `{{ vars.<name> }}`. | Variable name, Value | `name`, `value` |
+| **Send webhook** | Posts to a URL and forgets about it. Superseded by **HTTP request**. | URL, headers, raw body | `status`, `body` |
+| **Google action** | Runs one action through the [Apps Script bridge](/integrations/google-actions) — Gmail, Calendar, Sheets, Contacts, Docs, Tasks. | The action's own fields | Per action |
+
+A variable name may use letters, numbers and underscores only. It is read back as
+`{{ vars.<name> }}`, and a dot or a space there would split the path.
+
+<Note>
+  An **HTTP request** to a private, loopback or internal address is refused by the server
+  for security. The checks panel catches the obvious cases while you are editing.
+  Credentials typed into the authentication fields are ordinary settings — anyone who can
+  edit the automation can read them.
+</Note>
+
+**Google action** does not appear as a generic entry in the add menu. Each action is
+listed individually, because that is what you are looking for. The step names no
+connection and no URL: the deployment is resolved from the workspace.
+
+## Orchestration
+
+| Step | What it does | Settings | Produces |
+| --- | --- | --- | --- |
+| **Start flow** | Hands the contact to a [flow](/flows/overview). | Flow | `started`, `flow_run_id` |
+| **Run automation** | Runs another automation with this run's data. | Automation | `automation_id` |
+
+Only an **active** flow can be started; a draft is skipped. **Run automation** refuses to
+run the automation it is in, and a chain of automations is capped at three deep so a loop
+dies immediately rather than filling the queue.
+
+## Superseded steps
+
+**Send webhook** and **Close conversation** still work and still open for editing, but
+they are hidden from the add menu. **HTTP request** does everything **Send webhook** does
+and lets later steps read the response; **Set status** does everything **Close
+conversation** does and can also reopen a thread.

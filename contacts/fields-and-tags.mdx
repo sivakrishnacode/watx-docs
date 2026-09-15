@@ -1,0 +1,83 @@
+---
+title: "Fields and tags"
+description: "The built-in contact fields, the address, custom fields you define yourself, and colour-coded tags."
+sidebarTitle: "Fields and tags"
+icon: "tags"
+---
+
+A contact record has three layers: the built-in fields everybody gets, the custom fields your workspace defines, and tags.
+
+## Built-in fields
+
+Editable on the contact drawer's **Overview** tab. Click a field, type, and it saves on its own.
+
+| Group | Fields |
+| --- | --- |
+| Basics | Name, Phone, Email, Company |
+| Address | Street, Area, City, Pincode, State, Country |
+| Identity and origin | Source, Instagram handle, Web visitor id, the linked conversation, and the Contact ID for use with the API |
+
+Everything under **Identity and origin** is read-only — it records how this person reached you and cannot be edited after the fact.
+
+### Phone numbers
+
+Numbers are stored in international format so the same person looks the same whether they messaged you on WhatsApp, filled in a form or arrived in a CSV. A number typed without a country code picks up the workspace's default country; the **Add contact** form shows what will actually be saved before you commit to it.
+
+Set the default under **Settings → Fields & tags → Phone number format**. Only admins can change it, but everyone can see which country their typed numbers are being resolved against.
+
+### The address
+
+The address is an ordinary CRM field — it sits beside the name and the company, and it means something to a business that will never sell a product. A clinic, an agency and a service business all use it.
+
+Pincode is asked for before state on purpose: in India the pincode implies the state.
+
+<Note>
+**The newest address wins.** A connected store's checkout writes an address too, and so does anything else that learns one. Whichever address was set most recently is the one kept — so a correction you typed yesterday is not overwritten by an old order arriving late. The drawer shows *"Address last changed …"* under the block.
+</Note>
+
+An address is only recorded when there is a street line. A digital order that carries nothing but a country is not an address, and storing it would make the contact look reachable by post when they are not.
+
+## Custom fields
+
+Custom fields are defined once for the workspace and appear on every contact straight away. They are free text.
+
+Manage them from **Settings → Fields & tags**, or from **Custom fields** on the Contacts page. Both are admin-only.
+
+<Steps>
+  <Step title="Add a field">
+    Type the name — "Lead source", "Policy number" — and click **Add**. Names have to be unique.
+  </Step>
+  <Step title="Rename it">
+    Click the name in the list and edit it in place. Renaming keeps every stored value.
+  </Step>
+  <Step title="Delete it">
+    The confirmation says what it costs: deleting a field also removes its stored value on every contact, and cannot be undone.
+  </Step>
+</Steps>
+
+Values are filled in per contact on the drawer's **Fields** tab. Fill in what you need and click **Save custom fields**.
+
+Custom fields can also be used as rules in a [dynamic segment](/contacts/segments), and referenced from an [automation](/automations/expressions).
+
+## Tags
+
+A tag is a fact about one person — `vip`, `refunded`, `newsletter`. Use them to group and filter; use [segments](/contacts/segments) when you want a named audience with a purpose.
+
+Create them under **Settings → Fields & tags → Tags**: type a name (up to 40 characters), pick one of the preset colours, and click **Add tag**. Tags are workspace-wide.
+
+Deleting a tag removes it from every contact and cannot be undone.
+
+### Where tags are applied
+
+- The contact drawer's **Labels** tab — every tag in the workspace as a chip you switch on or off.
+- The **Add contact** form.
+- A `tags` column in a [CSV import](/contacts/overview). Existing tag names are matched; creating a tag that does not exist yet needs an admin.
+- The **Add tag** and **Remove tag** [automation steps](/automations/steps), and the **Tag contact** [flow node](/flows/nodes).
+- The public API.
+
+### Where tags are used
+
+- Filtering the Contacts list and the Inbox conversation list.
+- As the audience, or part of it, for a [broadcast](/whatsapp/broadcasts).
+- As a rule in a dynamic segment.
+- As the **Tag added** [automation trigger](/automations/triggers).

@@ -1,0 +1,110 @@
+---
+title: "Field types"
+description: "Every field you can put on a form, the settings it takes, the formats it can enforce, and how an answer reaches the contact record."
+sidebarTitle: "Field types"
+icon: "table-list"
+---
+
+The palette on the Build tab groups fields into **Input**, **Choice**, **Date & time**, **Special** and **Layout**. Search it by name or by what a field is for.
+
+## The catalogue
+
+| Field | Group | What it collects | Settings it takes |
+| --- | --- | --- | --- |
+| **Short text** | Input | A single line — names, job titles, reference numbers. Up to 500 characters | Placeholder, length bounds, accepted format, save to contact |
+| **Long text** | Input | A paragraph. Up to 5,000 characters | Placeholder, length bounds, accepted format |
+| **Email** | Input | An email address, checked and stored lowercase | Placeholder, length bounds, accepted format, save to contact |
+| **Phone** | Input | A phone number, accepted the way people actually type one | Placeholder, save to contact |
+| **Number** | Input | A number | Placeholder, minimum, maximum, save to contact |
+| **Dropdown** | Choice | One answer from a long list | Options, placeholder, save to contact |
+| **Radio buttons** | Choice | One answer from a few, all visible at once | Options, save to contact |
+| **Checkbox list** | Choice | Any number of answers from a list | Options |
+| **Date** | Date & time | A calendar date | Save to contact |
+| **Time** | Date & time | A time of day, unconnected to your availability | — |
+| **Appointment slot** | Date & time | A bookable time from your availability. Adding this makes it a booking form | Set on the [Availability tab](/forms/bookings) |
+| **Rating** | Special | Stars, for feedback and satisfaction scores | Number of stars (3–10, default 5) |
+| **Consent** | Special | A tick box that must be ticked — marketing opt-in, terms | Help text |
+| **Hidden field** | Special | Not shown to the visitor. Filled from the link, for campaign tracking | Default value, save to contact |
+| **Heading** | Layout | A section title | — |
+| **Paragraph** | Layout | Explanatory text between questions | — |
+| **Page break** | Layout | Splits the form into steps, with a progress bar | — |
+
+Headings, paragraphs and page breaks carry no answer. They are never required, never stored, never a column in the export, and cannot be used as the source of a conditional rule.
+
+<Warning>
+Two items in the palette are not ready to use. **File upload** renders a file chooser, but a file picked on a live form is not uploaded and the submission is refused — ask for files in the conversation instead. **Checkboxes** does not store the options that were ticked; use **Checkbox list** for any multiple-choice question.
+</Warning>
+
+## Required
+
+**Required** blocks the form until the field is answered. It is checked in the browser as you move between steps, and again on the server — so it holds even if somebody strips the attribute out of the page.
+
+Two types manage their own rule:
+
+- **Consent** is always required. An unticked consent box is a "no", not a missing answer, and is never recorded as consent given.
+- **Hidden field** is never required, because the visitor has no way to fill one in.
+
+A field that a conditional rule has hidden is not required either, and no answer to it is stored. See [Conditional logic](/forms/conditional-logic).
+
+## What each type accepts
+
+| Field | Accepted |
+| --- | --- |
+| Email | Must look like an address, at most 320 characters. Stored lowercase |
+| Phone | Digits with optional `+`, spaces, dashes, brackets and dots; between 6 and 15 digits. Deliberately loose — a lead-capture form is not a dialler |
+| Number | Anything that is a number, within the minimum and maximum you set |
+| Dropdown, Radio buttons | Must be one of the options you offered |
+| Checkbox list | Every value must be one of your options; repeats are collapsed |
+| Rating | A whole number between 1 and the number of stars |
+| Appointment slot | A time the form is genuinely still offering, re-checked at the moment of submission |
+
+An answer that fails is reported on the field itself, and the rest of the form is kept — a rejected submission is a lost enquiry, so the checks are strict only where accepting would store something false.
+
+## Length and format
+
+**Short text**, **Long text** and **Email** take a **Min length**, a **Max length** and an **Accepted format**. The format is a fixed list, not a pattern you write:
+
+| Accepted format | Allows |
+| --- | --- |
+| **Anything** | No format check. The default |
+| **Letters only** | Letters, in any script |
+| **Name (letters, spaces, hyphens)** | Letters, spaces, apostrophes and hyphens |
+| **Letters and numbers** | Letters and digits |
+| **Digits only** | Digits |
+| **No links (spam control)** | Refuses anything that looks like a web address |
+| **Web address** | Must start with `http://` or `https://` |
+| **Work email only** | Refuses the common consumer mailbox providers. Offered on Email fields only |
+
+Every format understands scripts that build a letter from a base plus marks, so Indic, Arabic and Vietnamese names pass **Letters only** and **Name** as readily as Latin ones do.
+
+A rejected answer is told what *is* allowed — "should be letters only", "should be a work email address" — rather than "invalid".
+
+## Prefilled values and the link
+
+Every answerable field takes a starting value: **Prefilled with** on a visible field, **Default value** on a hidden one.
+
+A query parameter in the link beats it. Add `?<field key>=<value>` to the form's address and that field opens filled in:
+
+```
+https://app.watx.in/f/demo-request?email=priya@example.com&campaign=spring
+```
+
+This is how you send a form to somebody you already know with their details in it, and how a hidden field records which campaign a visitor came from. The field key to use is the one shown as **Saved as** in the inspector.
+
+<Note>
+A hidden field's default value is applied on the server and never reaches the browser, so it can name internal campaign structure safely. A visible field's prefill does reach the browser — it has to, or the visitor would not see it in the box.
+</Note>
+
+## Saving an answer to the contact
+
+Fields that can identify or describe a person carry a **Save to contact** picker: **Name**, **Email**, **Phone**, **Company**, or any custom field in the workspace. Leave it unmapped to keep the answer on the submission only.
+
+Mapping does three things:
+
+1. It is how a submission finds an existing contact — by phone first, then by email.
+2. It fills in blanks on that contact. It never overwrites a value somebody already put there; a correction made by your team survives a later form that still carries the old detail.
+3. It is what a newly created contact is built from.
+
+A phone number is converted to international format before it is written, using the workspace's country. A number that cannot be read is left off the contact — the raw answer is still on the submission.
+
+Only mapped fields count. A field labelled "Your name" with no mapping is you asking for an answer, not telling us it is the contact's name. See [Fields and tags](/contacts/fields-and-tags) for what a contact holds, and [Submissions](/forms/submissions) for the whole path.

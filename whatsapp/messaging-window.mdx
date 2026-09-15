@@ -1,0 +1,48 @@
+---
+title: "The 24-hour window"
+description: "WhatsApp's customer service window: what opens it, what closes it, what can still be sent afterwards, and how Watx enforces it everywhere."
+sidebarTitle: "The 24-hour window"
+icon: "clock"
+---
+
+This is Meta's rule, not a Watx setting, and it decides what you can send at any moment. Every WhatsApp feature in the product is shaped by it.
+
+## The rule
+
+Once a customer messages your business, Meta allows **24 hours of free-form replies** — text, media, voice notes, interactive messages, anything. After that, only a **pre-approved template** will send. A free-form message outside the window is rejected by Meta outright.
+
+Each new message from the customer restarts the 24 hours. Your own outgoing messages do not: only a message *from* the customer reopens the window.
+
+## Two ways it can be closed
+
+They need different answers, so Watx distinguishes them.
+
+| State | What it means | What you can send |
+| --- | --- | --- |
+| **Open** | The customer wrote within the last 24 hours | Anything |
+| **Window closed** | They wrote, but more than 24 hours ago | An approved template only |
+| **Never messaged you** | Watx has no incoming message from this person at all | Nothing on this thread. A template needs a customer who has opted in to hearing from you |
+
+## Where you see it
+
+- **In the inbox.** The thread header carries a countdown pill showing the time left in the window. When it expires, a strip above the composer says *"24-hour session expired. Use a template to re-engage."* with a **Templates** button beside it. See [Sending messages](/inbox/sending).
+- **In broadcasts.** A [broadcast](/whatsapp/broadcasts) is always a template send, because most of its audience will be outside the window.
+- **In automations and flows.** A step that sends free-form text will not reach a contact whose window has closed. The automation editor's pre-flight checks flag it before you activate — see [Channels and the 24-hour window](/automations/channels-and-window).
+- **In payment links.** Watx decides how to deliver *before* it creates the link: plain text inside the window, an approved template outside it. If the window is closed and no usable template is nominated, the link is refused rather than created and sent nowhere. See [Razorpay payments](/integrations/razorpay).
+- **In sales documents.** An invoice or receipt goes out as your nominated template every time. The plain document message is the fallback for a workspace with no template, and only while the window is open. See [Creating and sending](/integrations/sales-documents-sending).
+
+## What counts as an incoming message
+
+Any message from the customer, including a tap on a template's button — a quick reply arrives as a real inbound message and reopens the window like typed text does.
+
+## What a template can and cannot do
+
+A template re-opens a conversation. It does not exempt you from anything else:
+
+- Every template must be **approved by Meta** before it can be sent, and Meta can reject or pause one later. See [Message templates](/whatsapp/templates).
+- A template send costs against your **messaging limit** and affects your **quality rating**. See [Messaging limits and quality](/whatsapp/limits-and-quality).
+- Contacts who have opted out are skipped by broadcasts regardless of the window — see [Broadcasts](/whatsapp/broadcasts).
+
+<Warning>
+  Templates exist on WhatsApp and nowhere else. Instagram has a reply window too, but no template mechanism at all: once it closes, you can only wait for the person to write again. The website widget has no window. See [Instagram](/instagram/overview).
+</Warning>

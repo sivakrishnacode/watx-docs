@@ -1,0 +1,175 @@
+---
+title: "Message templates"
+description: "Build a template, submit it to Meta, track its status, and supply the values a send needs — headers, variables, buttons and carousel cards."
+sidebarTitle: "Message templates"
+icon: "file-lines"
+---
+
+A template is a message Meta has reviewed and approved. It is the only thing you can send outside the [24-hour window](/whatsapp/messaging-window), which makes it the starting point for broadcasts, order updates, reminders, payment requests and invoices.
+
+**WhatsApp → Templates** is your library. Everything there also exists in your Meta account: Watx submits to Meta, and Meta decides.
+
+## The list
+
+Each card shows the template's name, category, status, type, language, Meta quality score when there is one, and the body text. A rejection reason or a failed submission is printed on the card in red.
+
+Two buttons sit at the top:
+
+- **New Template** — opens the source chooser: **Start from scratch**, or **Use a template** from the [starter library](/whatsapp/template-library). Both end in the same editor.
+- **Sync from Meta** — pulls every template from your WhatsApp Business Account and mirrors it locally: new ones are added, changed ones updated, and templates that came from Meta but no longer exist there are removed. Drafts that were never submitted are kept. A very large library is synced in pages of 100, up to 2,000 at a time; press it again to continue.
+
+Per-card actions:
+
+| Action | When it appears | What it does |
+| --- | --- | --- |
+| **Edit** | Status is Approved | Re-opens the editor; saving re-submits and the status returns to Pending |
+| **Resubmit** | Status is Rejected or Paused | Same editor, same re-review |
+| Code icon | Always | Shows the exact API request that sends this template, with a runnable `curl` — see [API introduction](/api/introduction) |
+| Trash icon | Always | Deletes the template, after a confirmation |
+
+<Warning>
+  Deleting a template that exists at Meta deletes it **at Meta as well as in Watx**, and it cannot be undone. Any broadcast or automation still using it starts failing on its next send.
+</Warning>
+
+## Creating a template
+
+### Name, category and language
+
+- **Template Name** — lowercase letters, digits and underscores only, up to 512 characters. Fixed once the template exists at Meta; to change it, create a new one.
+- **Category** — how Meta polices the template:
+
+| Category | What it is for |
+| --- | --- |
+| **Marketing** | Offers, launches, reminders, anything promotional |
+| **Utility** | About a transaction the customer already entered into — an order, an appointment, an invoice, a ticket |
+| **Authentication** | One-time codes. Meta writes the wording; see below |
+
+- **Language** — must match the exact code at Meta. `en_US` and `en` are different templates, and a template's language is fixed once it exists.
+
+### Template type
+
+One selector covers the header, because that is how Meta's own manager presents it.
+
+| Type | What it adds |
+| --- | --- |
+| **NONE** | Body text only |
+| **TEXT** | A text header above the body |
+| **IMAGE** | A JPEG or PNG header |
+| **VIDEO** | An MP4 header |
+| **FILE** | A PDF or document header |
+| **LOCATION** | A map pin, set at send time |
+| **CAROUSEL** | Up to 10 swipeable cards |
+
+### Variables
+
+Pick one scheme for the whole template. Meta rejects a mix, and the choice is fixed once the template exists at Meta.
+
+- **Numbered** — `{{1}}`, `{{2}}`, … Must be contiguous and start at `{{1}}`.
+- **Named** — `{{customer_name}}`. Lowercase letters, digits and underscores, starting with a letter.
+
+Every variable needs a **sample value**. Meta reviews the template with those values filled in, and refuses a blank one.
+
+### Body, footer and header
+
+- **Body text** — up to 1,024 characters. It may not **start or end with a variable**; trailing punctuation does not help, so `Total comes to {{1}}.` is refused exactly like `Total comes to {{1}}`. Put real words on both sides.
+- **Footer** — optional, up to 60 characters, and it cannot contain variables.
+- **Text header** — up to 60 characters with at most one variable, plus a sample for it.
+- **Location header** — carries nothing at build time. Meta takes the latitude, longitude, place name and address at send time, so every message can point somewhere different.
+- **Media header** — choose a file, pick one from the [media library](/contacts/media-library), or paste a public link.
+
+| Header | Accepted | Limit |
+| --- | --- | --- |
+| Image | JPEG, PNG | 5 MB, 800 × 418 px or larger recommended |
+| Video | MP4, 3GPP | 16 MB, up to 60 seconds |
+| File | PDF | 16 MB |
+
+A file you pick is not uploaded until you press submit — close the dialog and it is simply discarded. A pasted link has to stay reachable for about 24 hours, because Meta fetches it during review.
+
+### Buttons
+
+Up to 10 buttons in total, each with a label of at most 25 characters. Quick replies must be grouped before the rest.
+
+| Button | Limit | Needs |
+| --- | --- | --- |
+| **Quick Reply** | — | A label. The tap arrives as an incoming message, which reopens the window |
+| **URL** | 2 per template | A valid URL. If it ends in a variable, Meta requires an example value, and the value is supplied at send time |
+| **Phone** | 1 per template | A phone number |
+| **Copy Code** | 1 per template | An example code. The real code is supplied at send time |
+
+A URL button takes at most one variable and it must sit at the end of the URL — Meta substitutes only the suffix.
+
+### Carousels
+
+A carousel is an outer body plus 1–10 cards, and Meta's rules are strict because it renders as one swipeable strip:
+
+- The outer message has **no header, no footer and no buttons** — those live on the cards.
+- Every card needs an image or video header, and **every card must use the same header format**.
+- Every card needs 1 or 2 buttons, and **every card must use the same button types in the same order**. Copy-code buttons are not allowed on cards.
+- A card body is at most 160 characters and follows the same start/end variable rule as the main body.
+
+<Warning>
+  **A carousel needs media on every card at every send** — Meta re-fetches each card's asset rather than reusing what was approved. A card with a saved image is an optional override; a card without one must be given an image or video each time it is sent.
+</Warning>
+
+### Advisory warnings
+
+Two things are flagged in the editor but never block you, because Meta's own behaviour is not exactly predictable:
+
+- **Too many variables for the length.** Roughly two words per variable is the floor; below that Meta rejects the template.
+- **Two variables next to each other.** The API accepts it, human reviewers often do not, and the message reads as a run of values.
+
+## Authentication templates
+
+Picking **Authentication** swaps the whole editor. Meta writes and translates the wording — you cannot type a body — and that fixed shape is what makes these cheaper to send. You choose:
+
+- whether to append the security line *"For your security, do not share this code."*
+- **Code expires after** — 1 to 90 minutes, or leave it empty for no expiry line.
+- **How they get the code**: **Copy code** (works on every device and needs nothing from you), **One-tap autofill** or **Zero-tap** (both fill the code into your own Android app and need its package name and signature hash).
+- An optional button label.
+
+The code itself is supplied when you send.
+
+## Submitting and statuses
+
+**Submit for Approval** sends the template to Meta. Review usually takes up to 24 hours and the status updates by itself.
+
+| Status | Meaning |
+| --- | --- |
+| **Draft** | Never reached Meta — usually a submission that failed; the error is on the card |
+| **Pending** | With Meta for review |
+| **Approved** | Sendable |
+| **Rejected** | Meta refused it. The reason is on the card; fix it and **Resubmit** |
+| **Paused** | Meta paused it, typically after poor feedback from recipients |
+| **Disabled** | Meta disabled it |
+| **In Appeal** | An appeal is open at Meta |
+| **Pending Deletion** | Deletion is being processed at Meta |
+
+Only Approved, Rejected and Paused templates can be edited. Editing an approved template sends it back for review, so it is **Pending** — and unsendable — until Meta answers.
+
+<Note>
+  Meta allows 100 template creations an hour. Submitting a whole [pack](/whatsapp/template-library) goes out one at a time for this reason, and stops with a clear message if Meta refuses part-way.
+</Note>
+
+## What a send must carry
+
+Meta rejects the **whole message** if one parameter is missing, so every sending surface in Watx asks for exactly the same things and refuses to send until they are filled in.
+
+| The template has | What must be supplied at send time |
+| --- | --- |
+| Body variables | A value for each one |
+| A text header with a variable | The header's value |
+| An image, video or file header | A media link — unless the template carries one, in which case it is an optional override |
+| A location header | Latitude, longitude, place name **and** address, every time |
+| A URL button with a variable | The value substituted into the end of the URL |
+| A copy-code button | The code to display |
+| Carousel cards | Media for each card, plus each card's own body values and button values |
+
+The five places this happens are the inbox template picker, the contact drawer, [broadcast](/whatsapp/broadcasts) step 3, the `send_template` [automation step](/automations/steps) and the `send_template` [flow node](/flows/nodes).
+
+<Warning>
+  **Changing the selected template clears every value you had filled in.** Those values are keyed to one template's shape — buttons by position, cards by position, variables by token — so carrying them across would not be stale, it would be wrong.
+</Warning>
+
+## Templates you will not see in a picker
+
+Meta ships a sample template called `hello_world` with every account. It can only be sent from Meta's public test numbers, so Watx hides it from the inbox, broadcast and automation pickers. It stays visible here so you can inspect or delete it.

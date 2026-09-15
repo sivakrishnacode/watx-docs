@@ -1,0 +1,94 @@
+---
+title: "Testing and Build with AI"
+description: "Walk through a flow in a phone preview before anyone else does, and draft one from a sentence."
+sidebarTitle: "Testing and AI"
+icon: "mobile"
+---
+
+## The simulator
+
+**Test** in the editor toolbar opens a phone preview of the flow as it stands — including
+unsaved changes. It starts at the entry node and walks forward exactly as the engine
+would: messages appear, buttons are tappable, list rows open, and a text box takes the
+place of the customer typing.
+
+The restart button clears it and starts again from the entry node.
+
+<Warning>
+  **The simulator never calls anything real.** No message is sent, no payment link is
+  created, no endpoint is called, no tag is written. Everything with a side effect is
+  reported as a line telling you what *would* have happened.
+</Warning>
+
+What it stands in for:
+
+| Node | In the preview |
+| --- | --- |
+| **Template** | Shows which template goes out. WhatsApp renders the approved copy, so the preview cannot. |
+| **Take a payment** | "Would send a payment link for …". No link is created. |
+| **API request** | "Would call `GET https://…` — not sent from the preview." |
+| **Wait** | Says how long it would wait, then carries straight on. |
+| **Ask location** / **Ask for a file** | Explains what WhatsApp would show, and lets you type anything as a stand-in for the pin or the file URL. |
+| **Tag contact** / **Segment contact** / **Set attribute** | Shown as a line saying what would be written. Nothing is written. |
+| **Connect flow**, **Handoff to agent**, **Hand to AI agent**, **End** | Shown as the end of the run, saying where it went. |
+
+One limitation worth knowing: an **If / else** can only be evaluated in the preview when
+it branches on a **flow variable**. A rule about a tag or a contact field has no real
+contact behind it at design time, so it takes the false path.
+
+Use the [runs screen](/flows/waits-and-runs) for the real thing — it carries the engine's
+own event log for every run that actually happened.
+
+## Build with AI
+
+Describe the flow you want and get a draft on the canvas. There are two ways in.
+
+**From the flow editor.** The prompt bar sits in the toolbar between the name and the
+buttons. Suggestions to start from: "Greet new customers, ask what they need, and route
+them to sales or support", "Take a food order: menu buttons, then ask for the delivery
+address".
+
+<Warning>
+  **A draft replaces the whole canvas.** A generated flow is a whole graph; merging it
+  into an existing one would leave two disconnected halves. On a flow that already has
+  nodes you are asked to confirm, and told what is about to go — "6 nodes, replacing your
+  3". An empty canvas skips the confirmation.
+</Warning>
+
+**From the flows list.** The **New flow** dialog has the same prompt at the top. The
+draft travels to a newly created flow, and the flow row is only created once a draft
+comes back — so a failed generation leaves nothing behind.
+
+Either way, **nothing is saved**. The draft is editor state. You press Save, and it goes
+through exactly the same validation as a flow you drew by hand. If you do not like it,
+do not save it.
+
+### It costs AI credits
+
+Each generation spends [AI credits](/ai-agents/credits-and-byok) from the workspace
+wallet, metered separately from the automation drafter so the two can be told apart. A
+workspace running on its own provider key is billed by that provider instead.
+
+### What it repairs, and what it leaves you
+
+A flow is a graph, so a generated one can be wrong in ways an automation cannot. Each of
+these is fixed before the draft reaches you, and each is reported as a note you can read:
+
+- **Two nodes with the same key** — one is renamed.
+- **A path pointing at a node that was never created** — it is left unconnected, so you
+  see the gap on the canvas and join it up.
+- **A missing or unknown entry node** — it falls back to the first node.
+- **A node type this version does not know** — dropped rather than drawn as a card no
+  form can edit.
+
+And what it deliberately will not do:
+
+- **It never invents an id.** Tags, segments, flows, agents, product ids and template
+  names come back blank and are listed as things you still have to pick.
+- **It never activates anything.** A draft is always a draft.
+
+The toast after a successful generation says what you got — "6 nodes · 2 questions · 1
+payment" — and a payment node is called out separately, because it is the one thing in a
+generated flow that moves real money.
+
+The same feature exists for [automations](/automations/templates-and-ai).

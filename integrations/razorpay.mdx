@@ -1,0 +1,176 @@
+---
+title: "Razorpay payments"
+description: "Collect money from your own customers through your own Razorpay account — payment links from the inbox, automations, flows and AI agents."
+sidebarTitle: "Razorpay"
+icon: "credit-card"
+---
+
+Razorpay in Watx is for **your customers paying you**. You connect your own Razorpay
+account, Watx creates payment links on it, and Razorpay settles the money directly to you.
+No money passes through Watx: there is no wallet, no ledger and no platform fee.
+
+<Note>
+  This is not your Watx subscription. What you pay Watx lives in
+  **Settings → Plan & billing** — see [Plans and billing](/getting-started/plans-and-billing).
+</Note>
+
+## Connect your account
+
+**Integrations → Razorpay → Connect** opens a four-step dialog. Steps 1 and 3 happen in
+Watx; step 2 happens in Razorpay.
+
+<Steps>
+  <Step title="Paste your API keys">
+    In Razorpay: **Settings → API Keys** → generate a key. Paste the **Key ID**
+    (`rzp_live_…` or `rzp_test_…`) and **Key Secret** into Watx and press **Connect**.
+
+    The keys are **verified against Razorpay before they are stored**, so a wrong pair is a
+    sentence on the screen rather than a failure in front of a customer hours later. Test
+    keys are fine — the card, the dialog and the Payments page all say **Test mode** so a
+    test link is never mistaken for revenue.
+  </Step>
+  <Step title="Add the webhook in Razorpay">
+    Copy the webhook URL the dialog shows into **Razorpay → Settings → Webhooks → Add New
+    Webhook**, and tick exactly these four active events:
+
+    `payment_link.paid` · `payment_link.partially_paid` · `payment_link.expired` ·
+    `payment_link.cancelled`
+
+    Razorpay asks for a **secret** while you create it. Generate a strong one and keep it
+    for the next step.
+  </Step>
+  <Step title="Save the webhook secret">
+    Paste the same secret back into Watx.
+
+    This step is optional. Without it, payments still register — Watx re-checks each link
+    with Razorpay instead of trusting the notification, so confirmation is slower. With it,
+    a payment confirms the moment the customer pays.
+  </Step>
+  <Step title="Nominate a payment template">
+    An approved WhatsApp template that can carry a payment link, for customers outside the
+    24-hour window. See below — this is the step that decides whether a payment request
+    reaches somebody who has not written in today.
+  </Step>
+</Steps>
+
+**Test connection** on step 1 confirms the keys still work. **Disconnect** stops Watx using
+them; links already sent stay live and payable, and the keys keep working — to revoke fully,
+regenerate them in Razorpay.
+
+## Where you can ask for a payment
+
+Every surface creates the link through the same service, and the Payments list records
+which one it came from.
+
+| Surface | Notes |
+| --- | --- |
+| **Inbox composer** | On every channel — a payment link is an ordinary URL. See [Sending messages](/inbox/sending) |
+| **Payments page** | **Request a payment**, with a customer picker |
+| **`create_payment_link` automation step** | Publishes the link so a later step can use it. See [Steps](/automations/steps) |
+| **`collect_payment` flow node** | Two outcomes — paid and expired. See [Node types](/flows/nodes) |
+| **AI agent tool `request_payment`** | Off by default and heavily gated. See [Skills](/ai-agents/skills) |
+
+Credentials are resolved from the workspace alone. No step, node or tool config names a key
+or an account, so nothing can be hand-edited to charge into somebody else's merchant
+account.
+
+## Asking for a payment
+
+**Payments** in the sidebar → **Request a payment**:
+
+| Field | Notes |
+| --- | --- |
+| **Customer** | The same picker sales documents use: type a phone number, and add the customer on the spot if they are new |
+| **Amount** | In whole units of your currency — `499` means 499, not 499 paise |
+| **Expires after (hours)** | Default 24. At least 20 minutes, at most 30 days. After this it can no longer be paid |
+| **What it's for** | Shown to the customer on the Razorpay payment page |
+| **Message** | The wording that goes with the link. Leave blank for the default; the link is added automatically |
+
+<Warning>
+  **Message is used inside the 24-hour window only.** Outside it, the wording is the
+  template's, fixed when Meta approved it — the dialog says so and disables the field.
+</Warning>
+
+## Outside the 24-hour window
+
+WhatsApp refuses a free-form message more than 24 hours after the customer last wrote (see
+[The 24-hour window](/whatsapp/messaging-window)), so a
+payment link sent as ordinary text past that point reaches nobody: you see a link in
+Razorpay, the customer sees nothing. Watx decides **before** the link is created:
+
+| Situation | What happens |
+| --- | --- |
+| Inside the window, or a channel with no window | The link is sent as an ordinary message |
+| WhatsApp, window closed, a usable template nominated | The link is sent inside that template |
+| WhatsApp, window closed, no usable template | The request is **refused** rather than creating a link nobody is shown |
+| No conversation, or you asked not to send | The link is created and not sent |
+
+The Payments list records which of those happened, and it is the first thing to check when
+someone says they never got it.
+
+### The payment template
+
+A template can carry exactly four values:
+
+| Value | Example |
+| --- | --- |
+| Customer name | `Asha` |
+| Amount | `₹499.00` |
+| Description | `School fees` |
+| Payment link | `https://rzp.io/rzp/mlx7YiYf` |
+
+Templates with **named** placeholders are matched by name; **positional** ones are filled
+in that order. The link can travel either in a body variable (which WhatsApp auto-links) or
+in a **dynamic URL button**.
+
+<Warning>
+  A dynamic URL button substitutes only the **end** of the URL, so the template's base must
+  match the link Razorpay actually issues. Razorpay has used `rzp.io/i/…`, `rzp.io/l/…` and
+  branded domains; a mismatch is refused rather than shipping a pay button that 404s.
+</Warning>
+
+The picker lists templates that cannot carry a link too, greyed out with the reason —
+"has nowhere to put the payment link", "is pending, not approved" — so a template you know
+you approved is never simply missing. The nomination is re-checked for approval on **every
+send**, so a template Meta paused stops being used immediately.
+
+If you have none, the picker offers the four payment starters from the library:
+`payment_request_link`, `payment_request_button`, `payment_reminder` and
+`payment_confirmation`. See [Template library and packs](/whatsapp/template-library).
+
+The `create_payment_link` step and the `collect_payment` node each accept their own template
+name, for a step whose wording should differ. Blank uses the workspace's.
+
+## The Payments page
+
+Every link the workspace has asked a customer to pay, newest first, with **Collected** and
+**Awaiting payment** totals across the top. Filter by **All**, **Awaiting payment**,
+**Paid**, **Expired** or **Cancelled**, and search by contact, amount or reason.
+
+| Status | Meaning |
+| --- | --- |
+| **Awaiting payment** | Created, not paid |
+| **Partly paid** | Razorpay recorded a partial payment |
+| **Paid** | Settled. Final |
+| **Expired** | The expiry passed unpaid. Final |
+| **Cancelled** | Cancelled here or at Razorpay. Final |
+
+Each row's menu offers **Copy link**, **Open payment page**, **Check with Razorpay** and
+**Cancel request**. **Check with Razorpay** re-reads the link and applies the answer — it is
+offered on every row, because "they say they paid" is the question people arrive with.
+
+A sweep re-checks open links every 5 minutes, and never decides an expiry locally: it asks
+Razorpay and applies what Razorpay says. A payment always outranks an expiry, so a customer
+who pays in the final minute is recorded as paid.
+
+## What a payment can start
+
+Three [triggers](/automations/triggers) fire on the outcome: **Payment received**,
+**Payment expired** and **Payment cancelled**. They carry no channel, because the customer
+paid on Razorpay's own page — do not scope an automation built on them to a channel.
+
+Payments also appear on the contact's [activity timeline](/contacts/activity-timeline).
+
+## Refunds
+
+Watx does not issue refunds. Do that in your Razorpay dashboard.

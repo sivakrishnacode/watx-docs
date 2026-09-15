@@ -1,0 +1,79 @@
+---
+title: "Knowledge"
+description: "Give the agent your policies, prices and pages to answer from — uploads, page crawling, indexing status and per-agent selection."
+icon: "book-open"
+---
+
+The knowledge base is the material an agent quotes from. Without it, an agent has only your business description and its general training — it will not know your prices, your policies or your hours, and it is instructed not to guess them.
+
+**The library belongs to the workspace, not to an agent.** One upload, one indexing cost, one reindex, and every agent can read it. Each agent then chooses how much of it to use.
+
+Only owners and admins can add, edit or delete documents. Everyone else sees the library read-only.
+
+## Three ways to add something
+
+<Tabs>
+  <Tab title="Crawl a page">
+    **Knowledge → Crawl a page**, paste a URL, press **Add page**.
+
+    One page, not the whole site — add your pricing page and your delivery page as two documents. The page must be public: the crawler is not signed in, and a page that renders entirely in JavaScript comes back empty. Private, internal and loopback addresses are refused, and a redirect chain is followed at most three hops with every hop re-checked.
+
+    A crawled document keeps its URL, and the refresh button on its row re-reads the page. Editing a crawled document turns it into your own text, and a later re-read will not overwrite it.
+  </Tab>
+  <Tab title="Upload a file">
+    **Upload a file** takes PDF, DOCX, TXT, MD, CSV, TSV, JSON, HTML and XML, up to 10 MB each.
+
+    PDF and DOCX go through real text extraction. A CSV is read with its header row paired to each row's values, so a price list embeds as `sku: A-1 | price: 499` rather than as raw commas. A very long file is truncated and you are told so.
+  </Tab>
+  <Tab title="Paste text">
+    **Paste text** takes a title and a body — refund policies, call scripts, price lists, the answers your team types out every week.
+
+    Write it the way you would explain it to a new colleague. The agent quotes from it, so plain sentences work better than bullet fragments.
+  </Tab>
+</Tabs>
+
+<Tip>
+One topic per document retrieves more accurately than one long page. Long documents are split into chunks automatically, and a reply is built from the handful of chunks that match the question — up to five per reply.
+</Tip>
+
+## How it is searched
+
+Two kinds of search, and the card at the top of the tab says which one is running:
+
+- **Meaning-based search on** — documents are embedded, so a paraphrased question still finds the right passage. On built-in AI this works with no setup of your own; on your own provider key it needs an embeddings key saved under **Provider & credits**.
+- **Keyword search only** — passages are found by matching words. Everything still works; it is just less forgiving of the words a customer chooses.
+
+Semantic matches are taken first and keyword matches fill the remaining slots, so the two are used together rather than one instead of the other.
+
+## Document status
+
+Every document carries a status, because a document that saved but is invisible to the agent is the worst outcome here.
+
+| Status | What it means |
+| --- | --- |
+| **Ready** | Indexed for both meaning-based and keyword search. |
+| **Indexing** | Still being processed — reload in a moment. |
+| **Keyword only** | Saved and searchable by keyword, but not by meaning. Fix the embeddings key, then reindex. |
+| **Needs reindex** | Indexed with a different embeddings model than the workspace now uses, so it is not being found by meaning. |
+| **Failed** | Nothing usable was indexed — the agent cannot see this document. |
+
+**Reindex all** re-processes every document with the current settings. Use it after changing the embeddings provider, or after any document turns amber.
+
+## Which documents this agent reads
+
+The control at the top of the tab has two positions:
+
+- **Everything** — the agent reads every document in the workspace, including ones added later.
+- **Only these** — tick the documents on the rows below and press save. New documents are **not** added automatically.
+
+Selecting nothing means exactly that: the agent answers with no documents at all. That is why an empty selection is stored as a real choice rather than read as "all of them" — unticking your last document must not silently re-grant the whole library.
+
+Switching from **Everything** to **Only these** starts from the full list, so you narrow down from what you were looking at rather than from nothing.
+
+## Editing and removing
+
+Click a document to open it and edit its title and body; saving re-indexes it. The bin icon deletes it — the agent stops using it to answer immediately, on every agent that had it selected.
+
+## What it costs
+
+Indexing is metered only on built-in AI credits, at roughly a hundredth of what generating a reply costs — one credit per 25,000 tokens, with a minimum of one per document. On your own provider key nothing is metered. See [Credits and your own key](/ai-agents/credits-and-byok).

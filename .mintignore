@@ -5,3 +5,8 @@
 # Draft content
 drafts/
 *.draft.mdx
+
+# Working files (not pages)
+DOCS_PLAN.md
+scripts/
+postman/

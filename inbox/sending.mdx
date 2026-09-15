@@ -1,0 +1,114 @@
+---
+title: "Sending messages"
+description: "Text, media, voice notes, reactions, quoted replies, templates, product cards and payment links — and what each channel supports."
+sidebarTitle: "Sending messages"
+icon: "paper-plane"
+---
+
+The composer sits under every thread. What it offers depends on the channel the conversation is on, because WhatsApp, Instagram and the website widget do not support the same things.
+
+## Text
+
+Type and press <kbd>Enter</kbd> to send. <kbd>Shift</kbd> + <kbd>Enter</kbd> starts a new line. The box grows to four lines and then scrolls.
+
+On WhatsApp, starting to type also shows the customer a typing indicator. Meta expires it by itself after about 25 seconds, so a long reply simply stops showing as typing rather than lying about it.
+
+## Media
+
+The paperclip menu offers **Photo**, **Video**, **Document**, **From media library** and **Voice note**.
+
+A picked file uploads first and appears as a draft above the composer, where you can add a caption (up to 1024 characters) and then send or discard it. Audio takes no caption.
+
+| Kind | Accepted | Size limit |
+| --- | --- | --- |
+| Photo | PNG, JPEG, WebP | 5 MB |
+| Video | MP4, 3GP | 16 MB |
+| Document | PDF, Word, Excel, PowerPoint, plain text | 16 MB |
+| Voice note | Recorded in the browser | 16 MB |
+
+Files over the limit are refused before they upload, with the size in the message.
+
+**From media library** picks something already uploaded to the workspace instead of uploading it again — see [Media library](/contacts/media-library).
+
+### Voice notes
+
+**Voice note** records straight in the browser and encodes the file WhatsApp plays as a voice note, so there is nothing to convert. While recording, the composer is replaced by a bar showing the elapsed and maximum time with **Cancel** and a stop button. Recording stops by itself at five minutes, and the take lands as a draft you still have to send.
+
+Your browser will ask for microphone permission the first time.
+
+## Reactions, replies and copy
+
+Hover a message — or long-press it on a touch screen — for a small toolbar with three actions.
+
+- **React** — pick an emoji. The set offered is the one the channel can actually send: WhatsApp takes 👍 ❤️ 😂 😮 😢 🙏, Instagram takes exactly 👍 ❤️ 😂 😮 😢 😡, and the website widget has no reactions at all, so the button is hidden there. Picking the same emoji again removes your reaction.
+- **Reply** — quotes that message above your next one.
+- **Copy** — copies the message text.
+
+## Approved templates
+
+Templates are WhatsApp-only. **Send template** in the composer opens a picker listing the workspace's **approved** templates with their category and language.
+
+Pick one and fill in whatever it needs — body variables, a header value, a header image or document, a location pin, button values, carousel cards. Meta rejects the entire message if any one of them is missing, so the dialog names the gaps (*"Still needed: …"*) and keeps **Send template** disabled until they are filled. A template that needs nothing sends straight away.
+
+If no approved templates are listed, approve one in Meta's WhatsApp Manager and sync it. See [Message templates](/whatsapp/templates).
+
+<Warning>
+A template is the only thing that will send on WhatsApp outside the 24-hour window. When the window closes the composer is disabled and an amber strip appears — *"24-hour session expired. Use a template to re-engage."* — with a **Templates** button next to it.
+
+On Instagram the same strip says there is no template to fall back on: you can only reply once that person messages again.
+</Warning>
+
+## Product cards
+
+**Send product** is WhatsApp-only and needs a connected catalog. Search your catalog by product name or retailer ID, then send either:
+
+- **Single Product (SPM)** — one product card, with optional body and footer text.
+- **Multi-Product List (MPM)** — up to 30 products in one message. Header text and body text are required; the section title and footer are optional.
+
+See [Catalog and orders](/whatsapp/catalog-and-orders).
+
+## Payment links
+
+The card button — **Request a payment** — appears on **every channel**, because a payment link is an ordinary URL that carries just as well in an Instagram DM or a website chat as on WhatsApp. It appears whenever the thread has a contact, since a link is made out to a person.
+
+The dialog asks for the amount, how long the link should stay payable, what it is for, and an optional message. Watx creates the link on the workspace's own Razorpay account and sends it on this thread — there is nothing to paste.
+
+If Razorpay is not connected the dialog says so and points to the setup rather than failing on submit. If the workspace is in Razorpay test mode it says that too.
+
+Out of the 24-hour window on WhatsApp, a link can only be delivered inside an approved template. If your workspace has nominated one, the dialog says the link will go out that way and the button changes to **Send via template**; if it has not, the dialog blocks the request and explains why rather than creating a link nobody will receive. See [Razorpay payments](/integrations/razorpay).
+
+## Draft a reply with AI
+
+The sparkles button asks your AI agent to write a reply and drops it into the composer for you to edit. Nothing is sent until you press send.
+
+It is disabled when the reply window has closed — there would be nothing to send the draft as. If the workspace has no AI set up, or has run out of credits, the message says which and offers the fix. See [Test mode and playground](/ai-agents/testing) and [Credits and your own key](/ai-agents/credits-and-byok).
+
+## Delivery status on your messages
+
+Every message you send carries a state in its corner.
+
+| Mark | Meaning |
+| --- | --- |
+| Clock | Sending |
+| One tick | Sent |
+| Two ticks | Delivered |
+| Two bold ticks | Read |
+| Filled cross | Failed — the reason Meta gave is shown under the bubble and in a tooltip |
+
+Instagram never reports delivery, so an Instagram message shows one tick until it is read and then jumps to read. That is the honest state, not a bug.
+
+## What each channel supports
+
+| | WhatsApp | Instagram | Website |
+| --- | --- | --- | --- |
+| Text, images, video, documents, voice notes | Yes | Yes | Yes |
+| Reactions | Any emoji | Six fixed reactions | No |
+| Approved templates | Yes | No | No |
+| Product cards | Yes | No | No |
+| Payment links | Yes | Yes | Yes |
+| Reply window after the customer's last message | 24 hours | 24 hours | None |
+| Delivery receipts | Yes | Read only | Yes |
+
+## Who can send
+
+Sending is gated by role. Members with the Viewer role see a read-only composer — *"Read-only — viewers can browse but not reply"*. See [Members and roles](/settings/members-and-roles).

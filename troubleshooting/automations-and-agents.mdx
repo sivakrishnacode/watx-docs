@@ -1,0 +1,323 @@
+---
+title: "Automations and agents"
+description: "Why an automation did not fire, why a step was skipped without an error, why a variable came out blank, and why an AI agent stayed silent or answered wrongly."
+sidebarTitle: "Automations and agents"
+icon: "robot"
+---
+
+Almost everything that goes wrong at run time here is **quiet on purpose**: an unknown variable becomes an empty gap, a step the channel cannot do is skipped, a step with nobody to send to is skipped. Those are the right behaviours in front of a customer, and they mean a broken automation looks exactly like a working one.
+
+Two places say it out loud, and they are where most of this page ends: the editor's **checks** panel before an automation goes live, and the **run log** afterwards. For agents it is the readiness checklist in the studio.
+
+## An automation did nothing
+
+<AccordionGroup>
+  <Accordion title="Nothing ran at all">
+    Work down these in order.
+
+    - **It is switched off.** The card's switch, and the pulsing dot beside the name, are the only thing that makes it live.
+    - **The trigger is not the one that happened.** **New message received** is any incoming message; **First message from a contact** fires once per contact, ever; **Keyword match** needs the words to be present. Check the trigger pill on the card against what you actually did.
+    - **The channel scope excludes it.** Selecting none means every channel; selecting some means only those. A rule scoped to Website never fires on WhatsApp.
+    - **A keyword trigger has no keywords.** It can never match. Activation is refused for **Keyword match** and the checks panel flags it.
+
+    **How to check.** **View runs** in the card's menu shows every run with its contact, channel and trigger. An empty list means it never fired, which is a different problem from a run that went wrong.
+
+    [Triggers](/automations/triggers) · [Diagnostics and logs](/automations/diagnostics-and-logs)
+  </Accordion>
+
+  <Accordion title="A form, payment or store automation never fires">
+    Twelve triggers carry **no channel at all** — the form, appointment, payment and store ones. A form is submitted on a public page and a payment is made on Razorpay's, so there is no channel to compare against.
+
+    **What is happening.** If you built the automation on a different trigger first and scoped it to a channel, that leftover scope used to sit invisibly on the rule. The picker is now hidden for these triggers and any leftover scope is cleared, and the engine ignores channel scoping for them entirely.
+
+    **What to do.** Re-open the automation, confirm the trigger, and save. If you built it on a store trigger from the [store console](/integrations/store-console) it is tied to that store; one you build by hand fires for every connected store.
+
+    [Triggers](/automations/triggers) · [Channels and the window](/automations/channels-and-window)
+  </Accordion>
+
+  <Accordion title="My scheduled automation does nothing">
+    A scheduled automation runs for the **workspace**, not for one person. There is no contact and no conversation, so every step that messages, tags or notes somebody has nobody to act on, and the editor marks those steps as unable to run.
+
+    **What to do.** Use a schedule for steps that need no contact — an HTTP request, a Google action, a team notification. To reach people on a timer, use a [broadcast](/whatsapp/broadcasts) instead.
+
+    `{{ message.text }}` in a scheduled automation is flagged by the checks panel for the same reason: there is no message.
+
+    [Triggers](/automations/triggers) · [Variables](/automations/expressions)
+  </Accordion>
+
+  <Accordion title="It will not switch on">
+    Turning **Active** on is validated by the server, and a broken automation is refused with the first problem it finds and where it is.
+
+    **What it requires.** At least one step, and each step carrying what it needs: message text, a template name, a tag, a pipeline and stage and title, a valid URL, a wait greater than zero with a real unit, a split percentage between 0 and 100, at most 3 buttons, at most 10 list rows, a variable name of letters, numbers and underscores. **Keyword match** needs a keyword, **On a schedule** needs a schedule, **Tag added** needs a tag.
+
+    **What to do.** Open the **checks** panel before you try — it lists everything, and clicking a finding selects the step it is about.
+
+    [Diagnostics and logs](/automations/diagnostics-and-logs)
+  </Accordion>
+</AccordionGroup>
+
+## It ran, but not the way you expected
+
+<AccordionGroup>
+  <Accordion title="A step was skipped and nothing failed">
+    **Skipped** is not a failure. It means the channel could not do that step, there was nobody to send to, or the step is switched off.
+
+    **The usual cases.** A WhatsApp template or a list on Instagram. A sending step on a run started by a hosted form, a booking, a payment or a store order, where the person may never have messaged you and there is no thread — the tag, segment, deal and notify steps beside it still run, and the run ends **partial**.
+
+    **What to do.** Read the run log: it names which step was skipped and why. To behave differently per channel, add a **Condition** on the **Channel** subject and put the template send in one branch and plain text in the other.
+
+    <Note>
+      **Send an invoice** is the exception among the sending steps: it creates the document anyway and records that it could not deliver it.
+    </Note>
+
+    [Channels and the window](/automations/channels-and-window) · [Diagnostics and logs](/automations/diagnostics-and-logs)
+  </Accordion>
+
+  <Accordion title="A variable came out blank in the message">
+    An unknown token resolves to an **empty string**. It is never shown to the customer with its braces intact — a visible token reads as a broken app — but it does mean a typo produces a gap rather than an error.
+
+    **The four causes.** A misspelled path. A token pointing at a step that runs **after** this one, or on the **other side of a branch** — it could only ever be empty. A namespace that is not a real one. A variable no **Set variable** step and no *Also save the result as* ever writes.
+
+    **What to do.** Use the **insert data** button beside the field rather than typing a path: it lists only what this step can actually read, with a value from a recent run beside it. The checks panel flags all four. `{{ contact.name | default:"there" }}` avoids "Hi ," when a name is genuinely missing.
+
+    [Variables and expressions](/automations/expressions) · [Diagnostics and logs](/automations/diagnostics-and-logs)
+  </Accordion>
+
+  <Accordion title="The customer saw braces in the message">
+    A `{{` that is never closed is sent to the contact exactly as typed — there is nothing for the engine to resolve.
+
+    **What to do.** Close it. The checks panel reports an unclosed brace before you go live.
+
+    [Variables and expressions](/automations/expressions)
+  </Accordion>
+
+  <Accordion title="The follow-up after a wait never arrived">
+    A parked run does not stop WhatsApp's clock. After a wait, only an approved template will send unless the customer has messaged again in the meantime.
+
+    **How to check.** The checks panel adds up every **Wait** along each path — counting a **Wait until** as up to 24 hours — and warns on the first sending step that lands past the limit, naming the total.
+
+    **Two fixes.** Shorten the wait, or make that step a **Send template**. The same applies to **Request a payment**: outside the window the link is carried by an approved template and the step's own message text is not used, because a template's copy is fixed at approval.
+
+    [Channels and the window](/automations/channels-and-window) · [The 24-hour window](/whatsapp/messaging-window)
+  </Accordion>
+
+  <Accordion title="The customer got two replies to one message">
+    Engines do not know about each other unless there is a rule saying so, and there are only two such rules.
+
+    - **An automation beats an AI agent.** If an active automation on a message trigger, scoped to this channel, with matching keywords, answers the message, the agent stays quiet on it.
+    - **A comment funnel beats the Instagram comment trigger** on the comment it claims.
+
+    **Everything else can double up.** Two automations listening for the same keyword both fire — the trigger panel says so when you add a word another automation or a [flow](/flows/overview) already listens for. A flow and an automation can both answer the same WhatsApp message.
+
+    **What to do.** Give each keyword one owner, or narrow one of them with a channel scope or a stricter **Is exactly the keyword** match.
+
+    [Triggers](/automations/triggers) · [Why is my agent silent?](/ai-agents/readiness)
+  </Accordion>
+
+  <Accordion title="The run says Failed but the messages went out">
+    A step set to *Carry on to the next step* on failure still marks the whole run **failed**, so a broken step is never invisible. The rest of the run still happens.
+
+    **What to do.** Expand the run and read the step that failed; its reason is on the row.
+
+    [Diagnostics and logs](/automations/diagnostics-and-logs)
+  </Accordion>
+
+  <Accordion title="Start flow did nothing">
+    Only an **active** flow answers anything. A draft flow is skipped, including by an automation's **Start flow** step, so the step runs and nothing happens.
+
+    **What to do.** Publish the flow. The checks panel flags a **Start flow** pointing at a flow that is not active, and a **Run automation** pointing at itself or at an automation that is switched off.
+
+    [Flows](/flows/overview) · [Diagnostics and logs](/automations/diagnostics-and-logs)
+  </Accordion>
+
+  <Accordion title="An HTTP request step was refused before it was sent">
+    Requests to private, loopback and internal addresses are refused by the server. The checks panel warns about them, and about plain `http://`, before you go live.
+
+    **What to do.** Point it at a public `https://` address. The step publishes `{{ steps.<name>.status }}` and `{{ steps.<name>.body }}` even on a refused call, so a **Condition** after it can branch on the failure instead of the automation simply stopping.
+
+    [Steps](/automations/steps) · [Variables and expressions](/automations/expressions)
+  </Accordion>
+
+  <Accordion title="An Add to segment step did nothing">
+    Only **static** segments have a membership anything can be added to or removed from. A filter segment works its membership out on the spot from its rules, so there is nothing to write.
+
+    **What to do.** Point the step at a static segment. The checks panel flags a segment step pointing at a filter segment; whether the segment still exists and still belongs to this workspace is checked when the step runs, because that answer can change after activation.
+
+    [Segments](/contacts/segments) · [Steps](/automations/steps)
+  </Accordion>
+</AccordionGroup>
+
+## Flows
+
+<AccordionGroup>
+  <Accordion title="The flow never starts on Instagram or a website chat">
+    **Flows are WhatsApp only.** They send lists, approved templates and catalogue products, none of which exist on the other two channels, so an Instagram DM or a web chat never enters the flow engine at all.
+
+    **What to do.** Build it as an [automation](/automations/overview) instead — that is the channel-agnostic engine, and it skips the individual steps a channel cannot do rather than failing mid-conversation.
+
+    [Flows](/flows/overview)
+  </Accordion>
+
+  <Accordion title="A contact cannot start a flow">
+    A contact can be in **one** flow at a time. That is why **Connect flow** ends the current run before starting the target rather than nesting, and why a loop between two flows terminates instead of growing.
+
+    **Check.** Open **Runs** in the editor toolbar. An **Active** run shows which node it is sitting on. A run that has gone quiet is closed by a sweep — the default cutoff is 24 hours without progress — so it does not block the contact for ever.
+
+    **Also.** If somebody on your team replied to that contact by hand, the run is marked **paused by agent** and stops advancing. A person owns the conversation now.
+
+    [Waits, hand-offs and runs](/flows/waits-and-runs)
+  </Accordion>
+
+  <Accordion title="The flow asked the same question twice and then stopped">
+    The customer's reply did not match what that node was waiting for — they typed a sentence instead of tapping a button, or sent a photo when a document was asked for. The flow re-sends the same prompt, by default twice, and then hands the conversation to a person.
+
+    **What to do.** Expand the run and read the event timeline: `fallback_fired` is the re-prompt and `handoff` is the hand-over. Widen what the node accepts, or make the prompt clearer about tapping rather than typing.
+
+    <Note>
+      The text of a customer's reply is not written to the event log — only its length, and which button or row was tapped.
+    </Note>
+
+    [Waits, hand-offs and runs](/flows/waits-and-runs) · [Node types](/flows/nodes)
+  </Accordion>
+
+  <Accordion title="Take a payment went straight down the expired path">
+    The link could not be created at all — Razorpay is not connected, or the keys were revoked. There is nothing to wait for, so the run takes the *If they don't, go to* path immediately rather than parking for ever.
+
+    **What to do.** Connect or reconnect Razorpay and test the keys. When a link is created normally, the run parks until the link's expiry, and a payment that arrives first claims that parking and continues down *When they pay, go to* — exactly one of the two wins.
+
+    [Razorpay payments](/integrations/razorpay) · [Waits, hand-offs and runs](/flows/waits-and-runs)
+  </Accordion>
+
+  <Accordion title="Part of the flow is reported as unreachable">
+    The validation bar at the foot of the editor checks the graph from the **entry node**. A node nothing points at is listed as a **warning** — it does not stop activation, but nothing will ever run it.
+
+    **The related error.** A path pointing at a node that is not there, or a required path left empty, is an **error** and stops activation. Clicking either jumps to the node on the canvas.
+
+    **What to do.** Connect the node, or delete it. Then check the run history for where real runs actually stop — a run that reaches a path pointing nowhere is marked **Failed**.
+
+    [The flow editor](/flows/editor) · [Waits, hand-offs and runs](/flows/waits-and-runs)
+  </Accordion>
+</AccordionGroup>
+
+## AI agents
+
+<AccordionGroup>
+  <Accordion title="The agent says nothing">
+    An agent that is silent looks the same from the inbox whatever the cause, so there is a list of causes in the order they are checked.
+
+    **Start with the readiness panel** above the studio tabs. It names anything outstanding and each line takes you to the tab that fixes it. An amber panel means a blocker: the workspace cannot reach a model, or the agent is switched off.
+
+    **Then the run-time gates**, in order: something else already handled the message (a flow, a button tap, a message with no text); no switched-on agent covers this channel; the agent does not answer automatically; the workspace is out of credits; a teammate owns the thread; AI replies are paused on that conversation; the conversation's reply budget is used up; test mode excludes this customer; an automation already answers this message; a handoff phrase matched; the model handed off or came back empty; the provider call failed.
+
+    **Two things are deliberately not blockers.** **Drafts only** and **test mode** are legitimate ways to run an agent.
+
+    [Why is my agent silent?](/ai-agents/readiness) · [Routing](/ai-agents/routing)
+  </Accordion>
+
+  <Accordion title="It replied, then went quiet for the rest of the conversation">
+    Three limits end a thread rather than a message.
+
+    - **The reply budget.** **Max replies per conversation** — three by default — counted over a rolling 24-hour window that opens with the first reply after a quiet period. A customer who comes back the next day gets a full budget.
+    - **A handoff.** The agent decided it could not help, or a handoff phrase matched. AI replies are paused on that conversation and it waits for your team.
+    - **An owner.** A conversation assigned to a member is that member's, and the agent stays out of it.
+
+    **What to do.** The bot button in the thread header resumes AI replies on that one conversation, and clearing the owner lets the agent answer again.
+
+    [Why is my agent silent?](/ai-agents/readiness) · [Working a conversation](/inbox/conversations)
+  </Accordion>
+
+  <Accordion title="The wrong agent is answering">
+    Routing is decided once per conversation, not per message. The first AI reply latches that agent to the thread and every later message goes to the same one — otherwise reordering the list would change who the customer is talking to mid-sentence.
+
+    **For a new conversation**, the first **switched-on** agent in list order whose channels cover it answers. Selecting no channels means every channel. There is no fallback: an agent scoped to Instagram will not answer a WhatsApp thread just because it is the only one you have.
+
+    **What to do.** Reorder the list with the arrows on each row — the list *is* the routing order — and put the narrow, specific agent above the general one. To move one existing thread, use the owner control in the thread header.
+
+    [Routing](/ai-agents/routing)
+  </Accordion>
+
+  <Accordion title="The agent replies but never uses a skill it has">
+    The reply reads as though the agent never knew it could book a meeting, log a row or send a basket link. That is a **withheld tool**: it was never shown to the agent, so it could not mention it.
+
+    | Symptom | Cause |
+    | --- | --- |
+    | Never checks the calendar or books | [Google](/integrations/google) is not connected, or the reply is a draft |
+    | Never sends a basket link | No store is [connected](/integrations/store-console) |
+    | Never sends a payment link | [Razorpay](/integrations/razorpay) is not connected, the reply is a draft, or **Most it may ever ask for** is unset |
+    | Never uses one of your approved templates | The conversation is not WhatsApp, the reply is a draft, no template is listed in the skill, or every listed template is currently unsendable |
+    | Never calls one of your API actions | The action is switched off, or this agent's action selection excludes it |
+
+    Every writing tool is withheld while **drafting**, deliberately: pressing the draft button three times must not book three meetings or send three payment requests.
+
+    [Skills](/ai-agents/skills) · [Why is my agent silent?](/ai-agents/readiness)
+  </Accordion>
+
+  <Accordion title="The answer was wrong, or it invented something">
+    Open the [test drawer](/ai-agents/testing) and ask the same question. The evidence line under the reply names the documents the answer was built from and every tool that ran.
+
+    - **The right document was not retrieved.** Split a long document into one topic per document, and check its status is **Ready** rather than **Keyword only**, **Needs reindex** or **Failed**.
+    - **It was retrieved and ignored.** A ground rule or an instruction is contradicting it — ground rules outrank everything below them, including your documents.
+    - **It invented something.** Fill in **What the business does** and add the fact as a document. The agent is told not to guess, but with nothing to go on it has only the customer's question.
+    - **It sounds wrong rather than being wrong.** That is tone, reply length and **Extra voice notes** on the Persona tab.
+
+    [Knowledge](/ai-agents/knowledge) · [Persona, voice and behaviour](/ai-agents/persona-and-behaviour)
+  </Accordion>
+
+  <Accordion title="A document is not being found">
+    Every document carries a status, because a document that saved but is invisible to the agent is the worst outcome here.
+
+    | Status | What it means |
+    | --- | --- |
+    | **Ready** | Indexed for meaning-based and keyword search |
+    | **Indexing** | Still processing |
+    | **Keyword only** | Searchable by word, not by meaning. Fix the embeddings key, then reindex |
+    | **Needs reindex** | Indexed with a different embeddings model than the workspace now uses |
+    | **Failed** | Nothing usable was indexed — the agent cannot see it |
+
+    **Also check the selection.** An agent set to **Only these** reads only the ticked documents, and documents added later are **not** included automatically. Selecting nothing means exactly that.
+
+    [Knowledge](/ai-agents/knowledge)
+  </Accordion>
+
+  <Accordion title="The workspace ran out of AI credits">
+    At zero, the inbox draft button refuses with a message offering a top-up, and the auto-reply agent leaves conversations for a person rather than telling a customer a business is out of credits. Nothing is lost; the conversation waits.
+
+    **What to do.** Top up from the header badge or **Provider & credits**, or save your own provider key. Fallback only ever runs one way: with credits exhausted and your own key saved, your key is used — but a working own-key setup never falls back to spending credits.
+
+    **What spends them.** Auto-replies, the inbox draft button, the test drawer, indexing documents, and the AI builders for automations and flows.
+
+    [Credits and your own key](/ai-agents/credits-and-byok)
+  </Accordion>
+
+  <Accordion title="Test mode silenced the agent for everybody">
+    Test mode is a **phone-number allowlist**. Only the numbers you listed are answered — and Instagram and website conversations have no phone number, so they are never answered while it is on.
+
+    **Check.** The numbers are matched exactly, with the country code: `+91 98765 43210`. A **Test mode** pill sits on the agent's row and in the studio header so it cannot be left on by accident.
+
+    **What to do.** Switch it off to go live. Clearing the last number also turns it off.
+
+    [Test mode and the playground](/ai-agents/testing)
+  </Accordion>
+
+  <Accordion title="The test drawer did something for real">
+    Nothing is sent to a customer from the drawer, and tools that read one customer's data say so instead of reading somebody's real orders. But **tools that write still write**: a Google booking, a spreadsheet row or one of your custom actions called from the drawer does the real thing.
+
+    The drawer is also metered exactly like production — an unmetered test surface would be an open AI endpoint behind a login page.
+
+    [Test mode and the playground](/ai-agents/testing)
+  </Accordion>
+
+  <Accordion title="I cannot create another agent">
+    How many agents a workspace may have is a plan limit: **Starter 1, Growth 5, Enterprise unlimited**. A paused agent still occupies a slot — a cap you can dodge by pausing is not a cap.
+
+    **What to do.** Delete an agent you no longer use, or change plan. The meter under the page title says where you are.
+
+    [Create an agent](/ai-agents/create) · [Plans and billing](/getting-started/plans-and-billing)
+  </Accordion>
+</AccordionGroup>
+
+## Still stuck
+
+- Messages that fail at Meta rather than in the engine: [WhatsApp delivery](/troubleshooting/whatsapp).
+- A store, payment, invoice or Google step: [Integrations](/troubleshooting/integrations).
+- Anything else: [support@watx.in](mailto:support@watx.in).
