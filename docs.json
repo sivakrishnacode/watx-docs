@@ -160,7 +160,7 @@
               "whatsapp/templates",
               "whatsapp/template-library",
               "whatsapp/broadcasts",
-              "whatsapp/campaigns",
+              "whatsapp/scheduled-broadcasts",
               "whatsapp/catalog-and-orders",
               "whatsapp/whatsapp-flows",
               "whatsapp/click-to-whatsapp",
@@ -331,5 +331,11 @@
       }
     ]
   },
-  "description": "Documentation for Watx: one inbox for WhatsApp, Instagram and website chat, with a CRM, automations, flows, forms, AI agents, integrations and a public API."
+  "description": "Documentation for Watx: one inbox for WhatsApp, Instagram and website chat, with a CRM, automations, flows, forms, AI agents, integrations and a public API.",
+  "redirects": [
+    {
+      "source": "/whatsapp/campaigns",
+      "destination": "/whatsapp/scheduled-broadcasts"
+    }
+  ]
 }

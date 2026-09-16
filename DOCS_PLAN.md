@@ -164,7 +164,7 @@ Three tabs. Slugs are file paths under the repo root (`.mdx` omitted).
 | Contacts & CRM | `contacts/overview` | Contacts | List, search, filters, bulk actions, import CSV, sources, the contact drawer | B |
 | Contacts & CRM | `contacts/fields-and-tags` | Fields and tags | Built-in fields, address, custom fields, tags; where they are edited | B |
 | Contacts & CRM | `contacts/segments` | Segments | Static vs dynamic, rule vocabulary, incomplete rules, how segments are used (broadcasts, automations) | B |
-| Contacts & CRM | `contacts/activity-timeline` | Activity timeline | What appears (orders, payments, carts, deals, notes, forms, campaigns, message roll-ups) | B |
+| Contacts & CRM | `contacts/activity-timeline` | Activity timeline | What appears (orders, payments, carts, deals, notes, forms, broadcasts, message roll-ups) | B |
 | Contacts & CRM | `contacts/pipelines-and-deals` | Pipelines and deals | Stages, creating deals, moving, value/currency, automation and agent hooks | B |
 | Contacts & CRM | `contacts/media-library` | Media library | Uploads, reuse across composer/templates/flows/broadcasts, the storage meter | B |
 | Automations | `automations/overview` | Automations | What an automation is (trigger → steps → branches), where they run, gallery, AI draft | C |
@@ -229,11 +229,11 @@ Three tabs. Slugs are file paths under the repo root (`.mdx` omitted).
 | WhatsApp | `whatsapp/messaging-window` | The 24-hour window | The rule, what counts as inbound, what can be sent outside, how Watx handles it everywhere | F |
 | WhatsApp | `whatsapp/templates` | Message templates | Categories, creating, variables (positional/named), headers, buttons, carousels, submitting, statuses, editing/deleting, send-time values | F |
 | WhatsApp | `whatsapp/template-library` | Template library and packs | Collections, starters, submitting a pack, the store bundle | F |
-| WhatsApp | `whatsapp/broadcasts` | Broadcasts | Audience (tags/segments/exclusions), template, variables, media, schedule, statuses, recipients, retries | F |
-| WhatsApp | `whatsapp/campaigns` | Campaigns | Scheduled/recurring sends (whatever the campaigns page does) | F |
+| WhatsApp | `whatsapp/broadcasts` | Broadcasts | Audience (tags/segments/exclusions), template, variables, media, when to send, drafts, duplicating, the four tabs, statuses, recipients, retries | F |
+| WhatsApp | `whatsapp/scheduled-broadcasts` | Scheduled and repeating broadcasts | Schedule once, repeat (daily/weekly/monthly, time zone, ends), the Scheduled and Repeating tabs, send-time checks and failure reasons | F |
 | WhatsApp | `whatsapp/catalog-and-orders` | Catalog and orders | Product catalog, product messages, orders | F |
 | WhatsApp | `whatsapp/whatsapp-flows` | WhatsApp Flows | Meta's native forms: what they are, managing, sending | F |
-| WhatsApp | `whatsapp/click-to-whatsapp` | Click-to-WhatsApp | CTWA campaigns, attribution, retargeting audiences | F |
+| WhatsApp | `whatsapp/click-to-whatsapp` | Click-to-WhatsApp ads | Tracked ads, attribution | F |
 | WhatsApp | `whatsapp/analytics` | Analytics | The overview metrics | F |
 | WhatsApp | `whatsapp/limits-and-quality` | Messaging limits and quality | Tiers, quality rating, what Watx shows | F |
 | Instagram | `instagram/overview` | Instagram | DMs, story replies, comments; how it differs from WhatsApp; the 7-day window | G |
@@ -354,8 +354,9 @@ that note lands in the table above.
   formatting instead of WhatsApp markup; playground does not render
   `credits_charged`; `GET /ai/credits/ledger` has no web caller; custom
   actions accept plain `http` although the form says https.
-- WhatsApp: `campaign_schedules` has no worker — schedules never run;
-  `retargeting_audiences` has no code references.
+- ~~WhatsApp: `campaign_schedules` has no worker — schedules never run~~ —
+  fixed 2026-09-16: scheduling moved into Broadcasts and a worker runs it.
+  `retargeting_audiences` still has no code references.
 - WhatsApp: the CTWA **Copy tracking link** points at `/ctwa/<id>`, a route
   that does not exist; clicks are recorded only through `POST /ctwa/track`
   behind dashboard auth, and the webhook ignores Meta's referral payload.
@@ -387,6 +388,7 @@ that note lands in the table above.
 
 ## 8b. Log
 
+- 2026-09-16 — Campaigns merged into Broadcasts in the product: the wizard's last step sends now, schedules once or repeats, and the Broadcasts page has History / Scheduled / Repeating / Drafts tabs. `whatsapp/campaigns` deleted and redirected to the new `whatsapp/scheduled-broadcasts`; broadcasts, troubleshooting, FAQ, overview, analytics, activity timeline, contacts, API keys and index updated. The CTWA page now says "tracked ad" rather than "campaign", matching the app. Nav regenerated.
 - 2026-09-16 — Meta Ads Manager removed from the product. Dropped its out-of-scope entry (here and in `AGENTS.md`), its §8 finding and the **Facebook lead** contact source row; the CTWA page no longer points at Meta Ads Manager. Data-deletion source now `meta-data-deletion` and `/meta/privacy/*`. CTWA attribution pages unchanged. Nav untouched (no §4 row changed).
 - 2026-09-15 — Verified with `mint dev`: pages and generated endpoint pages render; `.json`/`.yaml` files are NOT served as static assets (`.txt` and images are). The Postman page therefore links the raw GitHub URL (repo is public) and Postman imports it by link; `postman/` is in `.mintignore`.
 - 2026-09-15 — Batch I reported: 5 pages. All 104 pages written; final lint/validate/links run; commit and push authorised by Siva.

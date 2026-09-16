@@ -204,12 +204,30 @@ Most WhatsApp problems come down to one of three things: the [24-hour window](/w
     [Messaging limits and quality](/whatsapp/limits-and-quality)
   </Accordion>
 
-  <Accordion title="My campaign schedule never ran">
-    A campaign schedule is a **record of a plan**, not a timer. Creating one does not start the broadcast at the scheduled time, and **Next run** and **Runs** stay empty.
+  <Accordion title="My scheduled broadcast did not go out">
+    Open **WhatsApp → Broadcasts → History** and find it. A scheduled broadcast is checked again at its send time, and if it cannot go out it shows **Failed** with the reason under its name:
 
-    **What to do.** Send broadcasts from **WhatsApp → Broadcasts** until that changes.
+    - **The person who scheduled this is no longer allowed to send broadcasts in this workspace.** They were removed or made a Viewer. Someone with the Agent role or above has to create it again — **Duplicate** does most of the work.
+    - **WhatsApp is not connected.** Reconnect in Channel settings, then duplicate it.
+    - **No contacts found for this audience**, or **Everyone in this audience has opted out of marketing.** The audience was worked out again at send time and nobody could be messaged.
+    - A plan message. The month's broadcast or message allowance is used up, or the subscription has ended.
 
-    [Campaign schedules](/whatsapp/campaigns)
+    **Cancelled** means somebody cancelled it; nothing was sent. If it is still under **Scheduled** after its time, give it a minute — due broadcasts are picked up once a minute.
+
+    [Scheduled and repeating broadcasts](/whatsapp/scheduled-broadcasts)
+  </Accordion>
+
+  <Accordion title="My repeating broadcast stopped sending">
+    Check its status in **WhatsApp → Broadcasts → Repeating**:
+
+    - **Paused** — somebody paused it. **Resume** continues from the next matching time; sends that fell while it was paused are not sent.
+    - **Finished** — it reached its last send or its end date.
+    - **Stopped** — somebody chose **Stop for good**. Duplicate one of its sends and choose **Repeat** to start again.
+    - **Stopped — needs attention** — the member who set it up no longer has a login, or its template, audience or schedule is missing. Create it again.
+
+    If it is **Active** but a row says **Last send failed**, that send did not go out and the next one will still be tried. The reason is on the failed send in **History**, and the causes are the same as for a one-off scheduled broadcast.
+
+    [Scheduled and repeating broadcasts](/whatsapp/scheduled-broadcasts)
   </Accordion>
 </AccordionGroup>
 

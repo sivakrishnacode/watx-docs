@@ -1,0 +1,166 @@
+---
+title: "Scheduled and repeating broadcasts"
+description: "Send a broadcast once at a date and time you pick, or on a daily, weekly or monthly schedule — and manage both from the Broadcasts page."
+sidebarTitle: "Scheduled and repeating"
+icon: "calendar-days"
+---
+
+Scheduling is part of the broadcast itself. The last step of **New broadcast** asks **When should it go out?** and offers three answers:
+
+| Choice | What happens |
+| --- | --- |
+| **Send now** | Starts going out as soon as you confirm |
+| **Schedule** | Goes out once, at a date and time you pick |
+| **Repeat** | Goes out daily, weekly or monthly, until you stop it |
+
+Everything else in the wizard — template, audience, variables — is the same for all three. See [Broadcasts](/whatsapp/broadcasts) for those steps.
+
+<Note>
+  There is no separate "Campaigns" page. Scheduled broadcasts live in the **Scheduled** tab of **WhatsApp → Broadcasts**, and repeating ones in the **Repeating** tab. The old Campaigns address opens the Repeating tab.
+</Note>
+
+## Schedule once
+
+Choose **Schedule**, then fill in:
+
+| Field | Notes |
+| --- | --- |
+| **Date** | Today or later |
+| **Time** | 24-hour or 12-hour, depending on your browser |
+| **Time zone** | Your browser's zone is listed first, followed by common zones, each with its GMT offset |
+
+The time must be at least 2 minutes from now and no more than a year ahead. Below the fields, the page repeats the send time and how long until then.
+
+### Who gets it
+
+The audience is worked out **again when the broadcast goes out**, not only when you schedule it:
+
+- People who match the audience by then are included — for example, contacts tagged after you scheduled.
+- People who opt out in the meantime are skipped.
+- The count on the review step is today's count, labelled **Would reach today**.
+
+An audience that is already empty is refused when you schedule, so you find out while you are still on the page.
+
+<Info>
+  An **Upload CSV** audience is the exception. The list is saved when you schedule, and those exact numbers are sent at the scheduled time.
+</Info>
+
+### The Scheduled tab
+
+**WhatsApp → Broadcasts → Scheduled** lists every broadcast waiting for its time, soonest first.
+
+| Column | What it shows |
+| --- | --- |
+| **Name** | The broadcast |
+| **Template** | The template it sends |
+| **Audience** | Who it goes to, e.g. "Contacts with 2 tags" or "Uploaded list of 240" |
+| **Sends** | The date and time in your browser's time zone, and how long until then |
+
+The row menu offers:
+
+- **Send now** — sends it immediately instead of at its time.
+- **Duplicate** — opens the wizard with the same template, audience and values.
+- **Cancel** — it will not be sent. It moves to **History** with the status **Cancelled**, and nothing reaches anyone.
+
+A scheduled broadcast cannot be edited. To change one, cancel it and use **Duplicate**.
+
+Opening a scheduled broadcast shows when it sends, the same **Send now** and **Cancel** buttons, and **Duplicate**. Its delivery report fills in once it starts sending.
+
+### When the time comes
+
+Watx checks for due broadcasts every minute, so a broadcast goes out within about a minute of its time. It then moves to **History** and follows the usual statuses: **Queued**, **Sending**, **Sent**.
+
+## Repeat
+
+Choose **Repeat**, then set the schedule:
+
+| Field | Options |
+| --- | --- |
+| **Repeats** | **Every day**, **Every week** or **Every month** |
+| **On** | Weekly only. One or more days, Monday to Sunday |
+| **On day** | Monthly only. A day from 1 to 28, so every month has it |
+| **At** | The time of day |
+| **Time zone** | As for a one-off schedule |
+| **Ends** | **Never — until I stop it**, **After a number of sends** (1 to 1000), or **On a date** |
+
+The page sums the schedule up in a sentence — for example "Every Monday and Thursday at 9:00 AM, 4 sends in total" — and lists the next three send times.
+
+The time is local to the zone you pick. "9:00 AM New York" stays at 9:00 AM in New York when the clocks change.
+
+<Warning>
+  **Upload CSV** and **Re-target a broadcast** audiences cannot repeat. An uploaded list is not stored anywhere a later send could read it, and a re-target follows up one specific past broadcast. Schedule them once instead. To repeat to the people in a list, [import them as contacts](/contacts/overview#importing-a-csv) and choose them by tag or segment.
+</Warning>
+
+### What each send is
+
+Every time a repeating broadcast runs, Watx creates a new broadcast in **History**:
+
+- It is named after the repeating broadcast, followed by the date of the send.
+- It has its own report, recipient list and follow-up buttons.
+- It shows a repeat icon, and the line **Repeats · Weekly offers** under its name.
+- The audience is worked out fresh each time, with opted-out contacts skipped.
+- It counts against your plan's monthly broadcast and message limits like any other broadcast.
+
+The first send is the first matching time at least a minute after you confirm.
+
+If a send cannot go out, it appears in **History** as **Failed** with the reason, and the next send goes ahead as planned. A failed send is never retried later. **After a number of sends** counts every send, including failed ones.
+
+If Watx is unavailable when a send is due, the send goes out once Watx is back — once, however many were missed. Nobody gets several weeks of messages at once.
+
+### The Repeating tab
+
+**WhatsApp → Broadcasts → Repeating** lists every repeating broadcast.
+
+| Column | What it shows |
+| --- | --- |
+| **Name** | The broadcast, its template and its audience |
+| **Schedule** | The schedule in words, its time zone, and when it ends |
+| **Next send** | The next send time in the broadcast's own time zone, and how long until then |
+| **Sends** | How many sends so far, out of the total if it ends after a number of sends |
+| **Status** | See below |
+
+| Status | Meaning |
+| --- | --- |
+| **Active** | Sending on schedule |
+| **Paused** | No sends until you resume it |
+| **Finished** | It reached its last send or its end date |
+| **Stopped** | You stopped it |
+| **Stopped — needs attention** | It could not continue — see [Troubleshooting](/troubleshooting/whatsapp) |
+
+When a send fails, the row shows **Last send failed** with the reason until a later send succeeds.
+
+The row menu offers:
+
+- **View sends** — opens **History** filtered to this repeating broadcast. Remove the filter from the chip above the list.
+- **Pause** — no sends until you resume.
+- **Resume** — continues from the next matching time after now. Sends that fell while it was paused are not sent. If its end date has already passed, it becomes **Finished**.
+- **Stop for good** — it will never send again. This cannot be undone.
+- **Delete** — removes the repeating broadcast. Sends it already made stay in **History**.
+
+A repeating broadcast cannot be edited. To change the template, audience or schedule, stop it, open one of its sends and use **Duplicate**, then choose **Repeat** again.
+
+## What is checked when a send goes out
+
+A scheduled broadcast and every repeating send are checked again at send time. If a check fails, nothing is sent to anyone, and the broadcast shows **Failed** with one of these reasons:
+
+| Reason shown | What it means |
+| --- | --- |
+| **The person who scheduled this is no longer allowed to send broadcasts in this workspace.** | They were removed, or their role was changed to Viewer. Someone with the Agent role or above has to create it again |
+| **WhatsApp is not connected.** | Reconnect in [Channel settings](/whatsapp/settings) |
+| **No contacts found for this audience.** | Nobody matches the audience any more |
+| **Everyone in this audience has opted out of marketing** | Everyone who matches has opted out |
+| A plan message | The month's broadcast or message allowance is used up, or the subscription has ended. See [Plans and billing](/getting-started/plans-and-billing) |
+
+The plan is checked when you schedule as an early warning, and again when the broadcast goes out. Usage is only counted when it actually goes out.
+
+## Who can do what
+
+Members with the Agent role or above can schedule, repeat, send early, cancel, pause, resume, stop and delete. Viewers can see every tab but cannot change anything.
+
+A scheduled or repeating broadcast sends on behalf of the member who set it up. If that member later loses the right to send, its sends fail with the reason above.
+
+## Related
+
+- [Broadcasts](/whatsapp/broadcasts) — the wizard, audiences and the broadcast report.
+- [Plans and billing](/getting-started/plans-and-billing) — broadcast and message allowances.
+- [Messaging limits and quality](/whatsapp/limits-and-quality) — how many people Meta lets you reach a day.
