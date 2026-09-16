@@ -43,9 +43,8 @@
 
 ## Content boundaries
 
-- Do not document: Meta Ads Manager (gated, unreleased), voice or calling
-  (not built), the internal admin panel, deployment or infrastructure, or
-  anything on the roadmap.
+- Do not document: voice or calling (not built), the internal admin panel,
+  deployment or infrastructure, or anything on the roadmap.
 - Do not copy internal file paths, migration numbers, class names or the
   warning notes from the product repo's `CLAUDE.md` into public pages.
 - Do not invent a screen, a label, a limit or a Meta policy detail. If it

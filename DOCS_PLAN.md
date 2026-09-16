@@ -32,8 +32,6 @@ using it daily, (2) an agency running several workspaces, (3) a developer
 integrating through the API and webhooks. Write for (1) by default.
 
 ### Out of scope — do not document
-- **Meta Ads Manager** (`ads/*` routes, `apps/api/src/ads`) — built, gated
-  off behind a flag, pending Meta App Review. Not public.
 - **Voice / WhatsApp calling** — proposed only (`docs/whatsapp-calling.md`).
 - **The admin panel** (`apps/admin-panel`) — internal operations tool.
 - **Deployment, infrastructure, migrations, queues** — internal.
@@ -79,7 +77,7 @@ disagree, the code wins, and the writer says so in the report.
 | Zapier, n8n, other services | CLAUDE.md "Outbound webhooks"; `apps/web/src/lib/webhooks/providers.ts`, `apps/web/src/components/settings/webhook-integration-config.tsx`, `apps/api/src/integrations/**`, `apps/web/src/lib/automations/app-presets.ts` |
 | Public API & webhooks | `docs/public-api.md` (primary), `apps/api/src/v1/controllers/*.ts` (every route, body, query, response), `apps/api/src/auth/decorators/require-scope.decorator.ts` (scopes), `apps/api/src/v1/utils/webhooks.util.ts` (events, signing), `apps/api/src/auth/guards/api-key.guard.ts`, `apps/api/src/common/rate-limit*`; API keys UI: settings → API keys |
 | Settings screens | `apps/web/src/components/settings/**` |
-| Data deletion / privacy pages | `apps/web/src/app/instagram-data-deletion`, `ads-data-deletion` |
+| Data deletion / privacy pages | `apps/web/src/app/instagram-data-deletion`, `meta-data-deletion`; Meta callbacks `apps/api/src/meta-privacy` (`https://api.watx.in/meta/privacy/*`) |
 
 Fixed facts to use verbatim:
 - App: `https://app.watx.in`. API host: `https://api.watx.in` (public API base path `/v1`; the app host also proxies `/api/*` — the API writer confirms which base URL to publish from `apps/web/next.config.*` and `docs/public-api.md`, and uses one consistently).
@@ -326,8 +324,6 @@ that note lands in the table above.
 - Delete-pipeline dialog says deals are "archived"; they cascade-delete.
 - Team performance tile "Team median reply" computes a weighted mean.
 - "Weighted value" tooltip says "Won = 100%" but won deals are excluded.
-- `lead-ingest.service.ts` writes deals with `status: 'active'`, outside
-  `deals_status_check` (`open|won|lost`).
 - Activity timeline links to `/pipelines?deal=<id>`; the page ignores `deal`.
 - `renameAsset()` exists but is not wired into the media library UI.
 - Public API: `EntitlementGuard` throws a plain `HttpException`, so a 402 on
@@ -391,6 +387,7 @@ that note lands in the table above.
 
 ## 8b. Log
 
+- 2026-09-16 — Meta Ads Manager removed from the product. Dropped its out-of-scope entry (here and in `AGENTS.md`), its §8 finding and the **Facebook lead** contact source row; the CTWA page no longer points at Meta Ads Manager. Data-deletion source now `meta-data-deletion` and `/meta/privacy/*`. CTWA attribution pages unchanged. Nav untouched (no §4 row changed).
 - 2026-09-15 — Verified with `mint dev`: pages and generated endpoint pages render; `.json`/`.yaml` files are NOT served as static assets (`.txt` and images are). The Postman page therefore links the raw GitHub URL (repo is public) and Postman imports it by link; `postman/` is in `.mintignore`.
 - 2026-09-15 — Batch I reported: 5 pages. All 104 pages written; final lint/validate/links run; commit and push authorised by Siva.
 - 2026-09-15 — Static `.json`/`.yaml` files are NOT served by the Mintlify dev server (`.txt`, images and `.svg` are). The Postman page therefore links the collection through the public GitHub repo's raw URL and offers Postman's **Import → Link**. `scripts/` moved into the repo; README rewritten.
